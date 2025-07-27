@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Training a Vision Transformer on Amazon SageMaker</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Training a Vision Transformer on Amazon SageMaker</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+In this series of three videos, I focus on training a Vision Transformer model on Amazon SageMaker.
+</section>
+<section data-field="body" class="e-content">
+<section name="7b78" class="section section--body section--first"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="450b" id="450b" class="graf graf--h3 graf--leading graf--title">Training a Vision Transformer on Amazon SageMaker</h3><p name="71ad" id="71ad" class="graf graf--p graf-after--h3">In this series of three videos, I focus on training a <a href="https://huggingface.co/transformers/model_doc/vit.html" data-href="https://huggingface.co/transformers/model_doc/vit.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Vision Transformer</a> model on <a href="https://aws.amazon.com/sagemaker/" data-href="https://aws.amazon.com/sagemaker/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Amazon SageMaker</a>.</p><p name="b76e" id="b76e" class="graf graf--p graf-after--p">In the first video, I start from the « Dogs vs Cats » dataset on Kaggle, and I extract a subset of images that I upload to S3. Then, using SageMaker Processing, I run a script that loads the images directly from S3 into memory, extracts their features using the Vision Transformer feature extractor, and stores them in S3 as Hugging Face datasets for image classification.</p><figure name="3806" id="3806" class="graf graf--figure graf--iframe graf-after--p"><iframe src="https://www.youtube.com/embed/jalopOoBL5M?feature=oembed" width="700" height="393" frameborder="0" scrolling="no"></iframe></figure><p name="5eda" id="5eda" class="graf graf--p graf-after--figure">In the second video, I start from the image classification dataset that I prepared in the first video. Then, I download a pre-trained Vision Transformer from the Hugging Face hub, and I fine-tune it on my dataset, using a training script based on the Trainer API in the Transformers library.</p><figure name="b983" id="b983" class="graf graf--figure graf--iframe graf-after--p"><iframe src="https://www.youtube.com/embed/iiw9dNG7JcU?feature=oembed" width="700" height="393" frameborder="0" scrolling="no"></iframe></figure><p name="4d9f" id="4d9f" class="graf graf--p graf-after--figure">In the third video, I start from the image classification dataset that I prepared in the first video. Then, I download a pre-trained base Vision Transformer from the Hugging Face hub, and I use PyTorch Lightning to append a classification layer to it. Finally, I train the model using the Trainer API in PyTorch Lightning.</p><p name="bf90" id="bf90" class="graf graf--p graf-after--p">Resources:</p><ul class="postList"><li name="c90b" id="c90b" class="graf graf--li graf-after--p">Vision Transformer paper: <a href="https://arxiv.org/abs/2010.11929" data-href="https://arxiv.org/abs/2010.11929" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">https://arxiv.org/abs/2010.11929</a></li><li name="8eb1" id="8eb1" class="graf graf--li graf-after--li">Dataset: <a href="https://www.kaggle.com/c/dogs-vs-cats/" data-href="https://www.kaggle.com/c/dogs-vs-cats/" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">https://www.kaggle.com/c/dogs-vs-cats/</a></li><li name="c667" id="c667" class="graf graf--li graf-after--li">Code: <a href="https://gitlab.com/juliensimon/huggingface-demos/-/tree/main/vision-transformer" data-href="https://gitlab.com/juliensimon/huggingface-demos/-/tree/main/vision-transformer" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">https://gitlab.com/juliensimon/huggingface-demos/-/tree/main/vision-transformer</a></li><li name="8b85" id="8b85" class="graf graf--li graf-after--li graf--trailing">More Hugging Face on SageMaker notebooks: <a href="https://github.com/huggingface/notebooks/tree/master/sagemaker" data-href="https://github.com/huggingface/notebooks/tree/master/sagemaker" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">https://github.com/huggingface/notebooks/tree/master/sagemaker</a></li></ul></div></div></section><section name="1ae9" class="section section--body section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><p name="7208" id="7208" class="graf graf--p graf--leading graf--trailing">New to Transformers? Check out the <a href="https://huggingface.co/course" data-href="https://huggingface.co/course" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Hugging Face course</a>!</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/90a5b30c12b0"><time class="dt-published" datetime="2021-11-26T08:02:12.673Z">November 26, 2021</time></a>.</p><p><a href="https://medium.com/@julsimon/training-a-vision-transformer-on-amazon-sagemaker-90a5b30c12b0" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

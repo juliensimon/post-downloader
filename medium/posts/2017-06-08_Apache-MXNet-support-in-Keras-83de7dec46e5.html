@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Apache MXNet support in Keras</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Apache MXNet support in Keras</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+Pretty exciting news last week. François Chollet, author of the popular Keras Deep Learning library, has announced that Apache MXNet is now…
+</section>
+<section data-field="body" class="e-content">
+<section name="ad75" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="6a42" id="6a42" class="graf graf--h3 graf--leading graf--title">Apache MXNet support in Keras</h3><p name="e13f" id="e13f" class="graf graf--p graf-after--h3">Pretty exciting news last week. <a href="https://twitter.com/fchollet" data-href="https://twitter.com/fchollet" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">François Chollet</a>, author of the popular <a href="https://keras.io/" data-href="https://keras.io/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Keras</a> Deep Learning library, has announced that <a href="http://mxnet.io/" data-href="http://mxnet.io/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Apache MXNet</a> is now available as a backend, alongside TensorFlow and Theano.</p><figure name="b2d4" id="b2d4" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*bXuO4d9K7yONDtxI9SmHhQ.png" data-width="1160" data-height="420" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/1*bXuO4d9K7yONDtxI9SmHhQ.png"></figure><p name="77f1" id="77f1" class="graf graf--p graf-after--figure">This is still beta code, but it won’t prevent us from exploring, will it? :)</p><h4 name="f6ba" id="f6ba" class="graf graf--h4 graf-after--p">A word about Keras</h4><p name="99d2" id="99d2" class="graf graf--p graf-after--h4">In their own words, <a href="https://keras.io/" data-href="https://keras.io/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Keras</a> is “<em class="markup--em markup--p-em">a high-level neural networks API, written in Python and developed with a focus on enabling fast experimentation</em>”.</p><p name="90b0" id="90b0" class="graf graf--p graf-after--p">Indeed, Keras is pretty popular in the Deep Learning community, certainly because it provides a higher level API, allowing beginners and seasoned practitioners alike to quickly build and train networks without messing with low-level details.</p><p name="53b9" id="53b9" class="graf graf--p graf-after--p">Keras is also the main tool used in the equally popular — and highly recommended — Deep Learning course by <a href="http://www.fast.ai/" data-href="http://www.fast.ai/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">fast.ai</a>.</p><h4 name="71eb" id="71eb" class="graf graf--h4 graf-after--p">Keras backends</h4><p name="41f3" id="41f3" class="graf graf--p graf-after--h4">In a nutshell, Keras is a wrapper around Deep Learning <a href="https://github.com/fchollet/keras/tree/master/keras/backend" data-href="https://github.com/fchollet/keras/tree/master/keras/backend" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">backends</a>. Initially, it supported TensorFlow and Theano, but sure enough, the community <a href="https://github.com/fchollet/keras/issues/1313" data-href="https://github.com/fchollet/keras/issues/1313" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">asked</a> for MXNet support.</p><p name="46fc" id="46fc" class="graf graf--p graf-after--p">Lo and behold, the good folks at <a href="https://github.com/dmlc" data-href="https://github.com/dmlc" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">DMLC</a> got to work and MXNet support is now available in their <a href="https://github.com/dmlc/keras" data-href="https://github.com/dmlc/keras" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">forked repository</a>. If you’re curious about the Keras-to-MXNet API, it’s <a href="https://github.com/dmlc/keras/blob/master/keras/backend/mxnet_backend.py" data-href="https://github.com/dmlc/keras/blob/master/keras/backend/mxnet_backend.py" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">here</a>. Well done, guys!</p><h4 name="fc3b" id="fc3b" class="graf graf--h4 graf-after--p">Setting up Keras with MXNet</h4><p name="8615" id="8615" class="graf graf--p graf-after--h4">In the next steps, I’m using a g2.2xlarge instance on AWS, running the very latest <a href="https://aws.amazon.com/blogs/ai/updated-aws-deep-learning-amis-with-apache-mxnet-0-10-and-tensorflow-1-1-now-available/" data-href="https://aws.amazon.com/blogs/ai/updated-aws-deep-learning-amis-with-apache-mxnet-0-10-and-tensorflow-1-1-now-available/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Deep Learning AMI</a>, Ubuntu edition (lots of updates!).</p><p name="e162" id="e162" class="graf graf--p graf-after--p">I’m assuming that you already have MXNet installed: if not, please read <a href="https://becominghuman.ai/an-introduction-to-the-mxnet-api-part-1-848febdcf8ab" data-href="https://becominghuman.ai/an-introduction-to-the-mxnet-api-part-1-848febdcf8ab" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">this</a>.</p><p name="2408" id="2408" class="graf graf--p graf-after--p">First, we need to install the forked Keras version. Please use <a href="https://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/" data-href="https://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><em class="markup--em markup--p-em">virtualenv</em></a> if you’re concerned about messing up your Python environment.</p><figure name="95c6" id="95c6" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/c5b39bd2272694d8ae2a34b56e42eede.js"></script></figure><p name="0d78" id="0d78" class="graf graf--p graf-after--figure">Then, we need to declare MXNet as the backend for Keras. Let’s edit <em class="markup--em markup--p-em">~/.keras/keras.json</em>.</p><figure name="dabc" id="dabc" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/a526d7cf388fb3f637e91d1f8e910512.js"></script></figure><p name="aade" id="aade" class="graf graf--p graf-after--figure">Now, let’s start <em class="markup--em markup--p-em">python</em> and make sure our setup is correct.</p><figure name="30cf" id="30cf" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/6f9ce7432a16b90cca61a0ab10ed20fe.js"></script></figure><p name="07af" id="07af" class="graf graf--p graf-after--figure">Looking good. As far as I can see, the fork is based on <strong class="markup--strong markup--p-strong">Keras v1</strong>: until it’s merged with the upstream repository, <a href="https://github.com/fchollet/keras/wiki/Keras-2.0-release-notes" data-href="https://github.com/fchollet/keras/wiki/Keras-2.0-release-notes" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Keras v2</a> features won’t be available.</p><p name="102c" id="102c" class="graf graf--p graf-after--p">Let’s run a quick example. We’ve talked at length about the <a href="https://chatbotslife.com/training-mxnet-part-1-mnist-6f0dc4210c62" data-href="https://chatbotslife.com/training-mxnet-part-1-mnist-6f0dc4210c62" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">MNIST dataset</a>, so how about we use it again? You’ll find the Keras code <a href="https://github.com/dmlc/keras/blob/master/examples/mnist_mlp.py" data-href="https://github.com/dmlc/keras/blob/master/examples/mnist_mlp.py" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">here</a> and it’s pretty interesting to compare it to its MXNet <a href="https://github.com/juliensimon/aws/blob/master/mxnet/mnist/trainModel.py" data-href="https://github.com/juliensimon/aws/blob/master/mxnet/mnist/trainModel.py" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">equivalent</a>. C’mon, isn’t the MXNet version neater? ;)</p><figure name="6c3b" id="6c3b" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/835eea9d67a798a61a8f9f4da5b2f8a4.js"></script></figure><p name="32d4" id="32d4" class="graf graf--p graf-after--figure">All right, that worked. So there you go: MXNet on Keras!</p><h4 name="0517" id="0517" class="graf graf--h4 graf-after--p">GPU training</h4><p name="73e9" id="73e9" class="graf graf--p graf-after--h4">The previous example ran on the instance CPU. Although Keras does support GPU computing, setup is unfortunately <a href="https://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu" data-href="https://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">backend-dependent</a>. When it comes to multi-GPU support, setup is awkward at best (long discussion <a href="https://github.com/fchollet/keras/issues/2436" data-href="https://github.com/fchollet/keras/issues/2436" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">here</a>). Hopefully, this will be fixed elegantly in future releases.</p><p name="313f" id="313f" class="graf graf--p graf-after--p">When it comes to MXNet, GPU support doesn’t seem to be complete right now. GPUs are not detected automatically (like for Tensorflow) and I couldn’t find a reliable way to enable a GPU context.</p><p name="8199" id="8199" class="graf graf--p graf-after--p">Code is definitely in place: here’s the relevant snippet from <a href="https://github.com/dmlc/keras/blob/master/keras/engine/training.py" data-href="https://github.com/dmlc/keras/blob/master/keras/engine/training.py" class="markup--anchor markup--p-anchor" rel="nofollow noopener" target="_blank">https://github.com/dmlc/keras/blob/master/keras/engine/training.py</a></p><figure name="226d" id="226d" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/e22f96736dd033dda3596cd2f8d842f3.js"></script></figure><p name="4235" id="4235" class="graf graf--p graf-after--figure">This should allow me to modify the MNIST example above to use a GPU context.</p><figure name="2b11" id="2b11" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/24deaa7adba72c3495d976a74f95924e.js"></script></figure><p name="ad3b" id="ad3b" class="graf graf--p graf-after--figure">But the damn thing segfaults when I run the modified example :-/ Maybe it hasn’t been fully tested on the latest AMI, who knows. Or maybe I’m too dumb to figure it out: that’s always a strong possibility. Or too impatient. Please reach out if you have the answer :)</p><p name="5607" id="5607" class="graf graf--p graf-after--p">This is certainly going to work anytime soon. I’ll keep you posted!</p><h4 name="234a" id="234a" class="graf graf--h4 graf-after--p">Next steps</h4><p name="9d7a" id="9d7a" class="graf graf--p graf-after--h4">Having MXNet support in Keras is great news. Thanks again to everyone involved.</p><p name="89e2" id="89e2" class="graf graf--p graf-after--p">I can’t wait to get proper GPU and multi-GPU support for all backends. I think we’d all love a solution as simple and elegant as the MXNet way, i.e. <em class="markup--em markup--p-em">context=(mx.gpu(0), mx.gpu(1), mx.gpu(2)). </em>It would definitely allow Keras users to enjoy the near-linear scalability of MXNet while using their existing Keras code.</p><figure name="f33c" id="f33c" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*rfow_hmfd9AVCYiFyoXimA.png" data-width="1168" data-height="648" src="https://cdn-images-1.medium.com/max/800/1*rfow_hmfd9AVCYiFyoXimA.png"></figure><p name="1e9a" id="1e9a" class="graf graf--p graf-after--figure">And once this is available, I’ll run some more benchmarks ;)</p><p name="96f3" id="96f3" class="graf graf--p graf-after--p graf--trailing">That’s it for today. Thanks for reading.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/83de7dec46e5"><time class="dt-published" datetime="2017-06-08T12:34:37.084Z">June 8, 2017</time></a>.</p><p><a href="https://medium.com/@julsimon/apache-mxnet-support-in-keras-83de7dec46e5" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

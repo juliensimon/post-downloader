@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>AWS re:Invent 2019 — AI/ML recap — Part 3: Frameworks &amp; Infrastructure</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="1eab">AWS re:Invent 2019 — AI/ML recap — Part 3: Frameworks &amp; Infrastructure</h3><p id="187a">In the last two previous posts, I introduced you to our new <a href="https://medium.com/@julsimon/aws-re-invent-2019-ai-ml-recap-part-1-ai-services-9ca35bff2f07" target="_blank">high-level services</a>, and to the new <a href="https://medium.com/@julsimon/aws-re-invent-2019-ai-ml-recap-part-2-amazon-sagemaker-fee83f05a1bc" target="_blank">capabilities</a> we added to <a href="https://aws.amazon.com/sagemaker" rel="noopener nofollow noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener noopener" target="_blank">Amazon SageMaker</a>. Thought I was done, didn’t ya? Nope, there’s more. There’s ALWAYS more.</p><p id="8508">In this final post, let’s talk about frameworks and infrastructure.</p><p id="bc7d">As always, happy to answer questions here or on <a href="https://twitter.com/julsimon" rel="noopener nofollow noopener" target="_blank">Twitter</a>.</p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="236a">Amazon DeepComposer</h3><p id="21f5">Not sure when this one fits! <a href="https://aws.amazon.com/deepcomposer/" target="_blank">AWS DeepComposer</a> is the world’s first musical keyboard combined with a generative AI service.</p><p id="bc6e">Blog: <a href="https://aws.amazon.com/blogs/aws/aws-deepcomposer-compose-music-with-generative-machine-learning-models/" rel="nofollow noopener" target="_blank">https://aws.amazon.com/blogs/aws/aws-deepcomposer-compose-music-with-generative-machine-learning-models/</a></p><p id="a66a">Documentation: <a href="https://docs.aws.amazon.com/deepcomposer/latest/devguide/what-it-is.html" rel="nofollow noopener" target="_blank">https://docs.aws.amazon.com/deepcomposer/latest/devguide/what-it-is.html</a></p><figure id="9f8e"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/DfUdgvzbKII?feature=oembed" width="700"></iframe></figure><figure id="d668"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/0rO1s5Fpcss?feature=oembed" width="640"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="66e0">Amazon EC2 Inferentia (Inf1)</h3><p id="a393">Inf1 instances are powered by <a href="https://aws.amazon.com/machine-learning/inferentia/" target="_blank">AWS Inferentia</a> chips, and are designed to provide you with fast, low-latency inferencing.</p><figure id="7837"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/17r1EapAxpk?feature=oembed" width="700"></iframe></figure><p id="0a6b">Using the <a href="https://github.com/aws/aws-neuron-sdk" target="_blank">Neuron SDK</a>, which is pre-integrated into popular machine learning frameworks like TensorFlow, MXNet and Pytorch, you can compile and load your models on Inf1.</p><figure id="2cab"><img class="graf-image" src="image02.webp"/></figure><p id="1fa5">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-ec2-update-inf1-instances-with-aws-inferentia-chips-for-high-performance-cost-effective-inferencing/" rel="nofollow noopener" target="_blank">https://aws.amazon.com/blogs/aws/amazon-ec2-update-inf1-instances-with-aws-inferentia-chips-for-high-performance-cost-effective-inferencing/</a></p><p id="79bd">Neuron SDK: <a href="https://github.com/aws/aws-neuron-sdk" rel="nofollow noopener" target="_blank">https://github.com/aws/aws-neuron-sdk</a></p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="17e6">TensorFlow support</h3><p id="ccac">TensorFlow 1.15 is now supported in <a href="https://docs.aws.amazon.com/dlami/latest/devguide/what-is-dlami.html" target="_blank">Deep Learning AMIs</a>, <a href="https://docs.aws.amazon.com/dlami/latest/devguide/deep-learning-containers-images.html" target="_blank">Deep Learning containers</a> and <a href="https://sagemaker.readthedocs.io/en/stable/sagemaker.tensorflow.html" target="_blank">SageMaker</a>.</p><p id="d3ad">TensorFlow 2.0 is also available in the Deep Learning AMIs. I hear that it’s coming soon to Deep Learning containers and SageMaker as well, but shhhh.</p><figure id="6678"><img class="graf-image" src="image01.webp"/></figure><p id="496a">By the way, did you know that <strong class="markup--p-strong">85% </strong>of all TensorFlow workloads in the cloud run on AWS? Check out the report for more details (<a href="http://d1.awsstatic.com/whitepapers/Deep_Learning_on_AWS.pdf" target="_blank">PDF</a>).</p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="7df7">Deep Graph Library</h3><p id="96f4">The <a href="https://www.dgl.ai/" target="_blank">Deep Graph Library</a> is an open source library built for easy implementation of graph neural networks, and it is now available on <a href="https://aws.amazon.com/sagemaker/" target="_blank">Amazon SageMaker</a>. Weird and fascinating stuff!</p><figure id="1605"><img class="graf-image" src="image03.webp"/></figure><p id="5206">Blog: <a href="https://aws.amazon.com/fr/blogs/aws/now-available-on-amazon-sagemaker-the-deep-graph-library/" rel="nofollow noopener noopener" target="_blank">https://aws.amazon.com/blogs/aws/now-available-on-amazon-sagemaker-the-deep-graph-library</a></p><p id="9eea">Documentation and examples: <a href="https://www.dgl.ai/" target="_blank">https://www.dgl.ai/</a></p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="51c5">Deep Java Library</h3><p id="09f8">The <a href="https://djl.ai" target="_blank">Deep Java Library</a> is an open source library to develop Deep Learning models in Java. Does this mean that Java developers don’t have to learn Python anymore? ;)</p><figure id="38f8"><img class="graf-image" src="image04.webp"/></figure><p id="aed1">Documentation and examples: <a href="https://www.dgl.ai/" target="_blank">https://www.djl.ai/</a></p></div></div></section>
+</section>
+</article></body></html>

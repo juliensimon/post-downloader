@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Options for Machine Translation on AWS ?</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Options for Machine Translation on AWS ?</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+Here’s another question I got recently: “What are the different options for Machine Translation on AWS?”
+</section>
+<section data-field="body" class="e-content">
+<section name="88f4" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="170d" id="170d" class="graf graf--h3 graf--leading graf--title">Options for Machine Translation on AWS ?</h3><p name="5640" id="5640" class="graf graf--p graf-after--h3">Here’s another question I got recently: <em class="markup--em markup--p-em">“What are the different options for Machine Translation on AWS?”</em></p><figure name="fd55" id="fd55" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*K0mwDpkMiXQxU3hHfsyT-w.png" data-width="564" data-height="423" src="https://cdn-images-1.medium.com/max/800/1*K0mwDpkMiXQxU3hHfsyT-w.png"><figcaption class="imageCaption">I kinda have the same question.</figcaption></figure><p name="45d0" id="45d0" class="graf graf--p graf-after--figure">You have three options. Let’s go through each one of them.</p><h4 name="ac0e" id="ac0e" class="graf graf--h4 graf-after--p">1 — Use Amazon Translate</h4><p name="9aea" id="9aea" class="graf graf--p graf-after--h4"><a href="http://aws.amazon.com/translate" data-href="http://aws.amazon.com/translate" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Amazon Translate</a> is a <strong class="markup--strong markup--p-strong">high-level AI service</strong> based on Deep Learning technology. It delivers fast, high-quality, and affordable language translation.</p><p name="1553" id="1553" class="graf graf--p graf-after--p">At the time of writing, it supports <strong class="markup--strong markup--p-strong">12 language pairs </strong>(more coming): English-Arabic, English-Chinese (simplified), English-French, English-German, English-Portuguese, English-Spanish.</p><p name="014f" id="014f" class="graf graf--p graf-after--p">If you want to see Amazon Translate in action, please refer to this <a href="https://medium.com/@julsimon/a-quick-look-at-machine-translation-with-amazon-translate-d7ca66983439" data-href="https://medium.com/@julsimon/a-quick-look-at-machine-translation-with-amazon-translate-d7ca66983439" class="markup--anchor markup--p-anchor" target="_blank">previous post</a>.</p><div name="bde6" id="bde6" class="graf graf--mixtapeEmbed graf-after--p"><a href="https://medium.com/@julsimon/a-quick-look-at-machine-translation-with-amazon-translate-d7ca66983439" data-href="https://medium.com/@julsimon/a-quick-look-at-machine-translation-with-amazon-translate-d7ca66983439" class="markup--anchor markup--mixtapeEmbed-anchor" title="https://medium.com/@julsimon/a-quick-look-at-machine-translation-with-amazon-translate-d7ca66983439"><strong class="markup--strong markup--mixtapeEmbed-strong">A quick look at Machine Translation with Amazon Translate</strong><br><em class="markup--em markup--mixtapeEmbed-em">Amazon Translate is a new service announced at AWS re:Invent 2017. At the time of writing, it is available in preview…</em>medium.com</a><a href="https://medium.com/@julsimon/a-quick-look-at-machine-translation-with-amazon-translate-d7ca66983439" class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="3f5596f948899aae833545cf3ae7d3cf" data-thumbnail-img-id="1*omz9T4nS3jeO62g7fJyAjg.png" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/1*omz9T4nS3jeO62g7fJyAjg.png);"></a></div><p name="67a1" id="67a1" class="graf graf--p graf-after--mixtapeEmbed"><strong class="markup--strong markup--p-strong">2 — Build a custom model on managed infrastructure with Amazon SageMaker</strong></p><p name="5058" id="5058" class="graf graf--p graf-after--p"><a href="https://aws.amazon.com/sagemaker" data-href="https://aws.amazon.com/sagemaker" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Amazon SageMaker</a> is a <strong class="markup--strong markup--p-strong">fully-managed service</strong> that enables developers and data scientists to quickly and easily <strong class="markup--strong markup--p-strong">build, train, and deploy Machine Learning models</strong> at scale.</p><p name="d8b0" id="d8b0" class="graf graf--p graf-after--p">One of the main features of SageMaker is its collection of <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html" data-href="https://docs.aws.amazon.com/sagemaker/latest/dg/algos.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">built-in Amazon-implemented algorithms</a>. One of these algorithms is ‘<a href="https://docs.aws.amazon.com/sagemaker/latest/dg/seq-2-seq.html" data-href="https://docs.aws.amazon.com/sagemaker/latest/dg/seq-2-seq.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><strong class="markup--strong markup--p-strong">seq2seq</strong></a>’, a popular choice to build custom Machine Translation models. In particular, this could help you <strong class="markup--strong markup--p-strong">train a model for a language pair not yet available in Amazon Translate</strong>.</p><p name="8f72" id="8f72" class="graf graf--p graf-after--p">If you want to see ‘seq2seq’ in action, please refer to this <a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms/seq2seq_translation_en-de" data-href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms/seq2seq_translation_en-de" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Jupyter notebook</a> that shows you how to train a model translating <strong class="markup--strong markup--p-strong">English to German</strong>. It is also available on Sagemaker notebook instances under <em class="markup--em markup--p-em">sample-notebooks/introduction_to_amazon_algorithms/seq2seq_translation_en-de.</em></p><div name="5aae" id="5aae" class="graf graf--mixtapeEmbed graf-after--p"><a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms/seq2seq_translation_en-de" data-href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms/seq2seq_translation_en-de" class="markup--anchor markup--mixtapeEmbed-anchor" title="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms/seq2seq_translation_en-de"><strong class="markup--strong markup--mixtapeEmbed-strong">awslabs/amazon-sagemaker-examples</strong><br><em class="markup--em markup--mixtapeEmbed-em">amazon-sagemaker-examples - Example notebooks that show how to apply machine learning and deep learning in Amazon…</em>github.com</a><a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms/seq2seq_translation_en-de" class="js-mixtapeImage mixtapeImage mixtapeImage--empty u-ignoreBlock" data-media-id="dcd84f55e504095a664c9ab191ec4fe3"></a></div><h4 name="598c" id="598c" class="graf graf--h4 graf-after--mixtapeEmbed"><strong class="markup--strong markup--h4-strong">3 — Build a custom model on any infrastructure with Sockeye</strong></h4><p name="2d6d" id="2d6d" class="graf graf--p graf-after--h4"><a href="https://aws.amazon.com/blogs/machine-learning/train-neural-machine-translation-models-with-sockeye/" data-href="https://aws.amazon.com/blogs/machine-learning/train-neural-machine-translation-models-with-sockeye/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Sockeye</a> is an <a href="https://github.com/awslabs/sockeye" data-href="https://github.com/awslabs/sockeye" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><strong class="markup--strong markup--p-strong">open source project</strong></a> that lets you train <strong class="markup--strong markup--p-strong">Machine Translation models</strong>. Sockeye also uses the ‘seq2seq’ algorithm and is based on <a href="https://mxnet.apache.org/" data-href="https://mxnet.apache.org/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Apache MXNet</a>, a open source library for Deep Learning.</p><p name="8102" id="8102" class="graf graf--p graf-after--p">With Sockeye, you can <strong class="markup--strong markup--p-strong">train custom models on any infrastructure</strong>. Using <a href="https://aws.amazon.com/about-aws/whats-new/2017/10/introducing-amazon-ec2-p3-instances/" data-href="https://aws.amazon.com/about-aws/whats-new/2017/10/introducing-amazon-ec2-p3-instances/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">GPU instances from the <strong class="markup--strong markup--p-strong">P3 family</strong></a> and the <a href="https://aws.amazon.com/blogs/machine-learning/getting-started-with-the-aws-deep-learning-conda-and-base-amis/" data-href="https://aws.amazon.com/blogs/machine-learning/getting-started-with-the-aws-deep-learning-conda-and-base-amis/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><strong class="markup--strong markup--p-strong">Deep Learning AMI</strong></a><strong class="markup--strong markup--p-strong"> </strong>on AWS would make sense, but obviously you can use it <strong class="markup--strong markup--p-strong">anywhere</strong> else, including on <strong class="markup--strong markup--p-strong">your own servers</strong>.</p><p name="3bc7" id="3bc7" class="graf graf--p graf-after--p">To see Sockeye in action, please refer to this <a href="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt" data-href="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">detailed tutorial</a> on translating <strong class="markup--strong markup--p-strong">German to English</strong>.</p><div name="4fd8" id="4fd8" class="graf graf--mixtapeEmbed graf-after--p"><a href="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt" data-href="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt" class="markup--anchor markup--mixtapeEmbed-anchor" title="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt"><strong class="markup--strong markup--mixtapeEmbed-strong">awslabs/sockeye</strong><br><em class="markup--em markup--mixtapeEmbed-em">sockeye - Sequence-to-sequence framework with a focus on Neural Machine Translation based on Apache MXNet</em>github.com</a><a href="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt" class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="00a8da6fc6c00f478448e63c01012e48" data-thumbnail-img-id="0*GHUDwL8VYksd5RvQ." style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*GHUDwL8VYksd5RvQ.);"></a></div><p name="1690" id="1690" class="graf graf--p graf-after--mixtapeEmbed">As you can see, the choice is yours!</p><p name="f0d6" id="f0d6" class="graf graf--p graf-after--p graf--trailing">Have another question? Please ping me on <a href="https://twitter.com/julsimon" data-href="https://twitter.com/julsimon" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Twitter</a>.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/da819d8a4887"><time class="dt-published" datetime="2018-01-19T11:35:18.445Z">January 19, 2018</time></a>.</p><p><a href="https://medium.com/@julsimon/options-for-machine-translation-on-aws-da819d8a4887" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

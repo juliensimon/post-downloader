@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Create your own Basquiat with Deep Learning for much less than $110 million</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="9120">Create your own Basquiat with Deep Learning for much less than $110 million</h3><p id="1cbe">You may have read today that a painting by Jean-Michel Basquiat was <a href="https://www.nytimes.com/2017/05/18/arts/jean-michel-basquiat-painting-is-sold-for-110-million-at-auction.html" target="_blank">just sold for $110 million</a>. Is this a tribute to his genius or a sign of very, very broken times? Probably both!</p></div><div><figure id="8022"><img class="graf-image" src="image07.webp"/></figure></div><div><p id="8765">This is a beautiful haunting piece. However, most of us don’t have that kind of money to spend on art (or anything else, for that matter), so we can forget about hanging a Basquiat on our walls.</p><p id="98b7">Or can we? Is there a way we could create artwork in the same style as Basquiat automatically? Enter Deep Learning once again :)</p><h4 id="a236">“A Neural Algorithm of Artistic Style”</h4><p id="21f5">This fascinating <a href="https://arxiv.org/abs/1508.06576" target="_blank">research paper</a> was authored by Leon A. Gatys, Alexander S. Ecker and Matthias Bethge in 2015. In their own words, they use “<em class="markup--p-em">neural representations to separate and recombine content and style of arbitrary images, providing a neural algorithm for the creation of artistic images</em>”.</p><p id="03f8">In a nutshell, they use a Convolutional Neural Network (<a href="https://arxiv.org/abs/1409.1556" target="_blank">VGG-19</a>, which we’ve used <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-5-9e78534096db" target="_blank">before</a>) to extract <strong class="markup--p-strong">style elements</strong> from a well-known painting and apply them to an arbitrary image.</p><p id="aacb">This means that we can take <strong class="markup--p-strong">any</strong> painting by a famous artist and apply its style to one of our <strong class="markup--p-strong">own</strong> pictures. <a href="http://mxnet.io/" target="_blank">MXNet</a> provides all the code that we need to do this, so let’s build our own Basquiat right away.</p><h4 id="4dda">Neural style with MXNet</h4><p id="89b5">It couldn’t be simpler. Just fire up a <a href="https://aws.amazon.com/about-aws/whats-new/2016/09/introducing-amazon-ec2-p2-instances-the-largest-gpu-powered-virtual-machine-in-the-cloud/" target="_blank">GPU instance</a> running the <a href="https://aws.amazon.com/blogs/ai/the-aws-deep-learning-ami-now-with-ubuntu/" target="_blank">Deep Learning AMI</a> or run the <a href="https://hub.docker.com/r/mxnet/" target="_blank">MXNet Docker image</a> on your own machine. In the MXNet source directory, go to <a href="https://github.com/dmlc/mxnet/tree/master/example/neural-style" target="_blank"><em class="markup--p-em">example/neural-style</em></a>.</p><p id="35ba">Now, you have two options. You can either load the <em class="markup--p-em">neuralart.ipynb</em> notebook in Jupyter and follow along, or run the <em class="markup--p-em">nstyle.py</em> script directly from the CLI.</p><p id="0889">With the CLI, this is how to run the script. There are a few parameters that you can tweak, but the most important are obviously the path to the <strong class="markup--p-strong">style image</strong> (in our case, the Basquiat painting) and the path to the <strong class="markup--p-strong">content image</strong> (here, my silly mug).</p><figure id="5ed1"><script src="https://gist.github.com/juliensimon/8ef4677984b99760a36088cbfddbe1f1.js"></script></figure><figure id="5d92"><img class="graf-image" src="image10.webp"/><figcaption>Yeah… I know.</figcaption></figure><p id="2c1b">Once you launch the script, it will run for 1000 epochs and save intermediate images to the <em class="markup--p-em">output</em> directory every 50 epochs. Here are some (resized) examples as well as the final image.</p><figure id="c8cf"><img class="graf-image" src="image03.webp"/><figcaption>Epoch 50</figcaption></figure><figure id="930c"><img class="graf-image" src="image01.webp"/><figcaption>Epoch 250</figcaption></figure><figure id="a361"><img class="graf-image" src="image02.webp"/><figcaption>Epoch 500</figcaption></figure><figure id="9dd9"><img class="graf-image" src="image08.webp"/><figcaption>Epoch 750</figcaption></figure><figure id="55c5"><img class="graf-image" src="image04.webp"/><figcaption>Final image</figcaption></figure><p id="c92d">So there you go. Pretty impressive result! The main elements of Basquiat’s style are clearly visible. I should use this as my profile picture on LinkedIn :D</p><p id="04ee">Anyway, now you can build a picture in the style of your favorite artist in just a few minutes! Maybe one day we’ll see AI-inspired art being sold at auction houses for ridiculous prices, who knows?</p><p id="532a">Until then, thanks for reading and have fun with AI art!</p><figure id="7761"><iframe frameborder="0" height="350" scrolling="no" src="https://upscri.be/8f5f8b?as_embed=true" width="700"></iframe></figure></div><div><figure id="fa08"><img class="graf-image" src="image05.webp"/></figure></div><div><figure id="46f1" style="width: 33.333%;"><a href="https://medium.com/becoming-human/artificial-intelligence-communities-c305f28e674c"><img class="graf-image" src="image11.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="4cbb" style="width: 33.333%;"><a href="https://upscri.be/8f5f8b" target="_blank"><img class="graf-image" src="image06.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="85c0" style="width: 33.333%;"><a href="https://medium.com/becoming-human/write-for-us-48270209de63"><img class="graf-image" src="image09.webp"/></a></figure></div></div></section>
+</section>
+</article></body></html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Optimizing Apache MXNet models for DeepLens on Amazon SageMaker</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Optimizing Apache MXNet models for DeepLens on Amazon SageMaker</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+In a previous post, we explored how Apache MXNet models are in fact optimized for AWS DeepLens thanks to the Intel Deep Learning Inference…
+</section>
+<section data-field="body" class="e-content">
+<section name="9769" class="section section--body section--first"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="02f1" id="02f1" class="graf graf--h3 graf--leading graf--title">Optimizing Apache MXNet models for DeepLens on Amazon SageMaker</h3><p name="23fe" id="23fe" class="graf graf--p graf-after--h3">In a <a href="https://medium.com/@julsimon/exploring-ahem-aws-deeplens-fcad551886ef" data-href="https://medium.com/@julsimon/exploring-ahem-aws-deeplens-fcad551886ef" class="markup--anchor markup--p-anchor" target="_blank">previous post</a>, we explored how <a href="https://mxnet.apache.org/" data-href="https://mxnet.apache.org/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Apache MXNet</a> models are in fact optimized for <a href="https://aws.amazon.com/deeplens/" data-href="https://aws.amazon.com/deeplens/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">AWS DeepLens</a> thanks to the <a href="https://software.intel.com/en-us/inference-engine-devguide" data-href="https://software.intel.com/en-us/inference-engine-devguide" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Intel Deep Learning Inference Engine</a>.</p><p name="8fac" id="8fac" class="graf graf--p graf-after--p">In this article, I will show you how to <strong class="markup--strong markup--p-strong">automate</strong> this process during a typical training process we would perform on Amazon SageMaker.</p><p name="f38b" id="f38b" class="graf graf--p graf-after--p">As usual, all code is available in a <a href="https://github.com/juliensimon/dlnotebooks/blob/master/mxnet/04%20-%20Optimizing%20an%20MXNet%20model%20for%20AWS%20DeepLens.ipynb" data-href="https://github.com/juliensimon/dlnotebooks/blob/master/mxnet/04%20-%20Optimizing%20an%20MXNet%20model%20for%20AWS%20DeepLens.ipynb" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Jupyter notebook</a> on Github.</p><figure name="2d61" id="2d61" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*ZprWvu2e9SV92k_SA1iZhg.png" data-width="1742" data-height="788" src="https://cdn-images-1.medium.com/max/800/1*ZprWvu2e9SV92k_SA1iZhg.png"></figure><h4 name="b590" id="b590" class="graf graf--h4 graf-after--figure">Downloading the Intel Deep Learning Deployment Toolkit</h4><p name="2b93" id="2b93" class="graf graf--p graf-after--h4">First of all, we need to <a href="https://software.seek.intel.com/deep-learning-deployment" data-href="https://software.seek.intel.com/deep-learning-deployment" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">register</a> and get a download link for the toolkit. Then, let’s grab the toolkit and extract it.</p><pre name="9133" id="9133" class="graf graf--pre graf-after--p">$ wget TOOLKIT_NAME.tgz<br>$ tar xvfz TOOLKIT_NAME.tgz<br>$ cd l_deeplearning_deploymenttoolkit_2017.1.0.5852</pre><p name="e9b4" id="e9b4" class="graf graf--p graf-after--pre">In order to be able to perform <strong class="markup--strong markup--p-strong">unattended installation</strong>, let’s edit the configuration file named <em class="markup--em markup--p-em">silent.cfg</em>. We simply need to set:</p><pre name="99a8" id="99a8" class="graf graf--pre graf-after--p">ACCEPT_EULA=accept</pre><p name="e59b" id="e59b" class="graf graf--p graf-after--pre">Now, let’s archive the toolkit and copy it to an S3 bucket, which we’ll use for deployment to SageMaker instances.</p><pre name="38fb" id="38fb" class="graf graf--pre graf-after--p">cd ..<br>tar cvfz toolkit.tgz l_deeplearning_deploymenttoolkit_2017.1.0.5852<br>aws s3 cp toolkit.tgz s3://jsimon-public-us</pre><p name="f175" id="f175" class="graf graf--p graf-after--pre">Ok, now we’re ready to deploy the toolkit to SageMaker and convert models. Let’s open a notebook instance and start a new Jupyter notebook.</p><h4 name="9d33" id="9d33" class="graf graf--h4 graf-after--p">Defining paths and parameters</h4><p name="6f06" id="6f06" class="graf graf--p graf-after--h4">First, let’s define S3 locations for the toolkit and the model to convert: if you used Amazon SageMaker to train the model (and why wouldn’t you?), your model is already in S3 anyway :)</p><blockquote name="f032" id="f032" class="graf graf--blockquote graf-after--p">In order to make these variables visible from all cells, we’re using the %env Jupyter magic.</blockquote><pre name="896e" id="896e" class="graf graf--pre graf-after--blockquote">%env TOOLKIT_BUCKET=s3://jsimon-public-us/<br>%env TOOLKIT_NAME=toolkit.tgz<br>%env TOOLKIT_DIR=l_deeplearning_deploymenttoolkit_2017.1.0.5852</pre><pre name="bc48" id="bc48" class="graf graf--pre graf-after--pre">%env MODEL_BUCKET=s3://jsimon-public-us/<br>%env MODEL_NAME=Inception-BN</pre><p name="f84d" id="f84d" class="graf graf--p graf-after--pre">Next, we have to set the location where the Intel Toolkit will be installed, as well the optimization parameters we’d like to use.</p><pre name="6b06" id="6b06" class="graf graf--pre graf-after--p">%env OPT_DIR=/opt/intel/deeplearning_deploymenttoolkit/deployment_tools/model_optimizer/model_optimizer_mxnet<br>%env OPT_PRECISION=FP16<br>%env OPT_FUSE=YES</pre><h4 name="9d6f" id="9d6f" class="graf graf--h4 graf-after--pre">Installing the toolkit</h4><p name="5f85" id="5f85" class="graf graf--p graf-after--h4">Now we’re ready to download and install the toolkit. A few lines of script is all it takes.</p><pre name="370e" id="370e" class="graf graf--pre graf-after--p">aws s3 cp $TOOLKIT_BUCKET$TOOLKIT_NAME .<br>tar xfz $TOOLKIT_NAME<br>cd $TOOLKIT_DIR<br>chmod 755 install.sh<br>sudo ./install.sh -s silent.cfg </pre><p name="4ba2" id="4ba2" class="graf graf--p graf-after--pre">The next step is to install <strong class="markup--strong markup--p-strong">Python dependencies</strong> required by the Model Converter.</p><p name="88dc" id="88dc" class="graf graf--p graf-after--p">Conda makes it easy to create <strong class="markup--strong markup--p-strong">isolated environments</strong>, so let’s build one for the Intel toolkit. This will save us from clobbering the environment we use for training.</p><p name="cf8b" id="cf8b" class="graf graf--p graf-after--p">Of course, you’ll only need to run these steps once per instance. The second (slightly cryptic) line is required to see the new kernel listed in the Jupyter menu.</p><pre name="bf10" id="bf10" class="graf graf--pre graf-after--p">conda create -n intel_toolkit -y</pre><pre name="c836" id="c836" class="graf graf--pre graf-after--pre">python -m ipykernel install --user --name intel_toolkit --display-name &quot;intel_toolkit&quot;</pre><pre name="ed64" id="ed64" class="graf graf--pre graf-after--pre">source activate intel_toolkit<br>cd $OPT_DIR<br>pip install -r requirements.txt</pre><h4 name="2ca4" id="2ca4" class="graf graf--h4 graf-after--pre">Downloading the model</h4><p name="a6b7" id="a6b7" class="graf graf--p graf-after--h4">Nothing fancy here: simply copy the trained model from its S3 location.</p><pre name="0155" id="0155" class="graf graf--pre graf-after--p">aws s3 cp $MODEL_BUCKET$MODEL_NAME&quot;-symbol.json&quot; .<br>aws s3 cp $MODEL_BUCKET$MODEL_NAME&quot;-0000.params&quot; .</pre><h4 name="b9a5" id="b9a5" class="graf graf--h4 graf-after--pre"><strong class="markup--strong markup--h4-strong">Converting the model</strong></h4><p name="9307" id="9307" class="graf graf--p graf-after--h4">We saw how to do this in the <a href="https://medium.com/@julsimon/exploring-ahem-aws-deeplens-fcad551886ef" data-href="https://medium.com/@julsimon/exploring-ahem-aws-deeplens-fcad551886ef" class="markup--anchor markup--p-anchor" target="_blank">previous post</a>. More information on parameters <a href="https://software.intel.com/en-us/inference-engine-devguide-converting-your-mxnet-model" data-href="https://software.intel.com/en-us/inference-engine-devguide-converting-your-mxnet-model" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">here</a>.</p><pre name="3c02" id="3c02" class="graf graf--pre graf-after--p">python $OPT_DIR/mo_mxnet_converter.py \<br> --models-dir . --output-dir . --model-name $MODEL_NAME \<br>--precision $OPT_PRECISION --fuse $OPT_FUSE</pre><p name="117a" id="117a" class="graf graf--p graf-after--pre">And we’re done! Now you can copy the converted model back to S3 and deploy it to Deep Lens.</p><h4 name="3453" id="3453" class="graf graf--h4 graf-after--p">Conclusion</h4><p name="fcce" id="fcce" class="graf graf--p graf-after--h4">This was surprisingly easy, don’t you think? Now you can optimize your models and deploy them to DeepLens. Please let me know about your projets, happy to share and retweet!</p><p name="42e5" id="42e5" class="graf graf--p graf-after--p graf--trailing">As always, thank you for reading.</p></div></div></section><section name="c9b9" class="section section--body section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><p name="0fdc" id="0fdc" class="graf graf--p graf--leading">The soundtrack to this post was Judas Priest.1983…. Spikes, leather, spandex: legendary!</p><figure name="4adb" id="4adb" class="graf graf--figure graf--iframe graf-after--p graf--trailing"><iframe src="https://www.youtube.com/embed/jRjrzpa38-0?feature=oembed" width="640" height="480" frameborder="0" scrolling="no"></iframe></figure></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/a9ec5673e8ce"><time class="dt-published" datetime="2017-12-22T18:07:49.187Z">December 22, 2017</time></a>.</p><p><a href="https://medium.com/@julsimon/optimizing-apache-mxnet-models-for-deeplens-on-amazon-sagemaker-a9ec5673e8ce" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

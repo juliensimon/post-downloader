@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <style>
+   body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 2.5em; }
+        h2 { font-size: 2em; }
+        h3 { font-size: 1.5em; }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 1em 0;
+        }
+        /* Image alignment classes for text wraparound */
+        img.alignleft {
+            float: left;
+            margin: 0.5em 1.5em 1em 0;
+        }
+        img.alignright {
+            float: right;
+            margin: 0.5em 0 1em 1.5em;
+        }
+        img.aligncenter {
+            display: block;
+            margin: 1em auto;
+            float: none;
+        }
+        img.alignnone {
+            float: none;
+            margin: 1em 0;
+        }
+        /* Clear floats after images */
+        .wp-block-image::after,
+        p:has(img.alignleft)::after,
+        p:has(img.alignright)::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1em;
+            overflow-x: auto;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 1em 0;
+            padding-left: 1em;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+  </style>
+ </head>
+ <body>
+  <h1>
+   Troubleshoot Boot and Networking Issues with New EC2 Serial Console
+  </h1>
+  <p style="color: #666; font-style: italic; margin-bottom: 1em;">
+   Published: 2021-03-30
+  </p>
+  <p style="color: #666; font-style: italic; margin-bottom: 2em;">
+   Originally published at
+   <a href="https://aws.amazon.com/blogs/aws/troubleshoot-boot-and-networking-issues-with-new-ec2-serial-console/">
+    https://aws.amazon.com/blogs/aws/troubleshoot-boot-and-networking-issues-with-new-ec2-serial-console/
+   </a>
+  </p>
+  <p>
+   Fixing production issues is one of the key responsibilities of system and network administrators. In fact, I’ve always found it to be one of the most interesting parts of infrastructure engineering. Diving as deep as needed into the problem at hand, not only do you (eventually) have the satisfaction of solving the issue, you also learn a lot of things along the way, which you probably wouldn’t have been exposed to under normal circumstances.
+  </p>
+  <p>
+   Operating systems certainly present such opportunities. Over time, they’ve grown ever more complex, forcing administrators to master a zillion configuration files and settings. Although infrastructure as code and automation have greatly improved provisioning and managing servers, there’s always room for mistakes and breakdowns that prevent a system from starting correctly. The list is endless: missing hardware drivers, misconfigured file systems, invalid network configuration, incorrect permissions, and so on. To make things worse, many issues can effectively lock administrators out of a system, preventing them from logging in, diagnosing the problem and applying the appropriate fix. The only option is to have an out-of-band connection to your servers, and although customers could view the
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetConsoleOutput.html">
+    console output
+   </a>
+   of an EC2 instance, they couldn’t interact with it – until now.
+  </p>
+  <p>
+   Today, I’m extremely happy to announce the
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html">
+    EC2 Serial Console
+   </a>
+   , a simple and secure way to troubleshoot boot and network connectivity issues by establishing a serial connection to your
+   <a href="https://aws.amazon.com/ec2/">
+    Amazon Elastic Compute Cloud (Amazon EC2)
+   </a>
+   instances.
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Introducing the EC2 Serial Console
+    </strong>
+   </span>
+   <br/>
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html">
+    EC2 Serial Console
+   </a>
+   access is available for EC2 instances based on the
+   <a href="https://aws.amazon.com/ec2/nitro/">
+    AWS Nitro System
+   </a>
+   . It supports all major Linux distributions, FreeBSD, NetBSD, Microsoft Windows, and VMWare.
+  </p>
+  <p>
+   Without any need for a working network configuration, you can connect to an instance using either a browser-based shell in the AWS Management Console, or an SSH connection to a managed console server. No need for an
+   <code>
+    sshd
+   </code>
+   server to be running on your instance: the only requirement is that the
+   <code>
+    root
+   </code>
+   account has been assigned a password, as this is the one you will use to log in. Then, you can enter commands as if you have a keyboard and monitor directly attached to one of the instance’s serial ports.
+  </p>
+  <p>
+   In addition, you can trigger operating system specific procedures:
+  </p>
+  <ul>
+   <li>
+    On Linux, you can trigger a
+    <a href="https://en.wikipedia.org/wiki/Magic_SysRq_key">
+     Magic SysRq
+    </a>
+    command to generate a crash dump, kill processes, and so on.
+   </li>
+   <li>
+    On Windows, you can interrupt the boot process, and boot in safe mode using Emergency Management Service (EMS) and Special Admin Console (SAC).
+   </li>
+  </ul>
+  <p>
+   Getting access to an instance’s console is a privileged operation that should be tightly controlled, which is why
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html">
+    EC2 Serial Console
+   </a>
+   access is not permitted by default at the account level. Once you permit access in your account, it applies to all instances in this account. Administrators can also apply controls at the organization level thanks to
+   <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html">
+    Service Control Policies
+   </a>
+   , and at instance level thanks to
+   <a href="https://aws.amazon.com/iam/">
+    AWS Identity and Access Management (IAM)
+   </a>
+   permissions. As you would expect, all communication with the
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html">
+    EC2 Serial Console
+   </a>
+   is encrypted, and we generate a unique key for each session.
+  </p>
+  <p>
+   Let’s do a quick demo with Linux. The process is similar with other operating systems.
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Connecting to the EC2 Serial Console with the AWS Management Console
+     <br/>
+    </strong>
+   </span>
+   First, I launch an Amazon Linux 2 instance. Logging in to it, I decide to mangle the network configuration for its Ethernet network interface (
+   <code>
+    /etc/sysconfig/network-scripts/ifcfg-eth0
+   </code>
+   ), setting a completely bogus static IP address. PLEASE do not try this on a production instance!
+  </p>
+  <p>
+   Then, I reboot the instance. A few seconds later, although the instance is up and running in the EC2 console and port 22 is open in its Security Group, I’m unable to connect to it with SSH.
+  </p>
+  <p>
+   <code>
+    $ ssh -i ~/.ssh/mykey.pem ec2-user@ec2-3-238-8-46.compute-1.amazonaws.com
+   </code>
+   <br/>
+   <code>
+    ssh: connect to host ec2-3-238-8-46.compute-1.amazonaws.com port 22: Operation timed out
+   </code>
+  </p>
+  <p>
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html">
+    EC2 Serial Console
+   </a>
+   to the rescue!
+  </p>
+  <p>
+   First, I need to allow console access in my account. All it takes is ticking a box in the EC2 settings.
+  </p>
+  <p>
+   <a href="https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/25/Capture-d’écran-2021-03-25-à-10.32.50.png">
+    <img alt="Enabling the console" class="size-large wp-image-51273" height="319" src="image01.webp" style="border: 1px solid black;" width="1024"/>
+   </a>
+  </p>
+  <p>
+   Then, right clicking on the instance’s name in the EC2 console, I select
+   <strong>
+    Monitor and troubleshoot;
+   </strong>
+   then
+   <strong>
+    EC2 Serial Console
+   </strong>
+   .
+  </p>
+  <p>
+   <a href="https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/22/Capture-d’écran-2021-03-22-à-14.39.13.png">
+    <img alt="" class="aligncenter wp-image-51118 size-large" height="617" loading="lazy" src="image02.webp" style="border: 1px solid black;" width="1024"/>
+   </a>
+  </p>
+  <p>
+   This opens a new window confirming the instance id and the serial port number to connect to. I simply click on
+   <strong>
+    Connect.
+   </strong>
+  </p>
+  <p>
+   <a href="https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/22/Capture-d’écran-2021-03-22-à-14.42.31-1.png">
+    <img alt="" class="size-large wp-image-51131 aligncenter" height="333" loading="lazy" src="image03.webp" style="border: 1px solid black;" width="1024"/>
+   </a>
+  </p>
+  <p>
+   This opens a new tab in my browser. Hitting
+   <code>
+    Enter
+   </code>
+   , I see the familiar login prompt.
+  </p>
+  <p>
+   <code>
+    Amazon Linux 2
+   </code>
+   <br/>
+   <code>
+    Kernel 4.14.225-168.357.amzn2.x86_64 on an x86_64
+   </code>
+   <br/>
+   <code>
+    ip-172-31-67-148 login:
+   </code>
+  </p>
+  <p>
+   Logging in as
+   <code>
+    root
+   </code>
+   , I’m relieved to get a friendly shell prompt.
+  </p>
+  <p>
+   Enabling Magic SysRq for this session (
+   <code>
+    sysctl -w kernel.sysrq=1
+   </code>
+   ), I first list available commands (
+   <code>
+    CTRL-0
+   </code>
+   +
+   <code>
+    h
+   </code>
+   ), and then ask for a memory report (
+   <code>
+    CTRL-0
+   </code>
+   +
+   <code>
+    m
+   </code>
+   ). You can click on the image below to get a larger view.
+  </p>
+  <p>
+   <a href="https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/22/Capture-d’écran-2021-03-22-à-14.54.06.png">
+    <img alt="Connecting to the console" class="alignnone size-large wp-image-51125" height="498" loading="lazy" src="image04.webp" width="1024"/>
+   </a>
+  </p>
+  <p>
+   Pretty cool! This would definitely come in handy to troubleshoot complex issues. No need for this here: I quickly restore a valid configuration for the network interface, and I restart the network stack.
+  </p>
+  <p>
+   <a href="https://d2908q01vomqb2.cloudfront.net/da4b9237bacccdf19c0760cab7aec4a8359010b0/2021/03/22/Capture-d’écran-2021-03-22-à-15.11.20.png">
+    <img alt="" class="size-large wp-image-51128 aligncenter" height="434" loading="lazy" src="image05.webp" width="1024"/>
+   </a>
+  </p>
+  <p>
+   Trying to connect to the instance again, I can see that the problem is solved.
+  </p>
+  <p>
+   <code>
+    $ ssh -i ~/.ssh/mykey.pem ec2-user@ec2-3-238-8-46.compute-1.amazonaws.com
+   </code>
+   <code>
+   </code>
+  </p>
+  <p>
+   <code>
+    __|   __|_  )
+   </code>
+   <br/>
+   <code>
+    _|   (    / Amazon Linux 2 AMI
+   </code>
+   <br/>
+   <code>
+    ___|\___|___|
+   </code>
+  </p>
+  <p>
+   <code>
+    https://aws.amazon.com/amazon-linux-2/
+   </code>
+   <br/>
+   <code>
+    [ec2-user@ip-172-31-67-148 ~]$
+   </code>
+  </p>
+  <p>
+   Now, let me quickly show you the equivalent commands using the AWS
+   <a href="https://aws.amazon.com/cli/">
+    command line interface
+   </a>
+   .
+  </p>
+  <p>
+   <strong>
+    <span style="text-decoration: underline;">
+     Connecting to the EC2 Serial Console with the AWS CLI
+     <br/>
+    </span>
+   </strong>
+   This is equally simple. First, I send the SSH public key for the instance key pair to the serial console. Please make sure to add the
+   <code>
+    file://
+   </code>
+   prefix.
+  </p>
+  <p>
+   <code>
+    $ aws ec2-instance-connect send-serial-console-ssh-public-key --instance-id i-003aecec198b537b0 --ssh-public-key file://~/.ssh/mykey.pub --serial-port 0 --region us-east-1
+   </code>
+  </p>
+  <p>
+   Then, I ssh to the serial console, using
+   <code>
+    &lt;instance id&gt;.
+    <em>
+     port
+    </em>
+    &lt;port number&gt;
+   </code>
+   as user name, and I’m greeted with a login prompt.
+  </p>
+  <p>
+   <code>
+    $ ssh -i ~/.ssh/mykey.pem i-003aecec198b537b0.port0@serial-console.ec2-instance-connect.us-east-1.aws
+   </code>
+  </p>
+  <p>
+   <code>
+    Amazon Linux 2
+   </code>
+   <br/>
+   <code>
+    Kernel 4.14.225-168.357.amzn2.x86_64 on an x86_64
+   </code>
+   <br/>
+   <code>
+    ip-172-31-67-148 login:
+   </code>
+  </p>
+  <p>
+   Once I’ve logged in, Magic SysRq is available, and I can trigger it with
+   <code>
+    ~B
+   </code>
+   +
+   <code>
+    command
+   </code>
+   . I can also terminate the console session with
+   <code>
+    ~.
+   </code>
+   .
+  </p>
+  <p>
+   <strong>
+    <span style="text-decoration: underline;">
+     Get Started with EC2 Serial Console
+    </span>
+   </strong>
+   <br/>
+   As you can see, the
+   <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-serial-console.html">
+    EC2 Serial Console
+   </a>
+   makes it much easier to debug and fix complex boot and network issues happening on your EC2 instances. You can start using it today in the following AWS regions, at no additional cost:
+  </p>
+  <ul>
+   <li>
+    US East (N. Virginia), US West (Oregon), US East (Ohio)
+   </li>
+   <li>
+    Europe (Ireland), Europe (Frankfurt)
+   </li>
+   <li>
+    Asia Pacific (Tokyo), Asia Pacific (Sydney), Asia Pacific (Singapore)
+   </li>
+  </ul>
+  <p>
+   Please give it a try, and let us know what you think. We’re always looking forward to your feedback! You can send it through your usual AWS Support contacts, or on the
+   <a href="https://forums.aws.amazon.com/forum.jspa?forumID=30">
+    AWS Forum for Amazon EC2
+   </a>
+   .
+  </p>
+  <a href="https://aws.amazon.com/developer/community/evangelists/julien-simon/">
+   - Julien
+  </a>
+  <p>
+  </p>
+  <p>
+  </p>
+  <!-- '"` -->
+ </body>
+</html>

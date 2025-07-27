@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>A quick look at Machine Translation with Amazon Translate</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="9923">A quick look at Machine Translation with Amazon Translate</h3><p id="f31c"><a href="http://aws.amazon.com/translate" target="_blank">Amazon Translate</a> is a new service announced at AWS re:Invent 2017. At the time of writing, it is available in <a href="https://pages.awscloud.com/amazon-translate-preview.html" target="_blank">preview</a>. Please consider joining it and sending us feedback!</p><figure id="f8f3"><img class="graf-image" src="image01.webp"/><figcaption>These guys didn’t have Amazon Translate, did they?</figcaption></figure><h4 id="6f4b">Features</h4><p id="1552">This is what Amazon Translate is capable of right now:</p><ul class="postList"><li id="6233"><strong class="markup--li-strong">Real-time</strong> translation based on <strong class="markup--li-strong">Deep Learning</strong> technology,</li><li id="8097"><strong class="markup--li-strong">12 language pairs </strong>(more coming): English-Arabic, English-Chinese (simplified), English-French, English-German, English-Portuguese, English-Spanish.</li><li id="014f">Simplest AWS service ever: <a href="http://docs.aws.amazon.com/translate/latest/dg/API_TranslateText.html" target="_blank"><strong class="markup--li-strong">only one API</strong></a> :)</li></ul><p id="51d0">Let’s try it on a few examples. Please keep in mind that the service is still in preview and that it’s constantly learning: imperfections will quickly be fixed thanks to customer feedback.</p><h4 id="107f">French-English</h4><p id="e137">First paragraph on <a href="http://www.lemonde.fr/europe/article/2017/12/21/elections-en-catalogne-un-scrutin-aux-multiples-inconnues-dans-une-region-tres-divisee_5232609_3214.html" target="_blank">this article</a> in today’s Le Monde:</p><pre class="graf--pre" id="6134"><strong class="markup--pre-strong">aws translate translate-text</strong> <strong class="markup--pre-strong">--source-language-code</strong> "fr" <strong class="markup--pre-strong">--target-language-code</strong> "en" <strong class="markup--pre-strong">--text</strong> "Une Catalogne fatiguée a commencé à voter, jeudi 21 décembre, lors d’élections régionales exceptionnelles convoquées par le gouvernement de Madrid dans le cadre de la mise sous tutelle de la région. Fatiguée par trois mois de tensions et par les profondes divisions de la société catalane. Fatiguée mais très mobilisée, car on s’attend à un taux de participation qui pourrait dépasser les 75 %. Les bureaux de vote ont ouvert à 9 heures et fermerons à 20 heures."<br/>{<br/>    "<strong class="markup--pre-strong">TargetLanguageCode</strong>": "en",<br/>    "<strong class="markup--pre-strong">TranslatedText</strong>": "A tired Catalonia began to vote on Thursday 21 December in the exceptional regional elections convened by the Government of Madrid in the context of the implementation of the region. Tired by three months of tension and by the deep divisions of Catalan society. Tired but highly mobilized, as a participation rate could be expected to exceed 75%. The polling stations opened at 9 a.m. and closed at 20 a.m.",<br/>    "<strong class="markup--pre-strong">SourceLanguageCode</strong>": "fr"<br/>}</pre><p class="graf-after--pre" id="85eb">The date is a little off, but the rest of the translation is fine.</p><h4 id="2e6a">Spanish-English</h4><p id="735b">First paragraph of <a href="http://www.elmundo.es/economia/2017/12/21/5a3aa0b422601d3d358b4682.html" target="_blank">this article</a> in today’s El Mundo:</p><pre class="graf--pre" id="3aaa"><strong class="markup--pre-strong">aws translate translate-text --source-language-code</strong> "es" <strong class="markup--pre-strong">--target-language-code</strong> "en" <strong class="markup--pre-strong">--text</strong> "Las necesidades inmobiliarias y urbanísticas de las sedes corporativas han experimentado una profunda transformación durante los últimos años. Tanto, que en la actualidad lo que buscan las compañías son edificios vanguardistas, desde los puntos de vista tecnológico y medioambiental, y además prefieren que estén situados en localizaciones buenas y provistas de todo tipo de dotaciones, porque eso facilita la captación de talento."<br/>{<br/>    "<strong class="markup--pre-strong">TargetLanguageCode</strong>": "en",<br/>    "<strong class="markup--pre-strong">TranslatedText</strong>": "The real estate and development needs of the corporate headquarters have undergone a profound transformation over the past few years. So far, what companies are looking for are avant-garde buildings, from the technological and environmental viewpoints, and they also prefer that they are located in good locations and provided with all kinds of gifted, because that facilitates the capture of talent.",<br/>    "<strong class="markup--pre-strong">SourceLanguageCode</strong>": "es"<br/>}</pre><p class="graf-after--pre" id="239a">I don’t speak Spanish, but the English definitely makes sense to me :)</p><h4 id="fc9e">Chinese-English</h4><p id="e77f">First paragraph on this article from the BBC:</p><pre class="graf--pre" id="f703"><strong class="markup--pre-strong">aws translate translate-text --source-language-code</strong> "zh" <strong class="markup--pre-strong">--target-language-code</strong> "en" <strong class="markup--pre-strong">--text</strong> "近年来中国关于房产税收不收、怎么收的讨论时常出现。周三（12月20日），中国财政部长肖捷在人民日报上发表了文章，明确推进房产税立法和实施，引起广泛讨论。肖捷在文章中称，按照“立法先行、充分授权、分步推进”的原则，推进房地产税立法和实施。对工商业房地产和个人住房按照评估值征收房地产税，适当降低建设、交易环节税费负担。"<br/>{<br/>    "<strong class="markup--pre-strong">TargetLanguageCode</strong>": "en",<br/>    "TranslatedText": "During the past few years, China has seen a lack of revenue collection and how much of its discussions have taken place in recent years. On Wednesday (December 20), the Minister of Finance of China, Xiao Jie, published an article in the People's Daily, which explicitly advanced the legislation and implementation of property taxes and gave rise to extensive discussions. Xiao Jie said in the article that the legislation and enforcement of real estate tax should be advanced in accordance with the principle of “legislative precedent, full authorization, step-by-step advancement”. The levy of real estate and personal housing for industrial and commercial real estate and personal housing is subject to an assessment of the real estate tax, with appropriate reductions in the cost of construction, trade ring taxes.",<br/>    "<strong class="markup--pre-strong">SourceLanguageCode</strong>": "zh"<br/>}</pre><p class="graf-after--pre" id="67c3">I don’t speak Chinese either. Although some parts of the translation need improvement, the meaning of the article is quite clear: more taxes :-/</p><p id="8e7c">Curious about this works? Read on :)</p><h4 id="6ad3">Sequence2Sequence (seq2seq)</h4><p id="0974">seq2seq is a <strong class="markup--p-strong">supervised learning Deep Learning algorithm</strong> where the input is a sequence of <strong class="markup--p-strong">tokens</strong> (such as words from a text) and the output generated is another sequence of tokens. It is a popular choice for Machine Translation applications.</p><blockquote class="graf--blockquote" id="6763">As a sidenote, seq2seq is one of the built-algorithms available in <a class="markup--blockquote-anchor" href="http://aws.amazon.com/sagemaker" rel="nofollow noopener noopener" target="_blank">Amazon SageMaker</a> . You’ll find a high-level description <a class="markup--blockquote-anchor" href="http://docs.aws.amazon.com/sagemaker/latest/dg/seq-2-seq-howitworks.html" target="_blank">here</a>.</blockquote><p class="graf-after--blockquote" id="4878">Months ago, AWS open-sourced a project named <a href="https://github.com/awslabs/sockeye" target="_blank"><strong class="markup--p-strong">Sockeye</strong></a>, a sequence-to-sequence framework for Neural Machine Translation based on <a href="https://mxnet.apache.org/" target="_blank"><strong class="markup--p-strong">Apache MXNet</strong></a>.</p><div class="graf--mixtapeEmbed" id="3c45"><a class="markup--mixtapeEmbed-anchor" href="https://github.com/awslabs/sockeye" title="https://github.com/awslabs/sockeye"><strong class="markup--mixtapeEmbed-strong">awslabs/sockeye</strong><br/><em class="markup--mixtapeEmbed-em">sockeye — Sequence-to-sequence framework with a focus on Neural Machine Translation based on Apache MXNet</em>github.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="d1c4beb4b77f5704b3577ac856dfdb70" data-thumbnail-img-id="0*JAn1xogiKrWknC6Z." href="https://github.com/awslabs/sockeye" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*JAn1xogiKrWknC6Z.);"></a></div><p class="graf-after--mixtapeEmbed" id="c331">Let’s take a look, shall we?</p><h4 id="ac27">Sockeye</h4><p id="f013">Sockeye includes a nice <a href="https://github.com/awslabs/sockeye/tree/master/tutorials/wmt" target="_blank">tutorial</a> on building a model to translate German to English. It relies on the <a href="http://www.statmt.org/wmt17/translation-task.html" target="_blank"><strong class="markup--p-strong">WMT news dataset</strong></a>, a great resource if you want to train other language pairs.</p><p id="b283">Following the instructions and letting the model train for <strong class="markup--p-strong">5–6 hours on a </strong><a href="https://aws.amazon.com/ec2/instance-types/p2/" target="_blank"><strong class="markup--p-strong">p2.8xlarge</strong></a> instance, I obtained my first model without any problem. Great job on the tutorial, Sockeye team :)</p><p id="5b6c">I threw the actual translation commands into a small shell script. Here are some samples taken from Wikipedia and German news websites.</p><pre class="graf--pre" id="72ea">./translate.sh "Mexiko schätzt Schäden auf mehr als zwei Milliarden Dollar ."<br/><strong class="markup--pre-strong">Mexico estimates damage to more than $ 2 billion .</strong></pre><pre class="graf--pre graf-after--pre" id="1c39">./translate.sh "Chopin zählt zu den bedeutendsten Persönlichkeiten der Musikgeschichte Polens ."<br/><strong class="markup--pre-strong">Chopin is one of the most important personalities of Poland &amp;apos;s history .</strong></pre><pre class="graf--pre graf-after--pre" id="bf73">./translate.sh "Hotelbetreiber müssen künftig nur den Rundfunkbeitrag bezahlen, wenn ihre Zimmer auch eine Empfangsmöglichkeit bieten ."<br/><strong class="markup--pre-strong">in the future , hotel operators must pay only the broadcasting fee if their rooms also offer a reception facility .</strong></pre><pre class="graf--pre graf-after--pre" id="86e7">./translate.sh "Die Parker Solar Probe wird das erste Raumfahrzeug sein, dass tief in die Atmosphäre der Sonne eindringt ."<br/><strong class="markup--pre-strong">the Parker Solar Probe is the first space vehicle to penetrate deep into the atmosphere of the sun .</strong></pre><p class="graf-after--pre" id="43bd">Pretty good results. I’m sure this would be even better with longer training times.</p><h4 id="91ab">Conclusion</h4><p id="2cd3">So there you have it. You can either use <strong class="markup--p-strong">Amazon Translate as a fully managed translation service</strong>, or you can <strong class="markup--p-strong">build and train your own with Sockeye</strong>. Choice is king!</p><p id="5e44">That’s it for today. Thank you for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="759a"><em class="markup--p-em">“Tosca” was the soundtrack to this post. Please take a few minutes to listen to this. The cry of a painter tortured and sentenced to death by a tyrant (words in Italian and English </em><a href="https://en.wikipedia.org/wiki/E_lucevan_le_stelle" target="_blank"><em class="markup--p-em">here</em></a><em class="markup--p-em">). Blood-freezing every single time</em></p><figure id="8c15"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/ixxpKB8zNC0?feature=oembed" width="700"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

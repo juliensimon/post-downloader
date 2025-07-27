@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Decoder-only inference: a step-by-step deep dive</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Decoder-only inference: a step-by-step deep dive</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+In this deep-dive video, we explore the step-by-step process of transformer inference for text generation, focusing on decoder-only…
+</section>
+<section data-field="body" class="e-content">
+<section name="55df" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="3636" id="3636" class="graf graf--h3 graf--leading graf--title">Decoder-only inference: a step-by-step deep dive</h3><p name="b471" id="b471" class="graf graf--p graf-after--h3">In this deep-dive video, we explore the step-by-step process of transformer inference for text generation, focusing on decoder-only architectures like those used in GPT models.</p><figure name="46cf" id="46cf" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*HgsfKxspOUdEa7wpgpes8w.png" data-width="1908" data-height="1074" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/1*HgsfKxspOUdEa7wpgpes8w.png"></figure><p name="170f" id="170f" class="graf graf--p graf-after--figure">We delve into the mechanics behind their operation, starting with an analysis of the self-attention mechanism, which serves as the foundational building block for these models. The video begins by explaining how self-attention is computed, including the role of queries, keys, and values in capturing contextual relationships within a sequence of tokens.</p><p name="a603" id="a603" class="graf graf--p graf-after--p">We then examine the significance of the KV cache in optimizing performance by avoiding redundant computations during token generation. The discussion progresses to multi-head attention (MHA), a key innovation in transformers that enables the model to capture diverse patterns in data through parallel attention heads. We address the memory bottlenecks associated with MHA and the techniques employed to mitigate them.</p><p name="3436" id="3436" class="graf graf--p graf-after--p">We also introduce multi-head latent attention (MLA), a cutting-edge alternative to traditional MHA. MLA significantly reduces memory usage by caching a low-rank representation of key and value matrices, enabling faster and more efficient inference. This breakthrough is explained in detail, alongside comparisons to MHA in terms of performance and accuracy.</p><p name="5cef" id="5cef" class="graf graf--p graf-after--p">Finally, the video walks through the process of translating attention outputs into coherent text generation. This includes the role of projection layers, softmax normalization, and decoding strategies like greedy search and top-k/top-p sampling.</p><p name="3e38" id="3e38" class="graf graf--p graf-after--p graf--trailing">This comprehensive exploration provides a detailed understanding of the inference process, emphasizing practical challenges and the state-of-the-art solutions that address them. Whether you’re a researcher, engineer, or AI enthusiast, this video offers valuable insights into the mechanics of generative language models.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/eef7c94a4c51"><time class="dt-published" datetime="2025-01-10T08:35:28.718Z">January 10, 2025</time></a>.</p><p><a href="https://medium.com/@julsimon/decoder-only-inference-a-step-by-step-deep-dive-eef7c94a4c51" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

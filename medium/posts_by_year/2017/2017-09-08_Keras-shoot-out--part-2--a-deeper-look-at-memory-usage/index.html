@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Keras shoot-out, part 2: a deeper look at memory usage</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="73fb">Keras shoot-out, part 2: a deeper look at memory usage</h3><figure id="b245"><img class="graf-image" src="image01.webp"/></figure><p id="1003">In a <a href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" target="_blank">previous article</a>, I used Apache MXNet and Tensorflow as Keras backends to learn the CIFAR-10 dataset on multiple GPUs.</p><p id="a7eb">One of the striking differences was memory usage. Whereas MXNet allocated a conservative 670MB on each GPU, Tensorflow allocated close to 100% of available memory (a tad under 11GB).</p><p id="46de">I was a little shocked by this state of affairs (must be the old-school embedded software developer in me). The model and data set (respectively Resnet-50 and CIFAR-10) didn’t seem to require that much memory after all. Diving a little deeper, I learned that this is indeed the default behaviour in Tensorflow: use all available RAM to speed things up. Fair enough :)</p><p id="a565">Still, a fact is a fact: in this particular setup, MXNet is faster AND memory-efficient. I couldn’t help but wonder how Tensorflow would behave if I constrained its memory usage. Let’s find out, shall we?</p><h4 id="2dd6">Tensorflow settings</h4><p id="6df7">As a number of folks pointed out, you can easily restrict the number of GPUs that Tensorflow uses, as well as the fraction of GPU memory that it allocates (a float value between 0 and 1). Additional information is available in the <a href="https://www.tensorflow.org/tutorials/using_gpu" target="_blank">Tensorflow documentation</a>.</p><p id="6e78">Just take a look at the example below.</p><figure id="2a77"><script src="https://gist.github.com/juliensimon/d27654818342f42635f399c1f2ee2bcb.js"></script></figure><p id="bcf5">With this in mind, let’s start restricting memory usage. I’m curious to find out how low we can actually go and if there’s any consequence on training time.</p><h4 id="a4c9">Test setup</h4><p id="12e3">I’ll run the same script as in the <a href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" target="_blank">previous article</a> (<em class="markup--p-em">keras/examples/cifar10_resnet50.py</em>), with the following parameters:</p><ul class="postList"><li id="f73f">1 GPU on p2.8xlarge instance,</li><li id="0e19">batch size set to 32,</li><li id="ac4d">no data augmentation.</li><li id="4aab">increasingly harsher memory usage constraints: none, 0.8, 0.6, 0.4, 0.2 and lower… if we can!</li></ul><p id="beb3">Our reference point will be MXNet: <strong class="markup--p-strong">658MB</strong> of allocated memory, <strong class="markup--p-strong">155 seconds</strong> per epoch.</p><figure id="230f"><script src="https://gist.github.com/juliensimon/7c1295e7008e7d4b1f2d38410eba2462.js"></script></figure><h4 id="6ebe">Test results</h4><p id="c900">After a little while, here are the results for memory usage and epoch time.</p><ul class="postList"><li id="2321"><strong class="markup--li-strong">No restriction</strong>: 10938MB, 211 seconds.</li><li id="555b"><strong class="markup--li-strong">0.8</strong>: 9282MB, 211 seconds.</li><li id="0d20"><strong class="markup--li-strong">0.6</strong>: 6994MB, 211 seconds.</li><li id="f8ea"><strong class="markup--li-strong">0.4</strong>: 4706MB, 211 seconds.</li><li id="0232"><strong class="markup--li-strong">0.2</strong>: 2418MB, 211 seconds.</li><li id="d503"><strong class="markup--li-strong">0.1</strong>: 1274MB, 212 seconds.</li><li id="2bd3"><strong class="markup--li-strong">0.08</strong>: 1045MB, 212 seconds.</li><li id="b16b"><strong class="markup--li-strong">0.06</strong>: 816MB, 211 seconds.</li><li id="2195"><strong class="markup--li-strong">0.05</strong>: 702MB, 211 seconds.</li><li id="d771"><strong class="markup--li-strong">0.045</strong>: not working (OOM error).</li></ul><h4 id="22cf">Conclusion</h4><p id="5beb">Again, this is a single test and YMMV. Still, a few remarks.</p><p id="0a24">By default, Tensorflow allocates as much memory as possible, but more memory doesn’t mean faster. So why behave like a hog in the first place?Especially since Tensorflow can actually get to a memory footprint similar to MXNet (although it’s really a trial and error process).</p><p id="a1bf">This behaviour still raises a lot of questions that trouble my restless mind :)</p><ol class="postList"><li id="0157">What about very large models? Would they run out of memory and would I need to tweak the memory setting to make them fit?</li><li id="3588">What about CPU training? It’s possible to limit the number of cores used by Tensorflow, but I couldn’t find any way to limit RAM usage (please correct me if I’m wrong).</li><li id="9077">What about inference? Is Tensorflow memory usage just as “liberal”? Would this be a problem for constrained devices like my beloved Raspberry Pi?</li></ol><p id="86d2">Oh boy. More questions than when I started. Typical :) I’ll have to investigate!</p><p id="d8b2">All in all, I guess I’m more comfortable with a library like MXNet that allocates memory as needed and gives me a clear view on how much is left, what the impacts are when parameters are tweaked, etc.</p><p id="07e9">Call it personal preference. And of course, MXNet is quite faster too.</p><p id="f5f3">Thanks for reading. Stay tuned for more articles!</p></div></div></section>
+</section>
+</article></body></html>

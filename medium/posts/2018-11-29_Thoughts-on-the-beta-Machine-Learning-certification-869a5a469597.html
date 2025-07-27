@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Thoughts on the beta Machine Learning certification</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Thoughts on the beta Machine Learning certification</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+We recently announced a new certification, the AWS Certified Machine Learning Specialty. Right now, the exam is still in beta. I took it…
+</section>
+<section data-field="body" class="e-content">
+<section name="ef18" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="9954" id="9954" class="graf graf--h3 graf--leading graf--title">Thoughts on the beta Machine Learning certification</h3><p name="bd05" id="bd05" class="graf graf--p graf-after--h3">We recently announced a new certification, the <a href="https://aws.amazon.com/certification/beta-exam/" data-href="https://aws.amazon.com/certification/beta-exam/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">AWS Certified Machine Learning Specialty</a>. Right now, the exam is still in beta. I took it this morning at re:Invent and although I won’t go into specific details, here are some remarks that may help you prepare.</p><figure name="7d61" id="7d61" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*fVNJJSasfcKnyv1JSM2B_g.jpeg" data-width="3200" data-height="1680" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/1*fVNJJSasfcKnyv1JSM2B_g.jpeg"><figcaption class="imageCaption">Winter is coming and I’m still catching up on SageMaker launches…</figcaption></figure><p name="9793" id="9793" class="graf graf--p graf-after--figure">The exam has 70 questions and lasts for 3 hours (I was done in 90 minutes). Here are the topics listed in the exam guide (<a href="https://d1.awsstatic.com/training-and-certification/machinelearning/AWS%20Certified%20Machine%20Learning%20-%20Specialty_Exam%20Guide_v1.1_FINAL.pdf" data-href="https://d1.awsstatic.com/training-and-certification/machinelearning/AWS%20Certified%20Machine%20Learning%20-%20Specialty_Exam%20Guide_v1.1_FINAL.pdf" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">PDF</a>)</p><p name="7404" id="7404" class="graf graf--p graf-after--p"><strong class="markup--strong markup--p-strong">Domain 1: Data Engineering (20%)<br></strong><em class="markup--em markup--p-em">Create data repositories for machine learning.<br>Identify and implement a data-ingestion solution.<br>Identify and implement a data-transformation solution.</em><br><strong class="markup--strong markup--p-strong">Opinion</strong>: IMHO this domain should be reduced to 15% or even 10%. I found the questions pretty repetitive, and they were about Big Data, not about Machine Learning. If you’ve already passed the Big Data Specialty certification, you’ll be fine. If not, make sure you’re very familiar with Kinesis and its different flavours, or you’ll have a miserable time.</p><p name="9fa2" id="9fa2" class="graf graf--p graf-after--p"><strong class="markup--strong markup--p-strong">Domain 2: Exploratory Data Analysis (24%)</strong><br><em class="markup--em markup--p-em">Sanitize and prepare data for modeling.<br>Perform feature engineering.<br>Analyze and visualize data for machine learning.</em><br><strong class="markup--strong markup--p-strong">Opinion</strong>: typical Data Science stuff, not really tied to any particular AWS service. Cleaning data, handling missing values, performing basic feature engineering. If you have hands-on ML experience, this won’t be a problem at all. Questions don’t go very deep. I was surprised to get a few questions on data viz, most of them pretty vague and awkward to answer without looking at any actual data. IMHO they should be dropped and replaced with more questions on feature engineering.</p><p name="8dc3" id="8dc3" class="graf graf--p graf-after--p"><strong class="markup--strong markup--p-strong">Domain 3: Modeling (36%)</strong><br><em class="markup--em markup--p-em">Frame business problems as machine learning problems.<br>Select the appropriate model(s) for a given machine learning problem.<br>Train machine learning models.<br>Perform hyperparameter optimization.<br>Evaluate machine learning models.</em><br><strong class="markup--strong markup--p-strong">Opinion</strong>:<strong class="markup--strong markup--p-strong"> </strong>a reasonable mix of high-level questions on framing business problems (algo selection, etc.), SageMaker-related questions (built-in algos, HPO, etc.) and Deep Learning questions (CNN, LSTM, regularization, etc.). Again, if you do this for a living and if you’ve spent some time with SageMaker, you should be fine. I didn’t get any complex algorithm question, and none on specific Deep Learning frameworks (TensorFlow, etc.). IMHO, this could be a little more challenging than it is :)</p><p name="32b3" id="32b3" class="graf graf--p graf-after--p"><strong class="markup--strong markup--p-strong">Domain 4: Machine Learning Implementation and Operations (20%)</strong><br><em class="markup--em markup--p-em">Build machine learning solutions for performance, availability, scalability, resiliency, and fault tolerance.<br>Recommend and implement the appropriate machine learning services and features for a given problem.<br>Apply basic AWS security practices to machine learning solutions.<br>Deploy and operationalize machine learning solutions.<br></em><strong class="markup--strong markup--p-strong">Opinion</strong>: the Ops section. I got quite a few questions on security (VPC, IAM, KMS, etc.) with respect to S3 and SageMaker, so make sure you know that stuff (it’s super important anyway!). Model deployment is important too (endpoint, scaling, etc.).</p><p name="ca56" id="ca56" class="graf graf--p graf-after--p">Overall, I think that the beta exam hits the target, i.e. checking for <strong class="markup--strong markup--p-strong">applied Machine Learning skills in an AWS context</strong>. I would simply tone down the Big Data stuff and add deeper ML/DL questions, but that’s just me :)</p><p name="aefd" id="aefd" class="graf graf--p graf-after--p graf--trailing">Did you also take the exam? Please share your comments here, but refrain from sharing detailed information as I’ll have to delete it.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/869a5a469597"><time class="dt-published" datetime="2018-11-29T18:31:00.761Z">November 29, 2018</time></a>.</p><p><a href="https://medium.com/@julsimon/thoughts-on-the-beta-machine-learning-certification-869a5a469597" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

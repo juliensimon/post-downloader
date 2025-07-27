@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Speeding up Apache MXNet, part 3: let’s smash it with C5 and Intel MKL</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="ece3">Speeding up Apache MXNet, part 3: let’s smash it with C5 and Intel MKL</h3><p id="3f80"><a href="https://medium.com/@julsimon/speeding-up-apache-mxnet-with-the-nnpack-library-7427f367490f" target="_blank">In a previous post</a>, I showed you how to speed up MXNet inference with the <a href="https://github.com/Maratyszcza/NNPACK" target="_blank">NNPACK</a> Open Source library.</p><p id="55ea">Since then, AWS has released a new instance family named <strong class="markup--p-strong">c5</strong>, based on the new <a href="https://en.wikipedia.org/wiki/Skylake_%28microarchitecture%29" target="_blank"><strong class="markup--p-strong">Intel Skylake</strong></a> architecture. This architecture notably uses the <a href="https://en.wikipedia.org/wiki/AVX-512" target="_blank"><strong class="markup--p-strong">AVX-512</strong></a> <a href="https://en.wikipedia.org/wiki/SIMD" target="_blank">SIMD</a> instruction set, which is designed to boost <strong class="markup--p-strong">math operation</strong>s involved in Deep Learning. To maximize performance, developers are encouraged to use the <a href="https://software.intel.com/en-us/mkl" target="_blank"><strong class="markup--p-strong">Intel Math Kernel Library</strong></a> which provides a <strong class="markup--p-strong">highly optimized implementation</strong> of these math operations.</p><p id="f041">How about we combine C5 and MKL and get smashin’?</p><figure id="44ef"><img class="graf-image" src="image02.webp"/><figcaption>Hulk no like tensors. Hulk smash tensors!</figcaption></figure><h4 id="84b2">Building MXNet with MKL</h4><p id="9f79">The procedure is pretty simple. Let’s start with a <strong class="markup--p-strong">c5.4xlarge</strong> instance 16 vCPUs, 32GB RAM) running the latest <a href="https://aws.amazon.com/marketplace/pp/B01M0AXXQB" target="_blank"><strong class="markup--p-strong">Deep Learning AMI</strong></a>.</p><p id="ee22">First, we need to configure the MXNet build in <em class="markup--p-em">~/src/mxnet/config.mk</em>. Please make sure that the following variables are set correctly.</p><figure id="c000"><script src="https://gist.github.com/juliensimon/0bff5d9a282376d25b6327f4afa70d39.js"></script></figure><p id="8115">Now, let’s build the latest version of MXNet (<strong class="markup--p-strong">0.12.1</strong> at the time of writing). The MKL library will be downloaded and installed automatically.</p><figure id="ac10"><script src="https://gist.github.com/juliensimon/b964d686e8f31f2213fa5c76073d70c4.js"></script></figure><p id="0174">Time for a quick check.</p><figure id="5cb7"><script src="https://gist.github.com/juliensimon/1080a8a536c1df5951a1076a7df57fa3.js"></script></figure><p id="b62d">We’re good to go. Let’s run our benchmark.</p><h4 id="e5ff">Running the benchmark</h4><p id="aeec">Let’s use the script included in the MXNet sources: <em class="markup--p-em">~/src/mxnet/example/image-classification/benchmark_score.py</em>. This benchmark runs inference on a synthetic data set, using a variety of <strong class="markup--p-strong">Convolutional Neural Networks</strong> and a variety of <strong class="markup--p-strong">batch sizes</strong>.</p><p id="7b17">As nothing is ever simple, we need to fix a line of code in the script. C5 instances don’t have any GPU installed (which is the whole point here) and the script is unable to properly detect that fact. Here’s the modification you need to apply. While we’re at it, let’s add additional batch sizes.</p><figure id="3289"><script src="https://gist.github.com/juliensimon/1f95775151558a7592cf58d84f9e599b#file-nnpack-10.js"></script></figure><p id="fe35">OK, now let’s run the benchmark. After a little while, here are the <a href="https://gist.github.com/juliensimon/5247fdbe3076273c8802a67fae7e732e" target="_blank">results</a>.</p><p id="6fbe">For comparison, here are the same results for <a href="https://gist.github.com/juliensimon/8118f6c2b6430ff1fcd91813c80ebfab" target="_blank">vanilla MXNet 0.12.1</a> running on the same c5 instance.</p><h4 id="844a">So how fast is this thing?</h4><p id="272f">A picture is worth a thousand words. The following graphs illustrate the <strong class="markup--p-strong">speedup</strong> provided by MKL for each network: <strong class="markup--p-strong">batch size</strong> on the X axis, <strong class="markup--p-strong">images per second</strong> on the Y axis.</p><figure id="54b6"><img class="graf-image" src="image05.webp"/></figure><figure id="87c6"><img class="graf-image" src="image03.webp"/></figure><figure id="da90"><img class="graf-image" src="image01.webp"/></figure><figure id="dc65"><img class="graf-image" src="image04.webp"/></figure><h4 id="4258">Conclusion</h4><p id="4d27">Do we need one? :) Thanks to Intel MKL, we get <strong class="markup--p-strong">massive inference speedup</strong> for all models, anywhere from <strong class="markup--p-strong">7x to 10x</strong>. We also get some <strong class="markup--p-strong">scalability</strong> as AVX-512 kicks into high gear when batch size increases.</p><p id="66a3">The comparison with <a href="https://gist.github.com/juliensimon/c3394ca697e5b8692a1956027afd34d1" target="_blank">vanilla MXNet 0.11</a> running on a <strong class="markup--p-strong">c4.8xlarge</strong> instance is even more impressive, as speedup consistently hits <strong class="markup--p-strong">10x to 15x</strong>. If you’re running inference on c4, please move to c5 as soon as you can: you’ll definitely get more <strong class="markup--p-strong">bang for your buck</strong>.</p><p id="f6a5">One last thing: what about training? Using the same c5 instance, a quick training test on <strong class="markup--p-strong">CIFAR-10</strong> (using the train_cifar10.py script) shows a <strong class="markup--p-strong">10x speedup between MKL-enabled MXNet and vanilla MXNet</strong>. Not bad at all. On smaller data sets, c5 could actually be a cost-effective solution compared to GPU instances. Your call, really… which is the way we like it ;)</p><p id="86cc">That’s it for today. Thanks for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="cbd0"><em class="markup--p-em">We smashed it, so yeah, this kind of applies.</em></p><figure id="12e8"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/F4l-BEiWb1w?feature=oembed" width="700"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

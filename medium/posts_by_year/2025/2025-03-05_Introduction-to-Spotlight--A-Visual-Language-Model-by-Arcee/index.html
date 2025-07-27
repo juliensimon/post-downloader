@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Introduction to Spotlight: A Visual Language Model by Arcee</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="a9f7"><strong class="markup--h3-strong">Introduction to Spotlight: A Visual Language Model by Arcee</strong></h3><figure id="3812"><img class="graf-image" src="image01.webp"/></figure><p id="8b3a">In the rapidly evolving landscape of artificial intelligence, the integration of vision and language has opened up new avenues for applications that were once the realm of science fiction. One of the most exciting developments in this domain is the emergence of visual language models (VLMs), which can understand and interact with images using natural language. These models are not only transforming how we process and interact with visual content but are also paving the way for more intuitive and accessible AI-powered tools.</p><p id="61ac">In this blog post, we will explore <strong class="markup--p-strong">Spotlight</strong>, a new VLM introduced by Arcee, a leading AI company. Spotlight is designed to provide robust and efficient interaction with image content, making it a valuable tool for a wide range of applications, from content creation to data management. We will delve into the features of Spotlight, demonstrate its capabilities, and discuss its potential use cases.</p><h3 id="ce2e">What is Spotlight?</h3><p id="7eea">Spotlight is a 7 billion-parameter visual language model developed by Arcee. It is based on the Qwen 2.5-VL architecture, which has been further refined and enhanced by Arcee’s research team. The model is hosted on Arcee’s inference platform, <strong class="markup--p-strong">Model Engine</strong>, which is designed to be compatible with OpenAI APIs, making it easy for developers to integrate Spotlight into their existing workflows.</p><figure id="4c16"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/xIsIcT8L5tE?feature=oembed" width="700"></iframe></figure><h3 id="9747">Key Features of Spotlight</h3><p id="a922">• <strong class="markup--p-strong">Parameter Count</strong>: 7 billion parameters, making it a lightweight yet powerful model.</p><p id="4709">• <strong class="markup--p-strong">Context Length</strong>: 32k, allowing for rich and detailed interactions with images.</p><p id="837c">• <strong class="markup--p-strong">Pricing</strong>: 10 cents per million tokens for input and 40 cents per million tokens for output, making it cost-effective for large-scale applications.</p><p id="3b4f">• <strong class="markup--p-strong">API Compatibility</strong>: Fully compatible with OpenAI APIs, ensuring a smooth integration process.</p><h3 id="b3e8">Demonstrating Spotlight</h3><h3 id="28ac">Using Model Engine</h3><p id="2c87">To demonstrate Spotlight, we will first use Arcee’s Model Engine, a platform that hosts various small language models, including Spotlight. Model Engine provides a user-friendly interface and API access, making it easy to test and deploy models.</p><p id="5bc0">Let’s start with a simple example. We have an image of the ARCEE advertisement on the NASDAQ building, which announces a 24 million series A raise led by Emergence Capital. When we input this image into Spotlight, the model generates a detailed and accurate description:</p><p id="68bc">• <strong class="markup--p-strong">Scene</strong>: A bustling urban scene in a financial district.</p><p id="694f">• <strong class="markup--p-strong">Ad</strong>: A large advertisement for ARCEE on a building.</p><p id="864f">• <strong class="markup--p-strong">Text</strong>: The ad mentions the 24 million series A raise.</p><p id="e062">• <strong class="markup--p-strong">Environment</strong>: The area is busy with pedestrians and vehicles, including trucks and construction cones.</p><p id="9f56">• <strong class="markup--p-strong">Weather</strong>: Clear and blue sky, suggesting a sunny day.</p><p id="567a">Spotlight’s ability to accurately pick up text and logos is particularly noteworthy, as this is a challenge for many image models.</p><h3 id="fab6">Using the OpenAI API</h3><p id="3409">For developers who prefer a programmatic approach, Spotlight can be accessed via the OpenAI API. Model Engine uses the same API structure as OpenAI, making it easy to switch between different models.</p><p id="cc97">To demonstrate this, we will use a Python client to interact with the API. We will pass an image to Spotlight and ask it to provide a caption and context.</p><p id="ebef">1. Passing the Image via URL:</p><p id="b442">- Prompt: “Where was this picture taken?”</p><p id="782c">- Image: A recognizable image (e.g., a famous landmark).</p><p id="a124">- Output: The model correctly identifies the location and provides context, such as the event and date (e.g., Bastille Day in Paris).</p><p id="f140">2. Passing the Image Inline:</p><p id="443d">- Method: Encode the image in base64 format and pass it inline in the API request.</p><p id="8de1">- Use Case: This method is useful when dealing with local images or when you want to avoid HTTP requests.</p><p id="43ef"><strong class="markup--p-strong">Passing the Image via URL</strong>:</p><p id="15f0">- <strong class="markup--p-strong">Prompt</strong>: “Where was this picture taken?”</p><p id="bf66">- <strong class="markup--p-strong">Image</strong>: A recognizable image (e.g., a famous landmark).</p><p id="9eaf">- <strong class="markup--p-strong">Output</strong>: The model correctly identifies the location and provides context, such as the event and date (e.g., Bastille Day in Paris).</p><p id="c81f"><strong class="markup--p-strong">Passing the Image Inline</strong>:</p><p id="723c">- <strong class="markup--p-strong">Method</strong>: Encode the image in base64 format and pass it inline in the API request.</p><p id="5344">- <strong class="markup--p-strong">Use Case</strong>: This method is useful when dealing with local images or when you want to avoid HTTP requests.</p><p id="27ea">One of the most powerful features of Spotlight is its ability to generate structured metadata from images. This is particularly useful for content management, image search, and data storage. For example, given an image of a famous landmark, Spotlight can generate metadata in JSON format, including:</p><p id="29d9">• <strong class="markup--p-strong">Country</strong>: France</p><p id="78e7">• <strong class="markup--p-strong">City</strong>: Paris</p><p id="3d71">• <strong class="markup--p-strong">Landmark</strong>: Arc de Triomphe</p><p id="6710">• <strong class="markup--p-strong">Short Description</strong>: “Air show over the Arc de Triomphe with colorful smoke trails.”</p><p id="c1c4">• <strong class="markup--p-strong">Detailed Description</strong>: A more elaborate description of the scene.</p><p id="2de9">• <strong class="markup--p-strong">Themes</strong>: “Military parade, fireworks, national holiday.”</p><p id="08c3">• <strong class="markup--p-strong">Keywords</strong>: “Bastille Day, Paris, Arc de Triomphe, fireworks, military parade.”</p><h3 id="e9d2">Performance and Efficiency</h3><p id="3606">Spotlight’s lightweight architecture (7B parameters) ensures that it is fast and efficient, making it suitable for real-time applications and large-scale image processing. The model’s speed is a significant advantage, especially in scenarios where low latency is crucial.</p><h3 id="bc8e">Conclusion</h3><p id="9e37">Spotlight represents a significant advancement in the field of visual language models, offering a powerful and efficient tool for interacting with images using natural language. Its ability to generate accurate descriptions, captions, and structured metadata opens up a wide range of applications, from content creation to data management.</p><p id="9db9">If you are interested in exploring Spotlight and other models by Arcee, we encourage you to:</p><p id="5b0a">• <strong class="markup--p-strong">Learn more about Arcee Orchestra in our launch blog post</strong> <a href="https://blog.arcee.ai/taking-the-stage-arcee-orchestra/" target="_blank">Taking the Stage: Arcee Orchestra</a></p><p id="1c03">• <strong class="markup--p-strong">Watch more videos on our YouTube channel</strong> <a href="https://www.youtube.com/@ArceeAI" target="_blank">Arcee AI</a></p><p id="3905">• <strong class="markup--p-strong">Follow Arcee AI on LinkedIn</strong> <a href="https://www.linkedin.com/company/arcee-ai" target="_blank">Arcee AI</a> to stay updated on the latest developments and content.</p><p id="45c5">We look forward to seeing the innovative ways in which you will use Spotlight to enhance your projects and workflows. Keep rocking!</p></div></div></section>
+</section>
+</article></body></html>

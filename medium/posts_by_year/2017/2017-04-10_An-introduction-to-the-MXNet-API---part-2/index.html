@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>An introduction to the MXNet API — part 2</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="2fff">An introduction to the MXNet API — part 2</h3><p id="7ea0"><a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-1-848febdcf8ab" target="_blank">In part 1</a>, we covered some MXNet basics and then discussed the <em class="markup--p-em">NDArray</em> API (tldr: <em class="markup--p-em">NDArrays</em> is where we’re going to store data, parameters, etc).</p><p id="a26c">Now that we’ve got data covered, it’s time to look at how MXNet defines computation steps.</p><h4 id="8a36">Computation steps? You mean code, right?</h4><p id="d696">That’s a fair question! Haven’t we all learned that “program = data structures + code”? <em class="markup--p-em">NDArrays</em> are our data structures, let’s just add code!</p><p id="89e4">Well yes, we could to that. We’d have to define all the steps explicitly and run them sequentially on our data. This is called “<a href="https://en.wikipedia.org/wiki/Imperative_programming" target="_blank"><strong class="markup--p-strong">imperative programming</strong></a>” and it’s how Fortran, Pascal, C, C++ and so on work. Nothing wrong with that.</p><p id="eb1c">However, neural networks are intrinsically <strong class="markup--p-strong">parallel</strong> beasts: inside a given layer, all outputs can be computed <strong class="markup--p-strong">simultaneously</strong>. Independent layers could also run in parallel. So, in order to get good performance, we’d have to implement parallel processing ourselves using multithreading or something similar. We know how that usually works out. And even if we got the code right, how <strong class="markup--p-strong">reusable</strong> would it be if data size or network layout kept changing?</p><p id="6721">Fortunately, there is an alternative.</p><figure id="a3bb"><img class="graf-image" src="image02.webp"/></figure><h4 id="8a82">Dataflow programming</h4><p id="051b">“D<a href="https://en.wikipedia.org/wiki/Dataflow_programming" target="_blank"><strong class="markup--p-strong">ataflow programming</strong></a>” is a flexible way of defining parallel computation, where data flows through a <strong class="markup--p-strong">graph</strong>. The graph defines the order of operations, i.e. whether they need to be run sequentially or whether they may be run in parallel. Each operation is a <strong class="markup--p-strong">black box</strong>: we only define its input and output, without specifying its actual behaviour.</p><p id="50c0">This might sound like Computer Science mumbo jumbo, but this model is exactly what we need to define neural networks : let input data flow through an ordered sequence of operations called “layers”, with each layer running many instructions in parallel.</p><p id="c687">Enough talk. Let’s look at an example. This is how we would define E as (A*B) + (C*D).</p><figure id="96ec"><img class="graf-image" src="image01.webp"/><figcaption>E = (A*B) + (C*D)</figcaption></figure><blockquote class="graf--blockquote" id="0ffd">What A,B,C and D are is irrelevant at this point. They are <strong class="markup--blockquote-strong">symbols.</strong></blockquote><p class="graf-after--blockquote" id="37a7">No matter what the inputs are (integers, vectors, matrices, etc.), this graph tells us how to compute the output value — provided that operations “+” and “*” are defined.</p><blockquote class="graf--blockquote" id="32a7">This graph also tells us that (A*B) and (C*D) can be computed in <strong class="markup--blockquote-strong">parallel</strong>.</blockquote><p class="graf-after--blockquote" id="c0d5">Of course, MXNet will use this information for optimisation purposes.</p><h4 id="64d1">The Symbol API</h4><p id="77a9">So now we know why these things are called <strong class="markup--p-strong">symbols</strong> (not a minor victory!). Let’s see if we can code the example above.</p><pre class="graf--pre" id="16ce">&gt;&gt;&gt; import mxnet as mx<br/>&gt;&gt;&gt; a = mx.symbol.Variable('A')<br/>&gt;&gt;&gt; b = mx.symbol.Variable('B')<br/>&gt;&gt;&gt; c = mx.symbol.Variable('C')<br/>&gt;&gt;&gt; d = mx.symbol.Variable('D')<br/>&gt;&gt;&gt; e = (a*b)+(c*d)</pre><p class="graf-after--pre" id="98c1">See? This is perfectly valid code. We can assign a result to e without knowing what a, b, c and d are. Let’s keep going.</p><pre class="graf--pre" id="1cdf">&gt;&gt;&gt; (a,b,c,d)<br/>(&lt;Symbol A&gt;, &lt;Symbol B&gt;, &lt;Symbol C&gt;, &lt;Symbol D&gt;)<br/>&gt;&gt;&gt; e<br/>&lt;Symbol _plus1&gt;<br/>&gt;&gt;&gt; type(e)<br/>&lt;class 'mxnet.symbol.Symbol'&gt;</pre><p class="graf-after--pre" id="b3d3">a, b, c and d are symbols which we explicitly declared. e is different: it is a symbol as well, but one that is the result of a ‘+’ operation. Let’s try to learn more about e.</p><pre class="graf--pre" id="d1be">&gt;&gt;&gt; e.list_arguments()<br/>['A', 'B', 'C', 'D']<br/>&gt;&gt;&gt; e.list_outputs()<br/>['_plus1_output']<br/>&gt;&gt;&gt; e.get_internals().list_outputs()<br/>['A', 'B', '_mul0_output', 'C', 'D', '_mul1_output', '_plus1_output']</pre><p class="graf-after--pre" id="b606">What this tells us is that:</p><ul class="postList"><li id="acb2">e depends on variables a, b, c and d,</li><li id="eb4f">the operation that computes e is a sum,</li><li id="4470">e is indeed (a*b)+(c*d).</li></ul><p id="2cd8">Of course, we can do much more with symbols than ‘+’ and ‘*’. Just like for <em class="markup--p-em">NDArrays</em>, a lot of operations are defined (math, formatting, etc.). You should take some time to explore the <a href="http://mxnet.io/api/python/symbol.html" target="_blank">API</a>.</p><p id="b0b8">So now we know how do define our computing steps. Let’s see how we can apply them to actual data.</p><h4 id="6a7e">Binding <em class="markup--h4-em">NDArrays</em> and <em class="markup--h4-em">Symbols</em></h4><blockquote class="graf--blockquote" id="8b50">Applying computing steps defined with Symbols to data stored in NDArrays requires an operation called ‘<strong class="markup--blockquote-strong">binding</strong>’, i.e. assigning an NDArray to each input variable of the graph.</blockquote><p class="graf-after--blockquote" id="e465">Let’s continue with the example above. Here, I’d like to set ‘A’ to 1, ‘B’ to 2, C to ‘3’ and ‘D’ to 4, which is why I’m creating 4 <em class="markup--p-em">NDArrays</em> containing a single integer.</p><pre class="graf--pre" id="edd7">&gt;&gt;&gt; import numpy as np<br/>&gt;&gt;&gt; a_data = mx.nd.array([1], dtype=np.int32)<br/>&gt;&gt;&gt; b_data = mx.nd.array([2], dtype=np.int32)<br/>&gt;&gt;&gt; c_data = mx.nd.array([3], dtype=np.int32)<br/>&gt;&gt;&gt; d_data = mx.nd.array([4], dtype=np.int32)</pre><p class="graf-after--pre" id="f7ea">Next, I’m binding each <em class="markup--p-em">NDArray</em> to its corresponding <em class="markup--p-em">Symbol</em>. Please note that I have to select the <strong class="markup--p-strong">context</strong> (CPU or GPU) where execution will take place.</p><pre class="graf--pre" id="f457">&gt;&gt;&gt; executor=e.bind(mx.cpu(), {'A':a_data, 'B':b_data, 'C':c_data, 'D':d_data})<br/>&gt;&gt;&gt; executor<br/>&lt;mxnet.executor.Executor object at 0x10da6ec90&gt;</pre><p class="graf-after--pre" id="7522">Now, it’s time to let our input data flow through the graph in order to get a result: the <em class="markup--p-em">forward</em>() function will get things going. It returns an array of <em class="markup--p-em">NDArrays</em>, because a graph could have multiple outputs. Here, we have a single output, holding the value ‘14’ — which is reassuringly equal to (1*2)+(3*4).</p><pre class="graf--pre" id="bf01">&gt;&gt;&gt; e_data = executor.forward()<br/>&gt;&gt;&gt; e_data<br/>[&lt;NDArray 1 <a class="markup--pre-anchor" href="http://twitter.com/cpu" target="_blank" title="Twitter profile for @cpu">@cpu</a>(0)&gt;]<br/>&gt;&gt;&gt; e_data[0]<br/>&lt;NDArray 1 <a class="markup--pre-anchor" href="http://twitter.com/cpu" target="_blank" title="Twitter profile for @cpu">@cpu</a>(0)&gt;<br/>&gt;&gt;&gt; e_data[0].asnumpy()<br/>array([14], dtype=int32)</pre><p class="graf-after--pre" id="b4e3">Let’s apply the same graph to four 1000 x 1000 matrices filled with random floats between 0 and 1. All we have to do is define new input data: binding and computing are <strong class="markup--p-strong">identical</strong>.</p><pre class="graf--pre" id="9e05">&gt;&gt;&gt; a_data = mx.nd.uniform(low=0, high=1, shape=(1000,1000))<br/>&gt;&gt;&gt; b_data = mx.nd.uniform(low=0, high=1, shape=(1000,1000))<br/>&gt;&gt;&gt; c_data = mx.nd.uniform(low=0, high=1, shape=(1000,1000))<br/>&gt;&gt;&gt; d_data = mx.nd.uniform(low=0, high=1, shape=(1000,1000))</pre><pre class="graf--pre graf-after--pre" id="3156">&gt;&gt;&gt; executor=e.bind(mx.cpu(), {'A':a_data, 'B':b_data, 'C':c_data, 'D':d_data})<br/>&gt;&gt;&gt; e_data = executor.forward()</pre><pre class="graf--pre graf-after--pre" id="02e0">&gt;&gt;&gt; e_data<br/>[&lt;NDArray 1000x1000 <a class="markup--pre-anchor" href="http://twitter.com/cpu" target="_blank" title="Twitter profile for @cpu">@cpu</a>(0)&gt;]<br/>&gt;&gt;&gt; e_data[0]<br/>&lt;NDArray 1000x1000 <a class="markup--pre-anchor" href="http://twitter.com/cpu" target="_blank" title="Twitter profile for @cpu">@cpu</a>(0)&gt;<br/>&gt;&gt;&gt; e_data[0].asnumpy()<br/>array([[ 0.89252722,  0.46442914,  0.44864511, ...,  0.08874825,<br/>         0.83029556,  1.15613985],<br/>       [ 0.10265817,  0.22077513,  0.36850023, ...,  0.36564362,<br/>         0.98767519,  0.57575727],<br/>       [ 0.24852338,  0.6468209 ,  0.25207704, ...,  1.48333383,<br/>         0.1183901 ,  0.70523977],<br/>       ...,<br/>       [ 0.85037285,  0.21420079,  1.21267629, ...,  0.35427764,<br/>         0.43418071,  1.12958288],<br/>       [ 0.14908466,  0.03095067,  0.19960476, ...,  1.13549757,<br/>         0.22000578,  0.16202438],<br/>       [ 0.47174677,  0.19318949,  0.05837669, ...,  0.06060726,<br/>         1.01848066,  0.48173574]], dtype=float32)</pre><p class="graf-after--pre" id="a8e2">Pretty cool, isn’t it? This clean separation between data and computation aims at giving us <strong class="markup--p-strong">the best of both worlds</strong>:</p><ul class="postList"><li id="6f51">data is loaded and prepared using the <strong class="markup--li-strong">imperative</strong> programming model that we’re all very familiar with. We can even use any external library in the process (it’s just good old code!).</li><li id="4fcf">computation is performed using the <strong class="markup--li-strong">symbolic</strong> programming model, which allows MXNet not only to decouple code and data but also to perform parallel execution as well as graph optimisation.</li></ul><p id="0a25">That’s it for today. In the next article, we’ll look at the Module API, the last one we need to cover before we can start training and using neural networks!</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="460b">Next :</p><ul class="postList"><li id="de6c"><a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-3-1803112ba3a8" target="_blank">Part 3</a>: the Module API</li><li id="8171"><a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-4-df22560b83fe" target="_blank">Part 4</a>: Using a pre-trained model for image classification (Inception v3)</li><li id="99aa"><a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-5-9e78534096db" target="_blank">Part 5</a>: More pre-trained models (VGG16 and ResNet-152)</li><li id="39a8"><a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-6-fcdd7521ae87" target="_blank">Part 6</a>: Real-time object detection on a Raspberry Pi (and it speaks, too!)</li></ul></div></div></section>
+</section>
+</article></body></html>

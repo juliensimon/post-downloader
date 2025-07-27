@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Johnny Pi, I am your father — part 3: adding cloud-based speech</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="477a">Johnny Pi, I am your father — part 3: adding cloud-based speech</h3><p id="af88">In the <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-2-the-joystick-db8ac067e86" target="_blank">previous post</a>, we learned how to control our robot with a joystick connected to an Arduino Yùn.</p><p id="ddee">In this post, I’ll show you how to use <a href="https://aws.amazon.com/polly/" target="_blank">Amazon Polly</a> to give the gift of speech to our little friend. If you’re not familiar with this service, don’t worry: it’s dead simple to use.</p><blockquote class="graf--blockquote graf--hasDropCapModel" id="96a4">One API call is all it takes to generate speech from text.</blockquote><figure class="graf-after--blockquote" id="ee06"><img class="graf-image" src="image01.webp"/></figure><h4 id="ced8">Installing Python dependencies</h4><p id="5dc5">In order to invoke Polly and play the resulting sound file, we need to install three Python packages on our robot:</p><ul class="postList"><li id="db4d"><a href="https://pypi.python.org/pypi/boto3" target="_blank">boto3</a>, the AWS SDK for Python.</li><li id="a34f">the <a href="https://pypi.python.org/pypi/awscli" target="_blank">AWS CLI</a>, because we’re bound to need it at some point :)</li><li id="38d0"><a href="https://pypi.python.org/pypi/Pygame" target="_blank">pygame</a>, which I found to be the easiest way to play a sound file from Python.</li></ul><figure id="3fbf"><script src="https://gist.github.com/juliensimon/f3c092d7ad3190abd17b7c259ccaad36.js"></script></figure><h4 id="6faa">Allowing the robot to subscribe to a new MQTT topic</h4><p id="b0e6">Just like for movement, all commands will be sent through a dedicated MQTT topic, named <em class="markup--p-em">JohnnyPi/speak</em>. There’s nothing to provision on the AWS IoT gateway, but we have to update the thing’s IAM policy to allow it to subscribe to this new topic.</p><p id="f00b">Just go to the IAM console, locate the proper policy and add the following statement.</p><figure id="1c68"><script src="https://gist.github.com/juliensimon/bf097e20d178d968d43e6df39e64af3c.js"></script></figure><h4 id="dbd3">Allowing the robot to invoke Polly</h4><p id="e484">We’ve just taken care of IoT security, now let’s make sure the robot is also allowed to call the Polly API. To do so, we’re going to create a new IAM user with the corresponding policy and use its credentials to authenticate.</p><p id="6d24">Let’s use the AWS CLI for once. No, it’s not complicated: just run these commands on your own machine, not on the robot ;)</p><figure id="6fc5"><script src="https://gist.github.com/juliensimon/e6249ff529c291bd21cf4878d4f685df.js"></script></figure><p id="c9b4">Take note of the SECRET_KEY and ACCESS_KEY values. As usual, you have two options to deploy them on the robot:</p><ol class="postList"><li id="f956">run ‘<em class="markup--li-em">aws configure</em>’ and fill in the fields</li><li id="4cb5">store them in <em class="markup--li-em">~/.aws/credentials</em></li></ol><figure id="515f"><script src="https://gist.github.com/juliensimon/ef6d96edd38af02e93558aa6d640f61b.js"></script></figure><p id="263f">Ok, that’s enough IAM for a day. Let’s start to write some code.</p><h4 id="b938">Invoking the Polly API</h4><p id="18bf">We need to do three things:</p><ol class="postList"><li id="f22f">connect to Polly and return a client. Please check <a href="https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/" target="_blank">this page</a> to find out in which regions Polly is available.</li><li id="4fc6">using the client, generate a sound file from a text message: as promised, all it takes is a call to a single API, called <em class="markup--li-em">synthesize_speech</em>(),</li><li id="10aa">play the sound file thanks to the <em class="markup--li-em">pygame</em> library. Here I’m using the male UK voice (aka ‘Brian’).</li></ol><blockquote class="graf--blockquote" id="c352">Feel free to experiment with the other 47 voices and 23 languages: ‘<em class="markup--blockquote-em">aws polly describe-voices</em>’ will give you the full list.</blockquote><p class="graf-after--blockquote" id="eb63">Here’s the corresponding code: nothing clever :) It should also run file on your local machine.</p><figure id="5086"><script src="https://gist.github.com/juliensimon/1b24474a9411ef9b032c807af1f25ac7.js"></script></figure><h4 id="efc3">Processing the MQTT messages</h4><p id="d33d">Now that we can invoke Polly, it’s time to work on processing the MQTT messages. Here’s what we need to add to <a href="https://github.com/juliensimon/johnnypi/blob/master/part2/pi/server.py" target="_blank">our existing <em class="markup--p-em">server.py</em></a><em class="markup--p-em"> code:</em></p><ol class="postList"><li id="e4ce">Connect to Polly,</li><li id="08ea">Subscribe to the JohnnyPi/speak topic,</li><li id="f78f">Write a callback to handle messages and invoke Polly. We’ll keep it super simple and simply read the payload of the message.</li></ol><p id="5888">Here’s the updated code snippet.</p><figure id="93b4"><script src="https://gist.github.com/juliensimon/1d2855e523333fde196270512cb3ad09.js"></script></figure><h4 id="13fc">Testing</h4><p id="ca30">We’re done: you can grab the updated code on <a href="https://github.com/juliensimon/johnnypi/tree/master/part3" target="_blank">Github</a>.</p><p id="41e0">In order to test all of this, we need to:</p><ul class="postList"><li id="90c0">connect a loudspeaker to the audio output of the Pi,</li><li id="4fb1"><em class="markup--li-em">ssh</em> to the robot and start <em class="markup--li-em">server.py,</em></li><li id="91fb">publish MQTT messages to the <em class="markup--li-em">JohnnyPi/speak</em> topic, containing the text we’d like the robot to read.</li></ul><figure id="bdef"><img class="graf-image" src="image02.webp"/><figcaption>Using MQTT.fx to ask the robot for an honest unbiased opinion on the quality of my writing</figcaption></figure><h4 id="c0df">What’s next</h4><p id="4b25">In the next post, I’ll take you through integration with <a href="https://aws.amazon.com/rekognition/" target="_blank">Amazon Rekognition</a>. Of course, we’ll combine this with Polly to let the robot tell us what it sees :)</p><p id="b23d">As always, thank you for reading and for your support.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="80e6">Part 0: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-0-1eb537e5a36" target="_blank">a sneak preview</a></p><p id="4525">Part 1: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-1-moving-around-e09fe95bbfce" target="_blank">moving around</a></p><p id="58a9">Part 2: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-2-the-joystick-db8ac067e86" target="_blank">the joystick</a></p><p id="274c">Part 4: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-4-adding-cloud-based-vision-8830c2676113" target="_blank">cloud-based vision</a></p><p id="de3b">Part 5: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-5-adding-mxnet-for-local-image-classification-bc27a5fd2c27" target="_blank">local image classification with MXNet</a></p></div></div></section><section class="section"><div><hr/></div><div><div><p id="5c83"><em class="markup--p-em">Soundtrack to this article: the new Paradise Lost album, “Medusa”. Their best in 20+ years.</em></p></div></div></section>
+</section>
+</article></body></html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Enabling Deep Learning in IoT applications with Apache MXNet</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="e73e">Enabling Deep Learning in IoT applications with Apache MXNet</h3><p id="8d8a"><a href="https://mxnet.incubator.apache.org/" target="_blank">Apache MXNet</a> [1] is an Open Source library for Deep Learning. Thanks to a high-level API available in several languages (Python, C++, R, etc.), software developers and researchers can build Deep Learning models to help their applications make smarter decisions.</p><figure id="01b6"><img class="graf-image" src="image01.webp"/></figure><p id="f2c5">However, many state of the art models have hefty <strong class="markup--p-strong">compute</strong>, <strong class="markup--p-strong">storage</strong> and <strong class="markup--p-strong">power consumption</strong> requirements which make them impractical — or even impossible — to use on resource-constrained devices. For example, the 500MB+<a href="https://arxiv.org/abs/1409.1556" target="_blank"> VGG-16</a> Convolution Neural Network (CNN) model is too large to fit on a Raspberry Pi 3, which is not a tiny IoT device in itself. Other models may fit, but they usually suffer from pretty <strong class="markup--p-strong">slow inference times</strong>, a significant problem when fast processing is required.</p><p id="3a20">Is IoT then doomed to helplessly watch the AI revolution go by?</p><p id="0800">Of course not. Apache MXNet is <strong class="markup--p-strong">IoT-friendly</strong> in several ways. In addition, several AWS services also make it pretty easy to deploy MXNet models <strong class="markup--p-strong">at the Edge</strong>. Let’s dive deeper.</p><h4 id="d2c1">Lazy evaluation</h4><p id="8731">One of the key features of Apache MXNet is <strong class="markup--p-strong">lazy evaluation</strong>: data processing operations are only executed when strictly necessary. This allows many <strong class="markup--p-strong">optimization</strong> techniques to be applied, such as avoiding unnecessary calculations or reusing memory buffers. Obviously, this behavior greatly contributes to <strong class="markup--p-strong">speed</strong> and <strong class="markup--p-strong">memory efficiency</strong>, both key advantages for IoT projects.</p><h4 id="854a">Shrinking models</h4><p id="599e">In the last few years, significant advances have been made in shrinking Deep Learning models without losing accuracy. Thanks to operations like <strong class="markup--p-strong">pruning</strong> (removing useless connections), <strong class="markup--p-strong">quantization</strong> (using smaller weights and activation values) and <strong class="markup--p-strong">compression</strong> (encoding weights and activation values), researchers have managed to compress large CNNs by a factor of 35 or more [2]. Even complex models now end up in the 5–10MB range, definitely within reach of smaller IoT devices.</p><p id="7186">Amazingly, some of these bleeding edge techniques are available in Apache MXNet. You can use<a href="https://devblogs.nvidia.com/parallelforall/mixed-precision-training-deep-neural-networks/" target="_blank"> <strong class="markup--p-strong">mixed precision training</strong></a>, which relies on 16-bit floats instead of 32-bit floats to deliver 2x compression with no loss of accuracy [3]. Thanks to a recent<a href="https://github.com/hpi-xnor/BMXNet" target="_blank"> research project</a>, it’s also possible to use <strong class="markup--p-strong">Binary Neural Networks</strong>, where weights are encoded using only +1 and -1 values. This technique yields 20x to 30x compression, with only limited loss of accuracy [4].</p><h4 id="0108">Optimizing math operations to speed up inference</h4><p id="7d12">Of course, as they involve less computation, smaller models also tend to be faster. Another technique to speed up MXNet is to use an <strong class="markup--p-strong">acceleration software library</strong> such as<a href="https://software.intel.com/en-us/mkl" target="_blank"> Intel MKL</a> or<a href="https://github.com/Maratyszcza/NNPACK" target="_blank"> NNPACK</a>.</p><p id="45d9">These libraries provide accelerated math processing routines that are critical to the performance of Deep Learning. Both support the Intel architecture, with NNPACK also supporting ARM v7 and v8, both popular choices for embedded applications. In the same vein, MXNet can leverage performance-oriented libraries for <strong class="markup--p-strong">image processing</strong> and <strong class="markup--p-strong">memory allocation</strong>, namely<a href="https://www.libjpeg-turbo.org/" target="_blank"> libjpeg-turbo</a>,<a href="https://github.com/gperftools/" target="_blank"> gperftools</a> and<a href="http://jemalloc.net/" target="_blank"> jemalloc</a>.</p><p id="ef1a">All these need to be configured at <strong class="markup--p-strong">build time</strong>. You’ll find<a href="https://mxnet.incubator.apache.org/get_started/install.html" target="_blank"> detailed instructions</a> on the MXNet website.</p><h4 id="970f">Deploying MXNet models at the Edge with AWS services</h4><p id="eb0f">Performance is great, but what about deployment? How can IoT devices living at the edge of the network use Deep Learning capabilities?</p><p id="2b72">MXNet models can be<a href="https://aws.amazon.com/blogs/compute/seamlessly-scale-predictions-with-aws-lambda-and-mxnet/" target="_blank"> combined with <strong class="markup--p-strong">AWS Lambda</strong></a>, a compute service that lets you run code without provisioning or managing servers. Lambda functions can be triggered by many different types of events, such as an IoT message matching a rule defined on the<a href="https://aws.amazon.com/iot/" target="_blank"> AWS IoT</a> gateway. Thus, embedded applications that may be too constrained or too rigid to support on-device deployment can rely on <strong class="markup--p-strong">cloud-based models</strong> in a simple and scalable way.</p><p id="cbb1">On more powerful IoT devices,<a href="https://aws.amazon.com/greengrass/" target="_blank"> <strong class="markup--p-strong">AWS Greengrass</strong></a> provides a local Lambda execution environment able to sync back and forth with the Cloud when network connectivity is available: you’ll find a detailed example in this<a href="https://aws.amazon.com/blogs/aws/aws-greengrass-run-aws-lambda-functions-on-connected-devices/" target="_blank"> blog post</a>. This service can be used to deploy and update <strong class="markup--p-strong">MXNet models embedded in Lambda functions</strong>, now allowing IoT devices to run inference locally without any cloud-based support.</p><h4 id="b534">Wrapping up</h4><p id="9efa">As you can see, Deep Learning and IoT are not worlds apart. Quite the contrary, in fact. We can’t wait to see the devices and applications that will be built on top of Apache MXNet and AWS services. Science is definitely catching up with fiction: exciting times!</p><p id="54d9">Thank you for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="c329">[1] Chen et al. «<a href="https://www.cs.cmu.edu/~muli/file/mxnet-learning-sys.pdf" target="_blank">MXNet: A Flexible and Efficient Machine Learning Library for Heterogeneous Distributed Systems</a>», 2015.</p><p id="3a64">[2] Han et al. «<a href="https://arxiv.org/abs/1510.00149" target="_blank">Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman Coding </a>», 2016.</p><p id="ecd9">[3] Micikevicius et al. «<a href="https://arxiv.org/abs/1710.03740" target="_blank">Mixed Precision Training</a>», 2017.</p><p id="2823">[4] Yang et al. «<a href="https://arxiv.org/pdf/1705.09864" target="_blank">BMXNet: An Open-Source Binary Neural Network Implementation Based on MXNet</a>», 2017.</p></div></div></section>
+</section>
+</article></body></html>

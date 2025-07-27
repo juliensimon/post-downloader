@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Apache MXNet support in Keras</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="6a42">Apache MXNet support in Keras</h3><p id="e13f">Pretty exciting news last week. <a href="https://twitter.com/fchollet" target="_blank">François Chollet</a>, author of the popular <a href="https://keras.io/" target="_blank">Keras</a> Deep Learning library, has announced that <a href="http://mxnet.io/" target="_blank">Apache MXNet</a> is now available as a backend, alongside TensorFlow and Theano.</p><figure id="b2d4"><img class="graf-image" src="image02.webp"/></figure><p id="77f1">This is still beta code, but it won’t prevent us from exploring, will it? :)</p><h4 id="f6ba">A word about Keras</h4><p id="99d2">In their own words, <a href="https://keras.io/" target="_blank">Keras</a> is “<em class="markup--p-em">a high-level neural networks API, written in Python and developed with a focus on enabling fast experimentation</em>”.</p><p id="90b0">Indeed, Keras is pretty popular in the Deep Learning community, certainly because it provides a higher level API, allowing beginners and seasoned practitioners alike to quickly build and train networks without messing with low-level details.</p><p id="53b9">Keras is also the main tool used in the equally popular — and highly recommended — Deep Learning course by <a href="http://www.fast.ai/" target="_blank">fast.ai</a>.</p><h4 id="71eb">Keras backends</h4><p id="41f3">In a nutshell, Keras is a wrapper around Deep Learning <a href="https://github.com/fchollet/keras/tree/master/keras/backend" target="_blank">backends</a>. Initially, it supported TensorFlow and Theano, but sure enough, the community <a href="https://github.com/fchollet/keras/issues/1313" target="_blank">asked</a> for MXNet support.</p><p id="46fc">Lo and behold, the good folks at <a href="https://github.com/dmlc" target="_blank">DMLC</a> got to work and MXNet support is now available in their <a href="https://github.com/dmlc/keras" target="_blank">forked repository</a>. If you’re curious about the Keras-to-MXNet API, it’s <a href="https://github.com/dmlc/keras/blob/master/keras/backend/mxnet_backend.py" target="_blank">here</a>. Well done, guys!</p><h4 id="fc3b">Setting up Keras with MXNet</h4><p id="8615">In the next steps, I’m using a g2.2xlarge instance on AWS, running the very latest <a href="https://aws.amazon.com/blogs/ai/updated-aws-deep-learning-amis-with-apache-mxnet-0-10-and-tensorflow-1-1-now-available/" target="_blank">Deep Learning AMI</a>, Ubuntu edition (lots of updates!).</p><p id="e162">I’m assuming that you already have MXNet installed: if not, please read <a href="https://becominghuman.ai/an-introduction-to-the-mxnet-api-part-1-848febdcf8ab" target="_blank">this</a>.</p><p id="2408">First, we need to install the forked Keras version. Please use <a href="https://python-guide-pt-br.readthedocs.io/en/latest/dev/virtualenvs/" target="_blank"><em class="markup--p-em">virtualenv</em></a> if you’re concerned about messing up your Python environment.</p><figure id="95c6"><script src="https://gist.github.com/juliensimon/c5b39bd2272694d8ae2a34b56e42eede.js"></script></figure><p id="0d78">Then, we need to declare MXNet as the backend for Keras. Let’s edit <em class="markup--p-em">~/.keras/keras.json</em>.</p><figure id="dabc"><script src="https://gist.github.com/juliensimon/a526d7cf388fb3f637e91d1f8e910512.js"></script></figure><p id="aade">Now, let’s start <em class="markup--p-em">python</em> and make sure our setup is correct.</p><figure id="30cf"><script src="https://gist.github.com/juliensimon/6f9ce7432a16b90cca61a0ab10ed20fe.js"></script></figure><p id="07af">Looking good. As far as I can see, the fork is based on <strong class="markup--p-strong">Keras v1</strong>: until it’s merged with the upstream repository, <a href="https://github.com/fchollet/keras/wiki/Keras-2.0-release-notes" target="_blank">Keras v2</a> features won’t be available.</p><p id="102c">Let’s run a quick example. We’ve talked at length about the <a href="https://chatbotslife.com/training-mxnet-part-1-mnist-6f0dc4210c62" target="_blank">MNIST dataset</a>, so how about we use it again? You’ll find the Keras code <a href="https://github.com/dmlc/keras/blob/master/examples/mnist_mlp.py" target="_blank">here</a> and it’s pretty interesting to compare it to its MXNet <a href="https://github.com/juliensimon/aws/blob/master/mxnet/mnist/trainModel.py" target="_blank">equivalent</a>. C’mon, isn’t the MXNet version neater? ;)</p><figure id="6c3b"><script src="https://gist.github.com/juliensimon/835eea9d67a798a61a8f9f4da5b2f8a4.js"></script></figure><p id="32d4">All right, that worked. So there you go: MXNet on Keras!</p><h4 id="0517">GPU training</h4><p id="73e9">The previous example ran on the instance CPU. Although Keras does support GPU computing, setup is unfortunately <a href="https://keras.io/getting-started/faq/#how-can-i-run-keras-on-gpu" target="_blank">backend-dependent</a>. When it comes to multi-GPU support, setup is awkward at best (long discussion <a href="https://github.com/fchollet/keras/issues/2436" target="_blank">here</a>). Hopefully, this will be fixed elegantly in future releases.</p><p id="313f">When it comes to MXNet, GPU support doesn’t seem to be complete right now. GPUs are not detected automatically (like for Tensorflow) and I couldn’t find a reliable way to enable a GPU context.</p><p id="8199">Code is definitely in place: here’s the relevant snippet from <a href="https://github.com/dmlc/keras/blob/master/keras/engine/training.py" rel="nofollow noopener" target="_blank">https://github.com/dmlc/keras/blob/master/keras/engine/training.py</a></p><figure id="226d"><script src="https://gist.github.com/juliensimon/e22f96736dd033dda3596cd2f8d842f3.js"></script></figure><p id="4235">This should allow me to modify the MNIST example above to use a GPU context.</p><figure id="2b11"><script src="https://gist.github.com/juliensimon/24deaa7adba72c3495d976a74f95924e.js"></script></figure><p id="ad3b">But the damn thing segfaults when I run the modified example :-/ Maybe it hasn’t been fully tested on the latest AMI, who knows. Or maybe I’m too dumb to figure it out: that’s always a strong possibility. Or too impatient. Please reach out if you have the answer :)</p><p id="5607">This is certainly going to work anytime soon. I’ll keep you posted!</p><h4 id="234a">Next steps</h4><p id="9d7a">Having MXNet support in Keras is great news. Thanks again to everyone involved.</p><p id="89e2">I can’t wait to get proper GPU and multi-GPU support for all backends. I think we’d all love a solution as simple and elegant as the MXNet way, i.e. <em class="markup--p-em">context=(mx.gpu(0), mx.gpu(1), mx.gpu(2)). </em>It would definitely allow Keras users to enjoy the near-linear scalability of MXNet while using their existing Keras code.</p><figure id="f33c"><img class="graf-image" src="image01.webp"/></figure><p id="1e9a">And once this is available, I’ll run some more benchmarks ;)</p><p id="96f3">That’s it for today. Thanks for reading.</p></div></div></section>
+</section>
+</article></body></html>

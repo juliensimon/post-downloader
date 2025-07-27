@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Gluon CV: add image classification, detection and segmentation to your application in minutes</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="03eb">Gluon CV: add image classification, detection and segmentation to your application in minutes</h3><p id="eab9"><a href="https://mxnet.incubator.apache.org/" target="_blank"><strong class="markup--p-strong">Apache MXNet</strong></a> is an open source library for Deep Learning, supporting both <a href="https://mxnet.incubator.apache.org/architecture/program_model.html#symbolic-vs-imperative-programs" target="_blank">symbolic and imperative programming</a>. The latter is implemented by the <a href="https://github.com/gluon-api/gluon-api" target="_blank"><strong class="markup--p-strong">Gluon API</strong></a>, which we discussed before.</p><div class="graf--mixtapeEmbed" id="0e5c"><a class="markup--mixtapeEmbed-anchor" href="https://medium.com/@julsimon/gluon-building-blocks-for-your-deep-learning-universe-4bce4e56ef55" title="https://medium.com/@julsimon/gluon-building-blocks-for-your-deep-learning-universe-4bce4e56ef55"><strong class="markup--mixtapeEmbed-strong">Gluon: building blocks for your Deep Learning universe</strong><br/><em class="markup--mixtapeEmbed-em">Launched in October 2017, Gluon is a new Open Source high-level API for Deep Learning developers. Right now, it’s…</em>medium.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="304b092475192fad1b2243dd4d84e2cd" data-thumbnail-img-id="1*D5Tp--YLShZ8iCAtGvvT1Q.png" href="https://medium.com/@julsimon/gluon-building-blocks-for-your-deep-learning-universe-4bce4e56ef55" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/1*D5Tp--YLShZ8iCAtGvvT1Q.png);"></a></div><p class="graf-after--mixtapeEmbed" id="55c1">One of the cool features of Gluon is its <strong class="markup--p-strong">extensive </strong><a href="https://mxnet.incubator.apache.org/api/python/gluon/model_zoo.html" target="_blank"><strong class="markup--p-strong">model zoo</strong></a>, where you can grab a large number of pre-trained image models as easily as this:</p><pre class="graf--pre" id="d8ac">from mxnet.gluon.model_zoo import vision<br/>net = vision.squeezenet1_1(pretrained=True)</pre><p class="graf-after--pre" id="6a51">Guess what? <strong class="markup--p-strong">It just got better!</strong></p><figure id="d7e5"><img class="graf-image" src="image02.webp"/><figcaption>The Terminator: real-time classification and segmentation. He*did* come from the future!</figcaption></figure><h3 id="50c8">Gluon CV</h3><p id="b2c5"><a href="https://gluon-cv.mxnet.io/" target="_blank"><strong class="markup--p-strong">Gluon CV</strong></a> (Computer Vision) is a <a href="https://github.com/dmlc/gluon-cv" target="_blank">brand new project</a> which extends the model zoo to:</p><ul class="postList"><li id="ef82">More <a href="https://gluon-cv.mxnet.io/model_zoo/index.html#image-classification" target="_blank"><strong class="markup--li-strong">image classification models</strong></a> trained on ImageNet and CIFAR-10: ResNet v1 and v2, MobileNet v2, WideResNet and RestNext.</li><li id="e5f4"><a href="https://gluon-cv.mxnet.io/model_zoo/index.html#object-detection" target="_blank"><strong class="markup--li-strong">Single-shot detection model</strong>s</a> trained on the <a href="http://host.robots.ox.ac.uk/pascal/VOC/" target="_blank">Pascal VOC dataset</a>: VGG16 300x300, VGG16 512x512 and ResNet 50 512x512.</li><li id="4bda"><a href="https://gluon-cv.mxnet.io/model_zoo/index.html#semantic-segmentation" target="_blank"><strong class="markup--li-strong">Segmentation models</strong></a> trained on Pascal VOC: ResNet 50 and ResNet 101.</li></ul><blockquote class="graf--blockquote graf--hasDropCapModel" id="53a7">Similar models were previously available on Github (such as <a class="markup--blockquote-anchor" href="https://medium.com/mlreview/10-deep-learning-projects-based-on-apache-mxnet-8231109f3f64" target="_blank">these</a>), but using them wasn’t always straightforward. A while ago, I also showed you how to <a class="markup--blockquote-anchor" href="https://towardsdatascience.com/an-introduction-to-the-mxnet-api-part-4-df22560b83fe" target="_blank">use pre-trained models with the symbolic API</a>, but Gluon makes it much simpler.</blockquote><p class="graf-after--blockquote" id="abd8">Gluon CV also includes:</p><ul class="postList"><li id="3ad4">Utility APIs to transform and display images,</li><li id="f066">Tutorials,</li><li id="a215"><a href="https://github.com/dmlc/gluon-cv/tree/master/scripts" target="_blank">Prediction, training and fine-tuning scripts!</a></li></ul><p id="86bc">Let’s try this thing.</p><h3 id="9005">Installation</h3><p id="939d">Gluon CV is still a very young project. If you want to enjoy the latest features and bug fixes, I’d recommend installing the <strong class="markup--p-strong">latest</strong> MXNet and Gluon CV packages. You might want to do this in a virtual environment to avoid messing up your Python environment :)</p><pre class="graf--pre" id="74fa">$ virtualenv ~/mxnet-gluoncv<br/>$ source ~/mxnet-gluoncv/bin/activate<br/>$ pip3 install mxnet gluoncv --pre --upgrade<br/>$ python3<br/>&gt;&gt;&gt; import mxnet, gluoncv<br/>&gt;&gt;&gt; mxnet.__version__<br/>'1.2.0'<br/>&gt;&gt;&gt; gluoncv.__version__<br/>'0.2.0'<br/>$ git clone <a class="markup--pre-anchor" href="https://github.com/dmlc/gluon-cv" rel="nofollow noopener" target="_blank">https://github.com/dmlc/gluon-cv</a></pre><p class="graf-after--pre" id="8dd6">Good to go.</p><h3 id="8847">Image classification</h3><p id="dd5d">Let’s first try to classify this image with <a href="https://github.com/dmlc/gluon-cv/blob/master/scripts/classification/imagenet/demo_imagenet.py" target="_blank"><em class="markup--p-em">demo_imagenet.py</em></a>.</p><figure id="8495"><img class="graf-image" src="image03.webp"/></figure><pre class="graf--pre" id="1a8b">$ python3 demo_imagenet.py --model resnet50_v2 --input-pic kreator.jpg<br/><br/>The input picture is classified to be<br/> [electric_guitar], with probability 0.671.<br/> [drumstick], with probability 0.103.<br/> [stage], with probability 0.076.<br/> [banjo], with probability 0.024.<br/> [acoustic_guitar], with probability 0.016.</pre><p class="graf-after--pre" id="9ed5">Looking at the <a href="https://github.com/dmlc/gluon-cv/blob/master/scripts/classification/imagenet/demo_imagenet.py" target="_blank">script</a> itself, all it really takes is about 5 lines of code!</p><ul class="postList"><li id="c8d6">Load a pre-trained model.</li><li id="68a7">Read and transform the image (resize, crop, normalize colors).</li><li id="c6c2">Predict the image and display the top 5 categories.</li></ul><p id="853a">Let’s try image detection.</p><h3 id="8a28"><strong class="markup--h3-strong">Image detection</strong></h3><p id="75ed">The 20 Pascal VOC classes are: person, bird, cat, cow, dog, horse, sheep, aeroplane, bicycle, boat, bus, car, motorbike, train, bottle, chair, dining table, potted plant, sofa, tv/monitor.</p><p id="8037">Let’s grab a picture displaying some of these objects and run a SSD with <a href="https://github.com/dmlc/gluon-cv/blob/master/scripts/detection/ssd/demo_ssd.py" target="_blank"><em class="markup--p-em">demo_ssd.py</em></a><em class="markup--p-em">.</em></p><pre class="graf--pre" id="0d5d">$ python3 demo_ssd.py --network ssd_512_resnet101_v2_voc --images room.jpg</pre><figure class="graf-after--pre" id="503c"><img class="graf-image" src="image05.webp"/></figure><p id="2d96">This is pretty good! The painting was even detected as a person, which makes sense I think.</p><p id="dc6c">Looking at the <a href="https://github.com/dmlc/gluon-cv/blob/master/scripts/detection/ssd/demo_ssd.py" target="_blank">script</a> itself, once again this takes less than 10 lines of code.</p><h3 id="e072"><strong class="markup--h3-strong">Image segmentation</strong></h3><p id="3cbd">Last but not least, let’s use the <a href="https://github.com/dmlc/gluon-cv/blob/master/docs/tutorials/segmentation/demo_fcn.py" target="_blank"><em class="markup--p-em">demo_fcn.py</em></a> script to segment this image.</p><figure id="7db3"><img class="graf-image" src="image04.webp"/></figure><figure id="d301"><img class="graf-image" src="image01.webp"/></figure><p id="5f4c">Not bad at all! The three cars were picked up, as well the most visible people. Not sure what the yellow thing in the lower left corner is, though :D</p><p id="e5ba">That’s it for today. Gluon CV really makes it <strong class="markup--p-strong">very simple to use state of the art pre-trained models</strong>. Please take a look at the code and try it with your own apps: <strong class="markup--p-strong">it’s much easier than you probably think</strong>.</p><p id="6890">Happy to answer questions here or on <a href="https://twitter.com/julsimon" rel="noopener nofollow noopener noopener nofollow noopener noopener" target="_blank">Twitter</a>. For more content, please feel free to check out my <a href="https://www.youtube.com/juliensimonfr" rel="nofollow noopener noopener noopener nofollow noopener noopener" target="_blank">YouTube channel</a>.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="60ba"><em class="markup--p-em">I approve this message. Give’em hell, ladies \m/</em></p><figure id="1d90"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/yZvAO3S95Kk?feature=oembed" width="700"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

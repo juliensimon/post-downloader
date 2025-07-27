@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Deep Graph Library, part 2 — Training on Amazon SageMaker</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="ee8d">Deep Graph Library, part 2 — Training on Amazon SageMaker</h3><p id="eb91">In a <a href="https://medium.com/@julsimon/a-primer-on-graph-neural-networks-with-amazon-neptune-and-the-deep-graph-library-5ce64984a276" target="_blank">previous post</a>, I showed you how to use the <a href="https://www.dgl.ai/" target="_blank">Deep Graph Library</a> (DGL) to train a Graph Neural Network model on data stored in Amazon Neptune.</p><p id="5719">I used a vanilla Jupyter notebook, which is fine for experimentation, but what about training at scale on large datasets? Well, as DGL is available on <a href="https://aws.amazon.com/sagemaker" target="_blank">Amazon SageMaker</a>, I’ll show you in this post how to quickly and easily adapt your DGL code for SageMaker.</p><figure id="e3e4"><img class="graf-image" src="image01.webp"/></figure><h3 id="493c">Adapting our code</h3><p id="eb3f">Let’s take a look at the notebook I used in the previous post.</p><div class="graf--mixtapeEmbed" id="d2b7"><a class="markup--mixtapeEmbed-anchor" href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club.ipynb" title="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club.ipynb"><strong class="markup--mixtapeEmbed-strong">dgl/01_karate_club/karate_club.ipynb · master · Julien Simon / dlnotebooks</strong><br/><em class="markup--mixtapeEmbed-em">Machine Learning &amp;amp; Deep Learning notebooks</em>gitlab.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="ccec443991ca578f2ec3b0c849ae079e" data-thumbnail-img-id="0*yaSDkQd3gw-i-s-_" href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club.ipynb" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*yaSDkQd3gw-i-s-_);"></a></div><p class="graf-after--mixtapeEmbed" id="249e">As you probably guessed, we’re going to use <a href="https://sagemaker.readthedocs.io/en/stable/using_pytorch.html" target="_blank">script mode</a> to run this vanilla PyTorch code on Amazon SageMaker.</p><p id="af53">Script mode boils down to:</p><ul class="postList"><li id="a81a">Reading hyperparameters from command line arguments,</li><li id="5c05">Loading the dataset from a location defined by a SageMaker environment variable,</li><li id="fd16">Saving the trained model at a location defined by another SageMaker environment variable.</li></ul><h4 id="55e3">Reading Hyperparameters</h4><p id="db9f">In my script, I need two hyperparameters: the number of epochs to train for, and the number of nodes in the graph. SageMaker will pass them as command line arguments, which I extract with <em class="markup--p-em">argparse</em>.</p><pre class="graf--pre" id="9b3e">parser = argparse.ArgumentParser()<br/>parser.add_argument(‘--epochs’, type=int, default=30)<br/>parser.add_argument('--node_count’, type=int)<br/>args, _ = parser.parse_known_args()<br/>epochs = args.epochs<br/>node_count = args.node_count</pre><h4 class="graf-after--pre" id="9e3b">Loading the Dataset</h4><p id="354b">My dataset is stored in S3. As SageMaker will automatically copy it inside the training container, all I have to do is read an environment variable, and load the data.</p><pre class="graf--pre" id="c75a">training_dir = os.environ[‘SM_CHANNEL_TRAINING’]<br/>f = open(os.path.join(training_dir, 'edge_list.pickle'), 'rb')<br/>edge_list = pickle.load(f)</pre><h4 class="graf-after--pre" id="6da5">Saving the Model</h4><p id="ba6f">Same thing: read an environment variable, and save the model.</p><pre class="graf--pre" id="1516">model_dir = os.environ[‘SM_MODEL_DIR’]<br/>torch.save(net.state_dict(), <br/>           os.path.join(model_dir, ‘karate_club.pt’))</pre><p class="graf-after--pre" id="6c82">We’re done. Let’s train this code on SageMaker.</p><h3 id="3299">Training on Amazon SageMaker</h3><p id="b390">I start with importing the <a href="https://sagemaker.readthedocs.io/en/stable/" target="_blank">SageMaker SDK</a>. Then, I define the S3 bucket that I’ll use to store the dataset, and the IAM role allowing SageMaker to access the bucket.</p><pre class="graf--pre" id="6351">import sagemaker<br/>from sagemaker import get_execution_role<br/>from sagemaker.session import Session</pre><pre class="graf--pre graf-after--pre" id="d0d9">sess = sagemaker.Session()<br/>bucket = sess.default_bucket()<br/>role = get_execution_role()</pre><p class="graf-after--pre" id="c637">Next, I upload the dataset to S3.</p><pre class="graf--pre" id="c28e">prefix = ‘dgl-karate-club’<br/>training_input_path = sess.upload_data(‘edge_list.pickle’,<br/>                                      key_prefix=prefix+’/training’)</pre><p class="graf-after--pre" id="d531">Now, all I have to do is to define a PyTorch estimator for this training job, pointing at my script, passing hyperparameters, and defining infrastructure requirements.</p><pre class="graf--pre" id="7419">from sagemaker.pytorch import PyTorch</pre><pre class="graf--pre graf-after--pre" id="abb6">estimator = PyTorch(<br/>   entry_point=”karate_club_sagemaker.py”,<br/>   hyperparameters={‘node_count’: 34, ‘epochs’: 30},<br/>   framework_version=’1.3.1',<br/>   py_version=’py3',<br/>   train_instance_count=1, <br/>   train_instance_type=’ml.c4.xlarge’,<br/>   role=role,<br/>   sagemaker_session=sess<br/>)</pre><p class="graf-after--pre" id="2470">Finally, I launch the training job.</p><pre class="graf--pre" id="ec76">estimator.fit({'training': training_input_path})</pre><pre class="graf--pre graf-after--pre" id="e746">2020-01-28 08:57:34 Starting - Starting the training job...<br/>2020-01-28 08:57:36 Starting - Launching requested ML instances....</pre><pre class="graf--pre graf-after--pre" id="96c3"><em class="markup--pre-em">&lt;output removed&gt;</em></pre><pre class="graf--pre graf-after--pre" id="8ce9">Invoking script with the following command:<br/><br/>/opt/conda/bin/python karate_club_sagemaker.py --epochs 30 --node_count 34<br/><br/><em class="markup--pre-em">&lt;output removed&gt;</em></pre><pre class="graf--pre graf-after--pre" id="b24a">Epoch 0 | Loss: 0.6188<br/>Epoch 1 | Loss: 0.4804<br/>Epoch 2 | Loss: 0.3139<br/>Epoch 3 | Loss: 0.3143<br/>Epoch 4 | Loss: 0.3152<br/>Epoch 5 | Loss: 0.3158<br/>Epoch 6 | Loss: 0.3152<br/>Epoch 7 | Loss: 0.3142<br/>Epoch 8 | Loss: 0.3136<br/>Epoch 9 | Loss: 0.3134<br/>Epoch 10 | Loss: 0.3133<br/>Epoch 11 | Loss: 0.3133<br/>Epoch 12 | Loss: 0.3133<br/>Epoch 13 | Loss: 0.3133<br/>Epoch 14 | Loss: 0.3133<br/>Epoch 15 | Loss: 0.3133<br/>Epoch 16 | Loss: 0.3133<br/>Epoch 17 | Loss: 0.3133<br/>Epoch 18 | Loss: 0.3133<br/>Epoch 19 | Loss: 0.3133<br/>Epoch 20 | Loss: 0.3133<br/>Epoch 21 | Loss: 0.3133<br/>Epoch 22 | Loss: 0.3133<br/>Epoch 23 | Loss: 0.3133<br/>Epoch 24 | Loss: 0.3133<br/>Epoch 25 | Loss: 0.3133<br/>Epoch 26 | Loss: 0.3133<br/>Epoch 27 | Loss: 0.3133<br/>Epoch 28 | Loss: 0.3133<br/>Epoch 29 | Loss: 0.3133</pre><pre class="graf--pre graf-after--pre" id="56e7"><em class="markup--pre-em">&lt;output removed&gt;</em></pre><pre class="graf--pre graf-after--pre" id="9744">2020-01-28 09:01:19 Uploading - Uploading generated training model<br/>2020-01-28 09:01:19 Completed - Training job completed<br/>Training seconds: 76<br/>Billable seconds: 76</pre><p class="graf-after--pre" id="7b40">There you go! Once again, script mode makes it extremely simple to run existing code on SageMaker.</p><blockquote class="graf--blockquote" id="fc7c">This feature is available for all built-in frameworks: if you’re curious about it, here’s a <a class="markup--blockquote-anchor" href="https://www.youtube.com/watch?v=x94hpOmKtXM" target="_blank">very detailed video example</a> with Keras.</blockquote><p class="graf-after--blockquote" id="85e9">I hope this post was useful. You can find the training script and the notebook on <a href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/" target="_blank">Gitlab</a>.</p><div class="graf--mixtapeEmbed" id="dae1"><a class="markup--mixtapeEmbed-anchor" href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club_sagemaker.py" title="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club_sagemaker.py"><strong class="markup--mixtapeEmbed-strong">dgl/01_karate_club/karate_club_sagemaker.py · master · Julien Simon / dlnotebooks</strong><br/><em class="markup--mixtapeEmbed-em">Machine Learning &amp;amp; Deep Learning notebooks</em>gitlab.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="2a2c4815256b9ac2855e0a2f3caf87f6" data-thumbnail-img-id="0*n4dODktXJ9mJbYTv" href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club_sagemaker.py" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*n4dODktXJ9mJbYTv);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="f522"><a class="markup--mixtapeEmbed-anchor" href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club_sagemaker.ipynb" title="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club_sagemaker.ipynb"><strong class="markup--mixtapeEmbed-strong">dgl/01_karate_club/karate_club_sagemaker.ipynb · master · Julien Simon / dlnotebooks</strong><br/><em class="markup--mixtapeEmbed-em">Machine Learning &amp;amp; Deep Learning notebooks</em>gitlab.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="3a656575b7488733df97b6906648af81" data-thumbnail-img-id="0*TVqjB13tVeWIEEMX" href="https://gitlab.com/juliensimon/dlnotebooks/blob/master/dgl/01_karate_club/karate_club_sagemaker.ipynb" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*TVqjB13tVeWIEEMX);"></a></div><p class="graf-after--mixtapeEmbed" id="ae3c">Happy to answer questions here, or on Twitter. Don’t forget to subscribe to my <a href="https://www.youtube.com/user/juliensimonfr?sub_confirmation=1" target="_blank">YouTube channel</a> for more content!</p></div></div></section>
+</section>
+</article></body></html>

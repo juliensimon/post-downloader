@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Using a SageMaker XGBoost model in scikit-learn</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Using a SageMaker XGBoost model in scikit-learn</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+This is a quick post answering a question I get a lot: “how can I use in scikit-learn an XGBoost model that I trained on SageMaker?”.
+</section>
+<section data-field="body" class="e-content">
+<section name="b740" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="df0a" id="df0a" class="graf graf--h3 graf--leading graf--title">Using a SageMaker XGBoost model in scikit-learn</h3><p name="701c" id="701c" class="graf graf--p graf-after--h3">This is a quick post answering a question I get a lot: “<em class="markup--em markup--p-em">how can I use in scikit-learn an XGBoost model that I trained on SageMaker?</em>”.</p><p name="898d" id="898d" class="graf graf--p graf-after--p">Here it goes. Once you’ve trained your <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost.html" data-href="https://docs.aws.amazon.com/sagemaker/latest/dg/xgboost.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">XGBoost</a> model in SageMaker (examples <a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms" data-href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/introduction_to_amazon_algorithms" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">here</a>), grab the training job name and the location of the model artifact.</p><blockquote name="5a70" id="5a70" class="graf graf--blockquote graf-after--p">I’m using the CLI here, but you can of course use any of the AWS language SDKs.</blockquote><pre name="8db2" id="8db2" class="graf graf--pre graf-after--blockquote">$ export TRAINING_JOB_NAME=&#39;xgboost-190511-0830-010-14f41137&#39;</pre><pre name="65be" id="65be" class="graf graf--pre graf-after--pre">$ export MODEL_ARTIFACT=`aws sagemaker describe-training-job \<br>--training-job-name $TRAINING_JOB_NAME \<br>--query ModelArtifacts.S3ModelArtifacts \<br>--output text`<br><br>$ echo $MODEL_ARTIFACT<br>s3://sagemaker-eu-west-1-ACCOUNT_NUMBER/sagemaker/DEMO-hpo-xgboost-dm/output/xgboost-190511-0830-010-14f41137/output/model.tar.gz</pre><p name="9311" id="9311" class="graf graf--p graf-after--pre">Then, download the artifact and extract the model.</p><pre name="c1d3" id="c1d3" class="graf graf--pre graf-after--p">$ aws s3 cp $MODEL_ARTIFACT .</pre><pre name="a1a7" id="a1a7" class="graf graf--pre graf-after--pre">$ tar xvfz model.tar.gz<br>x xgboost-model</pre><p name="f3af" id="f3af" class="graf graf--p graf-after--pre">The model is a pickled Python object, so let’s now switch to Python and load the model.</p><pre name="59d9" id="59d9" class="graf graf--pre graf-after--p">$ python3<br>&gt;&gt;&gt; import sklearn, pickle<br>&gt;&gt;&gt; model = pickle.load(open(&quot;xgboost-model&quot;, &quot;rb&quot;))<br>&gt;&gt;&gt; type(model)<br>&lt;class &#39;xgboost.core.Booster&#39;&gt;</pre><p name="e3d8" id="e3d8" class="graf graf--p graf-after--pre">You’re done. From now on, you can use the model as if you’d trained it locally. For example, you can dump it and visualize it.</p><pre name="778b" id="778b" class="graf graf--pre graf-after--p">&gt;&gt;&gt; model.dump_model(&#39;model.txt&#39;)<br>&gt;&gt;&gt; exit()</pre><pre name="5a20" id="5a20" class="graf graf--pre graf-after--pre">$ head model.txt<br>booster[0]:<br>0:[f2&lt;512] yes=1,no=2,missing=1<br> 1:[f1&lt;3.5] yes=3,no=4,missing=3<br>  3:[f2&lt;1.5] yes=7,no=8,missing=7<br>   7:[f42&lt;0.5] yes=15,no=16,missing=15<br>    15:leaf=0.508301735<br>    16:leaf=1.51004589<br>   8:leaf=1.72906268<br>  4:[f52&lt;0.5] yes=9,no=10,missing=9<br>   9:leaf=1.39554036</pre><p name="61b6" id="61b6" class="graf graf--p graf-after--pre">See? That was super easy :)</p><p name="dc25" id="dc25" class="graf graf--p graf-after--p graf--trailing">Thanks for reading. Happy to answer questions here or on <a href="https://twitter.com/julsimon" data-href="https://twitter.com/julsimon" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Twitter</a>.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/3574b93a2535"><time class="dt-published" datetime="2019-05-11T16:25:54.097Z">May 11, 2019</time></a>.</p><p><a href="https://medium.com/@julsimon/using-a-sagemaker-xgboost-model-in-scikit-learn-3574b93a2535" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>I3 instances and NVMe: booya!</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="e4da">I3 instances and NVMe: booya!</h3><p id="9f2a">In a <a href="https://medium.com/@julsimon/freebsd-from-cd-rom-to-cloud-1322e5591d99" target="_blank">previous post</a>, I used an i2.8xlarge instance (32 vCPUs, 244GB RAM, 8x800GB local SSD storage, 10Gb networking) to build FreeBSD in 17 minutes. Pretty good, but in the never ending quest for performance, I decided to try again with an i3.8xlarge instance, as the I3 family is now supported by the latest <a href="https://aws.amazon.com/marketplace/pp/B01LWSWRED/" target="_blank">FreeBSD 11.1 AMI</a> released at the beginning of August. Kudos to <a href="https://twitter.com/cperciva" target="_blank">Colin Percival</a> for maintaining the FreeBSD AMIs!</p><h4 id="8c78">The I3 family</h4><p id="e353">The I3 family is more than a generation bump. Along with the FPGA instances (F1 family), they’re the first to support <strong class="markup--p-strong">non-volatile memory express</strong> (<a href="https://en.wikipedia.org/wiki/NVM_Express" target="_blank">NVMe</a>) SSD instance store volumes, which deliver a massive performance upgrade compared to traditional SSDs. Thanks to this new technology, the I3 family can deliver up to <strong class="markup--p-strong">3.3 million IOPS</strong> at a 4 KB block and up to 16 GB/second of sequential disk throughput.</p><p id="4d7f">Along with a <strong class="markup--p-strong">CPU upgrade</strong> (from <a href="https://en.wikipedia.org/wiki/Ivy_Bridge_%28microarchitecture%29" target="_blank">Ivy Bridg</a>e to <a href="https://en.wikipedia.org/wiki/Broadwell_%28microarchitecture%29" target="_blank">Broadwell</a>), we should definitely see a nice improvement in our build time. Let’s get to work.</p><h4 id="6f02">Launching an I3 instance</h4><p id="bd75">We’ll start by launching an i3.16xlarge instance (64 vCPUs, 488GB RAM, 8x1900GB local NVMe storage, 20Gb networking), with the latest F<a href="https://aws.amazon.com/marketplace/pp/B01LWSWRED/" target="_blank">reeBSD 11.1 AMI</a> (<em class="markup--p-em">ami-ab56bed2</em> in eu-west-1).</p><figure id="4643"><img class="graf-image" src="image01.webp"/><figcaption>I’m in love already</figcaption></figure><p id="52b3">A few minutes later, we can connect to the instance. Let’s take a look at the NVMe devices.</p><figure id="6db2"><script src="https://gist.github.com/juliensimon/877aea0179a5856b783a3dba4797ca9d.js"></script></figure><h4 id="cfff">Preparing the build</h4><p id="2fe3">Now, let’s create two ZFS pools with four disks each: one for <em class="markup--p-em">/usr/src</em>, one for <em class="markup--p-em">/usr/obj</em>.</p><figure id="d166"><script src="https://gist.github.com/juliensimon/2ee2798da8ed394de3dd849c613498f1.js"></script></figure><p id="4fe8">OK, now let’s fetch and extract the FreeBSD distribution.</p><figure id="39de"><script src="https://gist.github.com/juliensimon/26c8ff40b9e7ae404b010b3a9576dcaa.js"></script></figure><h4 id="dbc9">The moment of truth</h4><p id="53fa">Let’s build. Ready… set… go!</p><figure id="aa4d"><script src="https://gist.github.com/juliensimon/38780685abd77cdc2702b0bcbc31855c.js"></script></figure><p id="9a0d">And the result is… <strong class="markup--p-strong">10 minutes and 54 seconds</strong>.</p><p id="60a5">This is a 35% speedup compared to the 17 minutes we got on the i2.8xlarge. Granted, the i3.16xlarge has more cores, but given the structure of the FreeBSD build, they’re hardly ever put to work. <a href="https://en.wikipedia.org/wiki/Amdahl%27s_law" target="_blank">Amdahl’s Law</a> strikes again.</p><p id="08fe">I’m guessing that most of the improvement does come from the crazy-fast NVMe storage system. To confirm this, let’s run the same test using memory disks.</p><figure id="2d00"><script src="https://gist.github.com/juliensimon/bce4acad6f6bbb0b30564485ffeffa0d.js"></script></figure><p id="f411">No improvement at all. This leads me to think that CPU is now the bottleneck. Indeed, the quest never ends. Now, EC2 team, could be please get NVMe on the upcoming <a href="https://aws.amazon.com/about-aws/whats-new/2016/11/coming-soon-amazon-ec2-c5-instances-the-next-generation-of-compute-optimized-instances/" target="_blank">C5</a> <a href="https://en.wikipedia.org/wiki/Skylake_%28microarchitecture%29" target="_blank">Skylake</a>-based instances? Please please please? :D</p><p id="c51c">Thanks for reading and happy testing.</p></div></div></section>
+</section>
+</article></body></html>

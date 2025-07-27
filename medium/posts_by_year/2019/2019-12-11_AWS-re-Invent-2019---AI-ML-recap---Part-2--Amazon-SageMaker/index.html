@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>AWS re:Invent 2019 — AI/ML recap — Part 2: Amazon SageMaker</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="1a61">AWS re:Invent 2019 — AI/ML recap — Part 2: Amazon SageMaker</h3><p id="558b">In a previous <a href="https://medium.com/@julsimon/aws-re-invent-2019-ai-ml-recap-part-1-ai-services-9ca35bff2f07" target="_blank">post</a>, I introduced you to our new high-level services. Now let’s go down one layer and talk about the new capabilities added to <a href="https://aws.amazon.com/sagemaker" target="_blank">Amazon SageMaker</a>: <strong class="markup--p-strong">SageMaker Processing, SageMaker Experiments, SageMaker AutoPilot, SageMaker Debugger, SageMaker Model Monitor, SageMaker Notebooks, SageMaker Studio, and SageMaker Operators for Kubernetes.</strong></p><figure id="e60f"><img class="graf-image" src="image07.webp"/></figure><p id="fdd6">If you’re just looking for an overview of the new capabilities, this is the one.</p><figure id="3e74"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/Ac5m4-xWtCU?feature=oembed" width="700"></iframe></figure><p id="a41b">If you want the full enchilada, keep reading. I’ll share learning resources along the way.</p><p id="2995">As always, happy to answer questions here or on <a href="https://twitter.com/julsimon" rel="noopener nofollow noopener noopener" target="_blank">Twitter</a>.</p><p id="8919">Here we go!</p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="a747">Amazon SageMaker Processing</h3><p id="f8e1">Amazon SageMaker Processing lets you easily run your preprocessing, postprocessing and model evaluation workloads on fully managed infrastructure. At launch, you can use either Scikit-learn or Spark.</p><figure id="cc64"><img class="graf-image" src="image06.webp"/></figure><p id="0b20">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-processing-fully-managed-data-processing-and-model-evaluation/" target="_blank">https://aws.amazon.com/blogs/aws/amazon-sagemaker-processing-fully-managed-data-processing-and-model-evaluation/</a></p><p id="628a">Documentation: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/processing-job.html" target="_blank">https://docs.aws.amazon.com/sagemaker/latest/dg/processing-job.html</a></p><p id="f139">Examples: <a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker_processing" target="_blank">https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker_processing</a></p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="5581">Amazon SageMaker Experiments</h3><p id="6959">Amazon SageMaker Experiments is a capability of Amazon SageMaker that lets you organize, track, compare, and evaluate your machine learning experiments. It’s nicely integrated with hyperparameter tuning and SageMaker Autopilot: no code needed!</p><figure id="fc9b"><img class="graf-image" src="image08.webp"/></figure><p id="3612">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/" target="_blank">https://aws.amazon.com/blogs/aws/amazon-sagemaker-experiments-organize-track-and-compare-your-machine-learning-trainings/</a></p><p id="5df0">Documentation: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/experiments.html" target="_blank">https://docs.aws.amazon.com/sagemaker/latest/dg/experiments.html</a></p><p id="7c65">Examples:</p><ul class="postList"><li id="e3f4">AIM361 workshop at re:Invent2019: <a href="https://gitlab.com/juliensimon/aim361/blob/master/Lab2.ipynb" target="_blank">https://gitlab.com/juliensimon/aim361/</a></li></ul></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="5730">Amazon SageMaker AutoPilot</h3><p id="af1b">Amazon SageMaker AutoPilot Amazon lets you automatically create the best classification and regression machine learning models, while allowing full control and visibility.</p><figure id="211e"><img class="graf-image" src="image09.webp"/></figure><p id="eb5c">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-autopilot-fully-managed-automatic-machine-learning/" target="_blank">https://aws.amazon.com/blogs/aws/amazon-sagemaker-processing-fully-managed-data-processing-and-model-evaluation/</a></p><p id="e116">Documentation: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/autopilot-automate-model-development.html" target="_blank">https://docs.aws.amazon.com/sagemaker/latest/dg/autopilot-automate-model-development.html</a></p><p id="551d">Examples:</p><ul class="postList"><li id="b7bf"><a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/autopilot" target="_blank">https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker_processing</a></li><li id="67eb">AIM361 workshop at re:Invent2019: <a href="https://gitlab.com/juliensimon/aim361/blob/master/Lab2.ipynb" target="_blank">https://gitlab.com/juliensimon/aim361/blob/master/Lab2.ipynb</a></li></ul><p id="e852">Here’s a gentle introduction.</p><figure id="3026"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/mKVZukgtkcA?feature=oembed" width="700"></iframe></figure><p id="3100">I also recorded a complete 4-part demo using Amazon SageMaker Studio.</p><figure id="f2ce"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/qMEtqJPhqpA?feature=oembed" width="640"></iframe></figure><figure id="f8cb"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/WsfRAeGzgm8?feature=oembed" width="640"></iframe></figure><figure id="7802"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/KZSTsWrDGXs?feature=oembed" width="640"></iframe></figure><figure id="14fc"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/vRHyX3kDstI?feature=oembed" width="640"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="75eb">Amazon SageMaker Debugger</h3><p id="e12b">Amazon SageMaker Debugger provides full visibility into the training of machine learning models by monitoring, recording, and analyzing the tensor data that captures the state of a machine learning training job.</p><figure id="a0e8"><img class="graf-image" src="image03.webp"/></figure><p id="49ef">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-debugger-debug-your-machine-learning-models/" target="_blank">https://aws.amazon.com/blogs/aws/amazon-sagemaker-debugger-debug-your-machine-learning-models/</a></p><p id="f3d5">Documentation: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/train-debugger.html" target="_blank">https://docs.aws.amazon.com/sagemaker/latest/dg/train-debugger.html</a></p><p id="85ac">Examples: <a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker-debugger" target="_blank">https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker-debugger</a></p><figure id="9587"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/x-HoZLdUOyU?feature=oembed" width="700"></iframe></figure><p id="77b2">Here’s an example with Keras.</p><figure id="ebf8"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/MqPdTj0Znwg?feature=oembed" width="640"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="09f8">Amazon SageMaker Model Monitor</h3><p id="2244">Amazon SageMaker Model Monitor automatically monitors ML models in production and notifies you when data quality issues arise.</p><figure id="3f92"><img class="graf-image" src="image01.webp"/></figure><p id="b84c">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-model-monitor-fully-managed-automatic-monitoring-for-your-machine-learning-models/" target="_blank">https://aws.amazon.com/blogs/aws/amazon-sagemaker-model-monitor-fully-managed-automatic-monitoring-for-your-machine-learning-models/</a></p><p id="aba9">Documentation: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html" target="_blank">https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor.html</a></p><p id="a571">Examples: <a href="https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker_model_monitor" target="_blank">https://github.com/awslabs/amazon-sagemaker-examples/tree/master/sagemaker_model_monitor</a></p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="51e8">Amazon SageMaker Studio and Amazon SageMaker Notebooks (preview)</h3><p id="84f0">Amazon SageMaker Studio is the first fully integrated development environment (IDE) for machine learning (ML). It includes Amazon SageMaker Notebooks, one-click Jupyter notebooks that you can start working with in seconds</p><figure id="d3ef"><img class="graf-image" src="image05.webp"/></figure><figure id="7e63"><img class="graf-image" src="image02.webp"/></figure><p id="0ddb">Blog: <a href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-studio-the-first-fully-integrated-development-environment-for-machine-learning/" target="_blank">https://aws.amazon.com/blogs/aws/amazon-sagemaker-model-monitor-fully-managed-automatic-monitoring-for-your-machine-learning-models/</a></p><p id="3d64">Documentation: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/notebooks.html" target="_blank">https://docs.aws.amazon.com/sagemaker/latest/dg/notebooks.html</a></p><figure id="db27"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/kou1gQmSmCU?feature=oembed" width="700"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="5cc1">Amazon SageMaker Operators for Kubernetes</h3><p id="ff92">Amazon SageMaker Operators for Kubernetes makes it easier for developers and data scientists using Kubernetes to train, tune, and deploy ML models in Amazon SageMaker.</p><figure id="81c9"><img class="graf-image" src="image04.webp"/></figure><p id="d22d">Blog: <a href="https://aws.amazon.com/blogs/machine-learning/introducing-amazon-sagemaker-operators-for-kubernetes/" target="_blank">https://aws.amazon.com/blogs/machine-learning/introducing-amazon-sagemaker-operators-for-kubernetes/</a></p><p id="ad4a">Documentation: <a href="https://sagemaker.readthedocs.io/en/stable/amazon_sagemaker_operators_for_kubernetes.html" target="_blank">https://sagemaker.readthedocs.io/en/stable/amazon_sagemaker_operators_for_kubernetes.html</a></p><p id="fcff">Examples: <a href="https://github.com/aws/amazon-sagemaker-operator-for-k8s" target="_blank">https://github.com/aws/amazon-sagemaker-operator-for-k8s</a></p><figure id="e92c"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/fgLlEnhFZQA?feature=oembed" width="700"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

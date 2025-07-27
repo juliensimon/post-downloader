@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Johnny Pi, I am your father — part 4: adding cloud-based vision</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="4857">Johnny Pi, I am your father — part 4: adding cloud-based vision</h3><p id="e870">In the <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-3-adding-cloud-based-speech-fb6e4f207c76" target="_blank">previous post</a>, we learned how to use <a href="https://aws.amazon.com/polly/" rel="nofollow noopener noopener noopener noopener" target="_blank">Amazon Polly</a> to let our robot speak. I hope you had fun with that :)</p><p id="ddee">In this post, I’ll show you how to take picture with the robot’s camera and how to use <a href="https://aws.amazon.com/rekognition/" target="_blank">Amazon Rekognition</a> to identify faces and objects… and yeah, we’ll send some tweets.</p><p id="1cb2">Let’s get going.</p><figure id="68ea"><img class="graf-image" src="image03.webp"/></figure><h4 id="12a8">What we’ll need</h4><p id="b841">Here’s the shopping list:</p><ul class="postList"><li id="5000">A <a href="https://www.raspberrypi.org/products/camera-module-v2/" target="_blank">camera module v2</a></li><li id="4d6b">Optional: an extra flex ribbon (such as <a href="https://www.amazon.com/Miuzei-Extension-Ribbon-Raspberry-Camera/dp/B072N7VXPR/" target="_blank">this one</a>), as they tend to bend and break pretty easily.</li></ul><div class="graf--mixtapeEmbed" id="e432"><a class="markup--mixtapeEmbed-anchor" href="https://www.raspberrypi.org/products/camera-module-v2/" title="https://www.raspberrypi.org/products/camera-module-v2/"><strong class="markup--mixtapeEmbed-strong">Camera Module V2 - Raspberry Pi</strong><br/><em class="markup--mixtapeEmbed-em">The Raspberry Pi Camera Module v2 replaced the original Camera Module in April 2016. The v2 Camera Module has a Sony…</em>www.raspberrypi.org</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="4bf7b90df6de2f48a94f600704353951" data-thumbnail-img-id="0*_i0qsq8diewH_DHW." href="https://www.raspberrypi.org/products/camera-module-v2/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*_i0qsq8diewH_DHW.);"></a></div><h4 class="graf-after--mixtapeEmbed" id="dd38">Allowing the robot to subscribe to a new MQTT topic</h4><p id="b0e6">Once again, all commands will be sent through a dedicated MQTT topic, named <em class="markup--p-em">JohnnyPi/see</em>. We have to update the thing’s IAM policy to allow it to subscribe to this new topic.</p><p id="f00b">Just go to the IAM console, locate the proper policy and add the following statement.</p><figure id="d629"><script src="https://gist.github.com/juliensimon/5d8e07f296bb3656c749f7ebcdea9400.js"></script></figure><h4 id="53f0">Allowing the robot to invoke Rekognition</h4><p id="e484">As we did for Polly, he have to allow the robot to call the Rekognition API. Let’s use the AWS CLI again and grant the robot the appropriate IAM permissions.</p><pre class="graf--pre" id="8549">$ aws iam attach-user-policy — user-name johnny-pi — policy-arn arn:aws:iam::aws:policy/AmazonRekognitionReadOnlyAccess</pre><h4 class="graf-after--pre" id="6d24">Code overview</h4><p id="1b5a">OK, with IAM out of the way, let’s write some code. Here’s what should happen when we send an MQTT message to the <em class="markup--p-em">JohnnyPi/see</em> topic:</p><ul class="postList"><li id="f1d5">take a picture with the Pi camera,</li><li id="dbc5">send it to Rekognition for face and label detection,</li><li id="0fef">draw a rectangle around each face, add a legend and save the new image,</li><li id="3d1e">build a text message about faces and another one about labels,</li><li id="87e1">send both messages to Polly for speech generation,</li><li id="f9b8">play both sound files on the Pi,</li><li id="06d7">last but not least, tweet the new image if the MQTT message contains ‘tweet’.</li></ul><p id="92c1">As usual, we need to add a callback for messages posted to the topic. This is what the function looks like.</p><figure id="f13c"><script src="https://gist.github.com/juliensimon/def4245ae36938c6a3b41a4724f30aed.js"></script></figure><p id="124a">It should be quite explanatory. Let’s look at the important steps in more detail.</p><h4 id="57d2">Taking a picture</h4><p id="e973">The Pi camera API is nice and simple. Open the camera, take a picture, close the camera. Why can’t programming be always this simple?</p><figure id="4db0"><script src="https://gist.github.com/juliensimon/1efc95f71a4efcd191dbc6a7976f9766.js"></script></figure><h4 id="4e3a">Detecting faces and labels with Rekognition</h4><p id="ccc9">First, we have to copy the picture to S3. Make sure to use your own bucket in <em class="markup--p-em">awsUtils.py</em>.</p><figure id="2756"><script src="https://gist.github.com/juliensimon/15398bcdcf40f6b57205545e32333ae7.js"></script></figure><p id="6c59">Next, we invoke two Rekognition APIs:</p><ul class="postList"><li id="f950"><a href="https://docs.aws.amazon.com/rekognition/latest/dg/API_DetectFaces.html" target="_blank"><em class="markup--li-em">detect_faces()</em></a> returns a list of face details: position, landmarks, age range, etc.</li><li id="86ba"><a href="https://docs.aws.amazon.com/rekognition/latest/dg/API_DetectLabels.html" target="_blank"><em class="markup--li-em">detect_labels</em>()</a> returns a list of labels and confidence scores. By default, we’re using 10 labels at most, with confidence score of 80% or higher.</li></ul><figure id="f2aa"><script src="https://gist.github.com/juliensimon/d69e62794ec6251610715ae4e772f4cd.js"></script></figure><h4 id="fc4d">Generating the new image</h4><p id="e075">Thanks to the face details provided by Rekognition, we’re now able to locate the position of each face in the picture. Using the <a href="https://python-pillow.org/" target="_blank">Pillow</a> library, we’re going to draw a rectangle around each face and add a legend with the face count (‘Face0’, ‘Face1’, etc.).</p><figure id="b54c"><script src="https://gist.github.com/juliensimon/047745fd932cd5914013216da3a168f6.js"></script></figure><p id="daf5">Drawing a rectangle around each face requires a bit more work that I’d have liked. First, Rekognition returns fractional coordinates for the bounding box, which need to be converted into absolute pixel values. Second, the Pillow API to draw rectangles doesn’t allow line width to be set: for high resolution pictures, the resulting rectangle tends to be invisible :-/ Thus, I’m drawing lines instead. If you’re curious about Pillow, all code is located in <em class="markup--p-em">RekognitionUtils.py</em>. If not, no worries, you can happily ignore this. It seems to work fine ;)</p><p id="128b">Once rectangles and legends have been added, the new image is saved locally and the number of faces is returned.</p><h4 id="fd21">Generating the face and label messages</h4><p id="c979">Using the number of faces, we build a text string that Polly will speak. In the same way, we build a text string about labels: more details in <em class="markup--p-em">generateMessages()</em>.</p><h4 id="a77d">Generating and playing the sound files</h4><p id="c8b9">We simply reuse the code we wrote in <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-3-adding-cloud-based-speech-fb6e4f207c76" target="_blank">part 3</a>.</p><figure id="7a0e"><script src="https://gist.github.com/juliensimon/1b24474a9411ef9b032c807af1f25ac7#file-johnnypi-part3-polly-py.js"></script></figure><h4 id="a426">Sending a tweet</h4><p id="ef60">The first step is to create a Twitter <a href="https://dev.twitter.com/" target="_blank">developer account</a> and get API credentials. Then, we can use the super simple T<a href="http://www.tweepy.org/" target="_blank">weepy</a> library to send a tweet.</p><figure id="16d4"><script src="https://gist.github.com/juliensimon/cb2eeaf14334bf4e9a7ba78500b0e793.js"></script></figure><p id="deea">That’s it, we have everything we need. Let’s test!</p><h4 id="778f">Testing</h4><p id="061e">As previously, I’m using <a href="http://www.mqttfx.org/" target="_blank">MQTT.fx</a> to publish messages to the <em class="markup--p-em">JohnnyPi/see</em> topic. Here’s the output for Rekognition only.</p><figure id="0b3e"><img class="graf-image" src="image02.webp"/><figcaption>Lemme guess…. LCD screens?</figcaption></figure><pre class="graf--pre" id="ab6d">Topic=JohnnyPi/see<br/>Picture uploaded<br/>Label People, confidence: 99.1184310913<br/>Label Person, confidence: 99.1184387207<br/>Label Human, confidence: 99.0959320068<br/>Label Computer, confidence: 98.671875<br/>Label Electronics, confidence: 98.671875<br/>Label LCD Screen, confidence: 98.671875<br/>Label Laptop, confidence: 98.671875<br/>Label Pc, confidence: 98.671875<br/>*** Face 0 detected, confidence: 99.9929733276<br/>Gender: Male<br/>Age: 48-68<br/>HAPPY 99.4530334473<br/>ANGRY 1.54959559441<br/>CALM 0.563991069794<br/>Face message: A single face has been detected.<br/>Label message: Here are some keywords about this picture: People, Person, Human, Computer, Electronics, LCD Screen, Laptop, Pc</pre><p class="graf-after--pre" id="20e7">48–68? WTF. I should have a chat with the Product Manager about the age range. Or maybe I simply need some sleep :)</p><p id="9259">Here’s a second try with both Rekognition and Twitter.</p><figure id="6312"><img class="graf-image" src="image01.webp"/></figure><pre class="graf--pre" id="da69">Topic=JohnnyPi/see<br/>Picture uploaded<br/>Label People, confidence: 98.8171768188<br/>Label Person, confidence: 98.8172149658<br/>Label Human, confidence: 98.7540512085<br/>Label Computer, confidence: 98.6133422852<br/>Label Electronics, confidence: 98.6133422852<br/>Label LCD Screen, confidence: 98.6133422852<br/>Label Laptop, confidence: 98.6133422852<br/>Label Pc, confidence: 98.6133422852<br/>*** Face 0 detected, confidence: 99.9958724976<br/>Gender: Male<br/>Age: 26-43<br/>Beard<br/>CONFUSED 56.1017799377<br/>SAD 16.9187488556<br/>ANGRY 5.65937137604<br/>Face message: A single face has been detected.<br/>Label message: Here are some keywords about this picture: People, Person, Human, Computer, Electronics, LCD Screen, Laptop, Pc,<br/>Tweet sent</pre><p class="graf-after--pre" id="179b">All right, the age range is more like it. I guess the moral of the story is: don’t smile.</p><h4 id="ee9a">What’s next</h4><p id="9578">As usual, you’ll find the full code on <a href="https://github.com/juliensimon/johnnypi/tree/master/part4" target="_blank">Github</a>.</p><p id="52a1">In the next part, we’ll keep expanding our robot vision skills with a pre-trained <a href="http://mxnet.io" target="_blank">MXNet</a> model for image recognition. More silliness in sight, no doubt!</p><p id="1f31">Until then, have fun and as always, thanks for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="5457">Part 0: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-0-1eb537e5a36" target="_blank">a sneak preview</a></p><p id="4525">Part 1: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-1-moving-around-e09fe95bbfce" rel="noopener nofollow noopener" target="_blank">moving around</a></p><p id="58a9">Part 2: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-2-the-joystick-db8ac067e86" rel="nofollow noopener noopener" target="_blank">the joystick</a></p><p id="a175">Part 3: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-3-adding-cloud-based-speech-fb6e4f207c76" target="_blank">cloud-based speech</a></p><p id="dd71">Part 5: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-5-adding-mxnet-for-local-image-classification-bc27a5fd2c27" target="_blank">local image classification with MXNet</a></p></div></div></section><section class="section"><div><hr/></div><div><div><p id="846f"><em class="markup--p-em">This article was written while playing way too many songs by Lynyrd Skynyrd. Must be the 68-year old redneck in me.</em></p></div></div></section>
+</section>
+</article></body></html>

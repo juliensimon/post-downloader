@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>C5 instances: fast… and then some</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">C5 instances: fast… and then some</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+In a previous post, I used the largest i3 instance to build FreeBSD 11 in 10 minutes and 54 seconds.
+</section>
+<section data-field="body" class="e-content">
+<section name="08f7" class="section section--body section--first"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="92e9" id="92e9" class="graf graf--h3 graf--leading graf--title">C5 instances: fast… and then some</h3><p name="6cda" id="6cda" class="graf graf--p graf-after--h3"><a href="https://medium.com/@julsimon/i3-instances-and-nvme-booya-57fbf452a1c1" data-href="https://medium.com/@julsimon/i3-instances-and-nvme-booya-57fbf452a1c1" class="markup--anchor markup--p-anchor" target="_blank">In a previous post</a>, I used the largest i3 instance to build FreeBSD 11 in <strong class="markup--strong markup--p-strong">10 minutes and 54 seconds</strong>.</p><blockquote name="b0e4" id="b0e4" class="graf graf--blockquote graf-after--p">i3.16xlarge instance, 64 vCPUs, 488GB RAM, 8x1900GB local NVMe storage, 20Gb networking</blockquote><p name="15a3" id="15a3" class="graf graf--p graf-after--blockquote">This was a massive improvement over the <a href="https://medium.com/@julsimon/freebsd-from-cd-rom-to-cloud-1322e5591d99" data-href="https://medium.com/@julsimon/freebsd-from-cd-rom-to-cloud-1322e5591d99" class="markup--anchor markup--p-anchor" target="_blank">i2 family</a>, thanks to super-fast NVMe storage. Now that the <a href="https://aws.amazon.com/fr/blogs/aws/now-available-compute-intensive-c5-instances-for-amazon-ec2/" data-href="https://aws.amazon.com/fr/blogs/aws/now-available-compute-intensive-c5-instances-for-amazon-ec2/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">c5 family</a> is available, let’s see if we can do even better :)</p><figure name="8c4b" id="8c4b" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*YkqwkQMU3LWioNqtjTjsCw.png" data-width="1638" data-height="1080" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/1*YkqwkQMU3LWioNqtjTjsCw.png"><figcaption class="imageCaption">C5, the ultimate face rippin’ experience</figcaption></figure><h4 name="2de8" id="2de8" class="graf graf--h4 graf-after--figure">The C5 family</h4><p name="9419" id="9419" class="graf graf--p graf-after--h4">As usual, c5 instances come in different sizes.</p><figure name="cff2" id="cff2" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*rIiqGOa8nV5BhiUTLhR93A.png" data-width="1286" data-height="702" src="https://cdn-images-1.medium.com/max/800/1*rIiqGOa8nV5BhiUTLhR93A.png"></figure><p name="9299" id="9299" class="graf graf--p graf-after--figure">Let’s pick the largest one and see how the new <a href="https://aws.amazon.com/intel/" data-href="https://aws.amazon.com/intel/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Intel Skylake architecture</a> performs. For storage, we’ll use a 100GB EBS SSD volume with 5,000 IOPS.</p><h4 name="c18c" id="c18c" class="graf graf--h4 graf-after--p">Building FreeBSD</h4><p name="455f" id="455f" class="graf graf--p graf-after--h4">We’ve done this a few times already, here are the commands. Let’s start 4 threads per vCPU, hopefully this will be enough to keep them busy.</p><figure name="fb7a" id="fb7a" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/b6892fbedc2a0ef2d5b469d0337c125b.js"></script></figure><p name="c1a8" id="c1a8" class="graf graf--p graf-after--figure"><strong class="markup--strong markup--p-strong">8 minutes and 30 seconds.</strong> Holy hell. <strong class="markup--strong markup--p-strong">21% faster</strong> than i3. For reference, the same test on the largest c4 (c4.8xlarge) takes 11 minutes and 32 seconds. The c5 instance is <strong class="markup--strong markup--p-strong">26% faster</strong> in this case.</p><p name="e109" id="e109" class="graf graf--p graf-after--p graf--trailing">Thanks for reading and happy testing.</p></div></div></section><section name="1bf6" class="section section--body section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><p name="b007" id="b007" class="graf graf--p graf--leading"><em class="markup--em markup--p-em">This post was written in 15 minutes in London. Both far beyond the sun and at full speed, then. Yngwie-style \m/</em></p><figure name="3c82" id="3c82" class="graf graf--figure graf--iframe graf-after--p graf--trailing"><iframe src="https://www.youtube.com/embed/MI_ft3iJrfM?feature=oembed" width="640" height="480" frameborder="0" scrolling="no"></iframe></figure></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/2a31d35a6a76"><time class="dt-published" datetime="2017-11-09T11:33:09.408Z">November 9, 2017</time></a>.</p><p><a href="https://medium.com/@julsimon/c5-instances-fast-and-then-some-2a31d35a6a76" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

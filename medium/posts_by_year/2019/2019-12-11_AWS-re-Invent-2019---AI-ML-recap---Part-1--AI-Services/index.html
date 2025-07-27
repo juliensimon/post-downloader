@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>AWS re:Invent 2019 — AI/ML recap — Part 1: AI Services</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="aa4c">AWS re:Invent 2019 — AI/ML recap — Part 1: AI Services</h3><p id="4297">Now that AWS re:Invent 2019 is over, I’d like to give you an overview of the AI services that we announced: <strong class="markup--p-strong">Amazon Transcribe Medical, Amazon Augmented AI, Amazon Fraud Detector, Contact Lens for Amazon Connect, Amazon Code Guru and Amazon Kendra</strong>.</p><blockquote class="graf--blockquote graf--hasDropCapModel" id="bd7e">If you’re late to the party, you might want to read about AI/ML services and features launched <a class="markup--blockquote-anchor" href="https://medium.com/@julsimon/pre-invent-2019-time-to-catch-up-8a1c2ff71e6f" target="_blank">prior to re:Invent</a>.</blockquote><p class="graf-after--blockquote" id="0238">I’ll share learning resources along the way. In the next posts, I’ll do the same for <a href="https://medium.com/@julsimon/aws-re-invent-2019-ai-ml-recap-part-1-ai-services-9ca35bff2f07" target="_blank">Amazon SageMaker</a>, and for frameworks and infrastructure.</p><p id="d971">As always, happy to answer questions here or on <a href="https://twitter.com/julsimon" target="_blank">Twitter</a>.</p><p id="29d4">Here we go!</p></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="6a0d">Amazon Transcribe Medical</h3><p id="87f6"><a href="https://aws.amazon.com/transcribe/medical/" target="_blank">Amazon Transcribe Medical</a>, a new HIPAA-eligible, machine learning automatic speech recognition (ASR) service that allows developers to add medical speech-to-text capabilities to their applications.</p><p id="bed5">Blog posts:</p><ul class="postList"><li id="fa8d"><a href="https://aws.amazon.com/blogs/aws/amazon-transcribe-medical-real-time-automatic-speech-recognition-for-healthcare-customers/" rel="nofollow noopener" target="_blank">https://aws.amazon.com/blogs/aws/amazon-transcribe-medical-real-time-automatic-speech-recognition-for-healthcare-customers/</a></li><li id="a0b5"><a href="https://aws.amazon.com/blogs/machine-learning/introducing-medical-speech-to-text-with-amazon-transcribe-medical/" target="_blank">https://aws.amazon.com/blogs/machine-learning/introducing-medical-speech-to-text-with-amazon-transcribe-medical/</a></li></ul><p id="5071">Documentation: <a href="https://docs.aws.amazon.com/transcribe/latest/dg/what-is-transcribe-med.html" target="_blank">https://docs.aws.amazon.com/transcribe/latest/dg/what-is-transcribe-med.html</a></p><p id="4dcf">I’m blown away by the quality of this service. I’m not a native speaker, I have no idea what I’m reading, and yet Transcribe Medical picks it up perfectly. Wow!</p><figure id="7624"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/_FoA5DZn7M8?feature=oembed" width="640"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="81ef">Amazon Augmented AI (A2I)</h3><p id="2a10"><a href="https://aws.amazon.com/augmented-ai/" target="_blank">Amazon A2I</a> makes it easy to build and manage human reviews for machine learning applications. At launch, it provides human review workflows for <a href="https://aws.amazon.com/rekognition" target="_blank">Amazon Rekognition</a>, <a href="https://aws.amazon.com/textract`" target="_blank">Amazon Textract</a>, and <a href="https://aws.amazon.com/sagemaker" target="_blank">Amazon SageMaker</a>.</p><p id="0832">Documentation: <a href="https://docs.aws.amazon.com/augmented-ai/2019-11-07/APIReference/Welcome.html" target="_blank">https://docs.aws.amazon.com/augmented-ai/2019-11-07/APIReference/Welcome.html</a></p><figure id="3a32"><img class="graf-image" src="image03.webp"/></figure><p id="8bce">This is a nice addition to the portfolio. As much as I like ML, it doesn’t always get things right! Having humans in the loop to review and fix low confidence predictions is critical. This service makes it easy to build and manage this feedback loop.</p><figure id="bc48"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/FzdeBDCd0kQ?feature=oembed" width="700"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="3ad0">Amazon Fraud Detector (preview)</h3><p id="661e"><a href="https://aws.amazon.com/fraud-detector/" target="_blank">Amazon Fraud Detector</a> is a fully managed service that makes it easy to identify potentially fraudulent online activities such as online payment fraud and the creation of fake accounts.</p><p id="c8cc">Documentation: <a href="https://docs.aws.amazon.com/frauddetector/latest/ug/what-is-frauddetector.html" target="_blank">https://docs.aws.amazon.com/frauddetector/latest/ug/what-is-frauddetector.html</a></p><figure id="d9eb"><img class="graf-image" src="image02.webp"/></figure><p id="8ebc">Fraud detection is a major problem for organizations, and a frequent use case for ML. Fraud Detector makes it simple, using the same philosophy as Amazon Personalize and Amazon Forecast. Just bring your data in Amazon S3, and Fraud Detector will take care of the rest.</p><figure id="2a1e"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/ZkPQtjETrBw?feature=oembed" width="700"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="55e9">Contact Lens For Amazon Connect (preview)</h3><p id="223c"><a href="https://aws.amazon.com/connect/contact-lens/" target="_blank">Contact Lens for Amazon Connect</a> is a set of ML capabilities integrated into <a href="https://aws.amazon.com/connect/" target="_blank">Amazon Connect</a>. They allow contact center supervisors to better understand the sentiment, trends, and compliance risks of customer conversations to effectively train agents, replicate successful interactions, and identify crucial company and product feedback.</p><p id="45f9">Blog: <a href="https://aws.amazon.com/blogs/contact-center/announcing-contact-lens-for-amazon-connect-preview/" target="_blank">https://aws.amazon.com/blogs/contact-center/announcing-contact-lens-for-amazon-connect-preview/</a></p><figure id="15e7"><img class="graf-image" src="image01.webp"/></figure><figure id="e4cb"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/9OwwJp53oIE?feature=oembed" width="700"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="7160">Amazon CodeGuru</h3><p id="2b00"><a href="https://aws.amazon.com/codeguru/" target="_blank">Amazon CodeGuru</a> is a ML service for automated code reviews and application performance recommendations. It supports Java at launch, with more languages coming.</p><p id="d8be">Documentation: <a href="https://docs.aws.amazon.com/codeguru/index.html" target="_blank">https://docs.aws.amazon.com/codeguru/index.html</a></p><figure id="8d27"><img class="graf-image" src="image04.webp"/></figure><p id="6898">CodeGuru Reviewer analyzes pull requests, and pinpoints potential problems in your code. Of course, you’re still in control.</p><figure id="8883"><img class="graf-image" src="image05.webp"/></figure><p id="4d94">CodeGuru Profiler inspects applications in production, and helps you find inefficient code that could code performance issues.</p><figure id="4913"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/WYuo0bIZre0?feature=oembed" width="700"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><h3 id="dba4">Amazon Kendra (preview)</h3><p id="1710"><a href="https://aws.amazon.com/kendra/" target="_blank">Amazon Kendra</a> is highly accurate and easy to use enterprise search service powered by ML.</p><p id="2992">Documentation: <a href="https://docs.aws.amazon.com/kendra/latest/dg/what-is-kendra.html" target="_blank">https://docs.aws.amazon.com/kendra/latest/dg/what-is-kendra.html</a></p><figure id="41ce"><img class="graf-image" src="image06.webp"/></figure><p id="dfb9">Finding information quickly and easily is a challenge in many (all?) organizations. Kendra is trying to fix that problem thanks to natural language processing techniques.</p></div></div></section>
+</section>
+</article></body></html>

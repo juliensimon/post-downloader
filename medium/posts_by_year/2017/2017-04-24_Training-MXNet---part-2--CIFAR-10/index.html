@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Training MXNet — part 2: CIFAR-10</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="7a82">Training MXNet — part 2: CIFAR-10</h3><p id="1822">In <a href="https://medium.com/@julsimon/training-mxnet-part-1-mnist-6f0dc4210c62" target="_blank">part 1</a>, we used the famous <a href="http://yann.lecun.com/exdb/lenet/" target="_blank">LeNet</a> Convolutional Neural Network to reach 99+% validation accuracy in just 10 epochs. We also saw how to use multiple GPUs to speed up training.</p><p id="340a">In this article, we’re going to tackle a more difficult data set: <a href="https://www.cs.toronto.edu/~kriz/cifar.html" target="_blank">CIFAR-10</a>. In the process, we’re going to learn a few new tricks. Read on :)</p><p id="8698"><strong class="markup--p-strong">The CIFAR-10 data set</strong></p><p id="3dc9">The CIFAR-10 dataset consists of 60,000 32 x 32 colour images. They are divided in 10 classes containing 6,000 images each. There are 50,000 training images and 10,000 test images. Categories are stored in a separate metadata file.</p><figure id="2314"><img class="graf-image" src="image04.webp"/><figcaption>Samples images from the CIFAR-10 data set</figcaption></figure><p id="225a">Let’s download the data set.</p><pre class="graf--pre" id="e164">$ wget <a class="markup--pre-anchor" href="https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz" rel="nofollow noopener" target="_blank">https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz</a><br/>$ tar xfz cifar-10-python.tar.gz<br/>$ ls cifar-10-batches-py/<br/>batches.meta  data_batch_1  data_batch_2  data_batch_3  data_batch_4  data_batch_5  readme.html  test_batch</pre><p class="graf-after--pre" id="5e4f">Each file contains 10,000 pickled images, which we need to turn into an array shaped (10000, 3, 32, 32). The ‘3’ dimension comes for the three RGB channels, remember? :)</p><p id="af2b">Let’s open the first file, save its first 10 images to disk and print their category. Nothing really complicated here, except some OpenCV tricks (see comments in the code below).</p><figure id="6b21"><script src="https://gist.github.com/juliensimon/273bef4c5b4490c687b2f92ee721b546.js"></script></figure><p id="ef6e">Here’s the output.</p><pre class="graf--pre" id="6fd3">(10000, 3, 32, 32)<br/>10000<br/>['frog', 'truck', 'truck', 'deer', 'automobile', 'automobile', 'bird', 'horse', 'ship', 'cat']</pre><figure class="graf-after--pre" id="d78c"><img class="graf-image" src="image02.webp"/><figcaption>Frog, truck, truck, deer, automobile, automobile, bird, horse, ship, cat</figcaption></figure><p id="fac5">Now let’s load the data set.</p><h4 id="9781">Loading CIFAR-10 in <em class="markup--h4-em">NDArrays</em></h4><p id="46e9">Just like we did for the the MNIST data, the CIFAR-10 images and labels could be loaded in <em class="markup--p-em">NDArrays </em>and then fed to an <strong class="markup--p-strong">iterator</strong>. This is how we would to it.</p><figure id="84a0"><script src="https://gist.github.com/juliensimon/ed9dd3b63cb180818368e937ce0f3e44.js"></script></figure><p id="547c">Here’s the output.</p><pre class="graf--pre" id="984f">(50000L, 3L, 32L, 32L)<br/>(50000L,)<br/>(10000L, 3L, 32L, 32L)<br/>(10000L,)</pre><p class="graf-after--pre" id="8150">The next logical step would be to <strong class="markup--p-strong">bind</strong> these arrays to a <em class="markup--p-em">Module</em> and start training (just like we did for the MNIST data set). However, I’d like to show you another way to load image data: the <strong class="markup--p-strong"><em class="markup--p-em">RecordIO</em></strong> file.</p><h4 id="9b5c">Loading CIFAR-10 with <em class="markup--h4-em">RecordIO</em> files</h4><p id="23c9">Being able to load data efficiently is a very important part of MXNet: you’ll find architecture details <a href="http://mxnet.io/architecture/note_data_loading.html" target="_blank">here</a>. In a nutshell, RecordIO files allow large data sets to be <strong class="markup--p-strong">packed</strong> and <strong class="markup--p-strong">split</strong> in multiple files, which can then be loaded and processed in <strong class="markup--p-strong">parallel</strong> by multiple servers for <strong class="markup--p-strong">distributed</strong> training.</p><p id="9a0e">We won’t cover how to build these files today. Let’s use pre-existing files hosted on the MXNet website.</p><pre class="graf--pre" id="8856">$ wget <a class="markup--pre-anchor" href="http://data.mxnet.io/data/cifar10/cifar10_val.rec" rel="nofollow noopener" target="_blank">http://data.mxnet.io/data/cifar10/cifar10_val.rec</a><br/>$ wget <a class="markup--pre-anchor" href="http://data.mxnet.io/data/cifar10/cifar10_train.rec" rel="nofollow noopener" target="_blank">http://data.mxnet.io/data/cifar10/cifar10_train.rec</a></pre><p class="graf-after--pre" id="09c7">The first file contains 50,000 samples, which we’ll use for training. The second one contains 10,000 samples, which we’ll use for validation. Image resolution has been set to 28x28.</p><p id="f9b0">Loading these files and building an iterator is extremely simple. We just have to be careful to :</p><ul class="postList"><li id="1b3d"><strong class="markup--li-strong">match</strong> <em class="markup--li-em">data_name</em> and <em class="markup--li-em">label_name</em> with the names of the input and output layers.</li><li id="e6eb"><strong class="markup--li-strong">shuffle</strong> samples in the training set in case they’ve been stored in some kind of sequence.</li></ul><figure id="fc78"><script src="https://gist.github.com/juliensimon/3517c77503ad661b53aa5d25b0392768.js"></script></figure><p id="4983">Data is ready for training. We’ve learned from previous examples that Convolutional Neural Networks are a good fit for object detection, so that’s where we should look.</p><h4 id="c7f2">Training vs. fine-tuning</h4><p id="1a6a">In previous examples, we picked models from the <a href="http://mxnet.io/model_zoo/" target="_blank">model zoo</a> and retrained them <strong class="markup--p-strong">from scratch</strong> on our data set. We’re going to do that again with the <a href="http://data.mxnet.io/models/imagenet/resnext/101-layers/" target="_blank">ResNext-101</a> model, but we’re going to try something different in parallel: <strong class="markup--p-strong">fine-tuning</strong> the model.</p><p id="b51c">Fine-tuning means that we’re going to keep all layers and pre-trained weights unchanged, except for the <strong class="markup--p-strong">last layer</strong>: it will be removed and replaced by a new layer having the number of outputs of the new data set. Then, we will train the output layer on the new data set.</p><p id="f7e7">Since our model has been pre-trained on the large <a href="http://www.image-net.org/" target="_blank">ImageNet</a> data set, the rationale for fine-tuning is to benefit from the very large number of <strong class="markup--p-strong">patterns</strong> that the model has learned while training on ImageNet. Although image sizes are quite different, it’s reasonable to expect that they will also apply to CIFAR-10.</p><h4 id="afd9">Training on ResNext-101</h4><p id="a8e4">Let’s first start by training the model from scratch. We’ve done this a few times before, so no difficulty here.</p><figure id="397f"><script src="https://gist.github.com/juliensimon/452e3d83d09bac9cbc5e2b5ec2342c10.js"></script></figure><p id="ceb1">This is the result after 100 epochs.</p><figure id="8241"><img class="graf-image" src="image01.webp"/></figure><h4 id="9622">Fine-tuning on ResNext-101</h4><p id="e967">Replacing layers sounds complicated, doesn’t it? Fortunately, the MXNet sources provide Python code to do this. It’s located in <em class="markup--p-em">example/image-classification/fine-tune.py. </em>Basically, it’s going to download the pre-trained model, remove its output layer, add a new one and start training.</p><p id="0233">This is how to use it:</p><pre class="graf--pre" id="852a">$ python fine-tune.py <br/>--pretrained-model resnext-101 --load-epoch 0000 <br/>--gpus 0,1,2,3 --batch-size 128<br/>--data-train cifar10_train.rec --data-val cifar10_val.rec <br/>--num-examples 50000 --num-classes 10 --image-shape 3,28,28 <br/>--num-epoch 300 --lr 0.05</pre><p class="graf-after--pre" id="da77">This is going to download <em class="markup--p-em">resnext-101–0000.params</em> and <em class="markup--p-em">resnext-101-symbol.json</em> from the model zoo. Most of the parameters should be familiar. Here’s the result after 100 epochs.</p><figure id="3c8e"><img class="graf-image" src="image08.webp"/><figcaption>Comparing training and fine-tuning</figcaption></figure><p id="9167">What do we see here?</p><p id="0ac0"><strong class="markup--p-strong">Early on</strong>, fine-tuning delivers much <strong class="markup--p-strong">higher</strong> training and validation accuracy. This makes sense, since the model has been pre-trained. So, if you have limited time and resources, fine-tuning is definitely an interesting way to get quick results on a new data set.</p><p id="496a">Over time, fine-tuning delivers about 5% <strong class="markup--p-strong">additional</strong> validation accuracy than training from scratch. I’m guessing that the pre-trained model generalizes better on new data thanks to the large ImageNet data set.</p><p id="e255">Last but not least, validation accuracy <strong class="markup--p-strong">stops</strong> improving after 50 epochs or so. Surely, we can do something to improve this?</p><p id="b8aa">Yes, of course. We’ll see how in part 3 :)</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="5993">Next:</p><ul class="postList"><li id="b55c"><a href="https://medium.com/@julsimon/training-mxnet-part-3-cifar-10-redux-ecab17346aa0" target="_blank">Part 3 — CIFAR-10 redux</a></li><li id="b7a1"><a href="https://medium.com/@julsimon/training-mxnet-part-4-distributed-training-91def5ea3bb7" target="_blank">Part 4 — Distributed training</a></li><li id="9244"><a href="https://medium.com/@julsimon/training-mxnet-part-5-distributed-training-efs-edition-1c2a13cd5460" target="_blank">Part 5 — Distributed training, EFS edition</a></li></ul><figure id="2979"><iframe frameborder="0" height="350" scrolling="no" src="https://upscri.be/8f5f8b?as_embed=true" width="700"></iframe></figure></div><div><figure id="e80b"><img class="graf-image" src="image03.webp"/></figure></div><div><figure id="c8b7" style="width: 33.333%;"><a href="https://medium.com/becoming-human/artificial-intelligence-communities-c305f28e674c"><img class="graf-image" src="image07.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="f924" style="width: 33.333%;"><a href="https://upscri.be/8f5f8b" target="_blank"><img class="graf-image" src="image05.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="cf51" style="width: 33.333%;"><a href="https://medium.com/becoming-human/write-for-us-48270209de63"><img class="graf-image" src="image06.webp"/></a></figure></div></div></section>
+</section>
+</article></body></html>

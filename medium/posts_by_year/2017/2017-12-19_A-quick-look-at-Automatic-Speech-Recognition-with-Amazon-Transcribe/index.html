@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>A quick look at Automatic Speech Recognition with Amazon Transcribe</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="c0d7">A quick look at Automatic Speech Recognition with Amazon Transcribe</h3><p id="877c"><a href="https://aws.amazon.com/transcribe/" target="_blank">Amazon Transcribe</a> is a new service announced at AWS re:Invent 2017.</p><figure id="4b7d"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/oVo-IKiM8Xk?feature=oembed" width="700"></iframe></figure><p id="aa70">At the moment, the service is only available in preview (which you can <a href="https://pages.awscloud.com/amazon-transcribe-preview.html" target="_blank">apply for</a>), but this shouldn’t prevent us from taking a look, should it? ;)</p><h4 id="9d83">Features</h4><p id="bf46">This is what Amazon Transcribe is capable of right now:</p><ul class="postList"><li id="eed1"><strong class="markup--li-strong">Offline processing</strong> of <strong class="markup--li-strong">audio</strong> files stored in <strong class="markup--li-strong">S3</strong>.</li><li id="25f2">Languages: <strong class="markup--li-strong">English</strong>, <strong class="markup--li-strong">Spanish</strong>.</li><li id="52b9">File formats: <strong class="markup--li-strong">WAV</strong>, <strong class="markup--li-strong">mp3</strong>, <strong class="markup--li-strong">mp4</strong>, <strong class="markup--li-strong">FLAC</strong>.</li><li id="078f">Sampling rate: from <strong class="markup--li-strong">8KHz</strong> (telephony audio) to <strong class="markup--li-strong">48Khz</strong>.</li><li id="a951">Duration: maximum <strong class="markup--li-strong">2 hours</strong>.</li></ul><h4 id="2ec9">API</h4><p id="6cfd">This is a <strong class="markup--p-strong">high-level service</strong> in the vein of <a href="http://aws.amazon.com/polly" target="_blank">Polly</a> and <a href="http://aws.amazon.com/rekognition" target="_blank">Rekognition</a>, so the API is as <strong class="markup--p-strong">easy</strong> as it gets: <a href="http://docs.aws.amazon.com/transcribe/latest/dg/API_ListTranscriptionJobs.html" target="_blank">ListTranscriptionJobs</a>, <a href="http://docs.aws.amazon.com/transcribe/latest/dg/API_StartTranscriptionJob.html" target="_blank">StartTranscriptionJob</a> and <a href="http://docs.aws.amazon.com/transcribe/latest/dg/API_GetTranscriptionJob.html" target="_blank">GetTranscriptionJob</a>.</p><p id="e9d4">No CLI for now, so we have to test either with the AWS Console or with the SDK. Let’s keep this simple and try the console.</p><h4 id="050d">Creating a job</h4><p id="6647">I recorded a sound file, saved it as a FLAC file and uploaded to S3. I also updated the <strong class="markup--p-strong">bucket policy</strong> to allow access for Transcribe (you’ll find the <a href="http://docs.aws.amazon.com/transcribe/latest/dg/access-control-managing-permissions.html#auth-role-permissions" target="_blank">policy</a> in the documentation).</p><p id="8395">Heading out to the console, it’s pretty easy to create a job. Just make sure you use a proper <strong class="markup--p-strong">URL</strong> to point to your sound file, not an S3 URI.</p><figure id="32d7"><img class="graf-image" src="image02.webp"/></figure><p id="9c34">Click on the “Create” button, wait for a few minutes and you’ll see the output of the job.</p><figure id="6bff"><img class="graf-image" src="image01.webp"/></figure><p id="205c">Let’s download the <strong class="markup--p-strong">JSON file</strong> (<a href="https://gist.github.com/juliensimon/d4e13412ec56a5eca25e501a9909db6b" target="_blank">complete file</a>) and look at the raw output.</p><pre class="graf--pre" id="966b">Hello my name is julian and i live in paris france right now i'm recording a sound file because i would like to test a new service called amazon transcribed this file should be long enough to give me a good sample and hopefully transcribed will be able to understand my french accent. And if not well that should make for a pretty funny transcription. This should be long enough by now so let's stop the recording upload that file and get some results.</pre><p class="graf-after--pre" id="c8b9">Pretty good results. Some commas are missing and funny enough, Transcribe doesn’t understand its own name. Apart from this, this is an <strong class="markup--p-strong">accurate transcription</strong> of my sound file.</p><p id="323d">The output file also contains the <strong class="markup--p-strong">time stamps</strong> for each words, the <strong class="markup--p-strong">confidence score</strong> and possible <strong class="markup--p-strong">alternatives</strong>, e.g.:</p><pre class="graf--pre" id="cdf2">"items": [<br/>      {<br/>        "start_time": "0.600",<br/>        "end_time": "1.030",<br/>        "alternatives": [<br/>          {<br/>            "confidence": "1.0000",<br/>            "content": "Hello"<br/>          }<br/>        ],<br/>        "type": "pronunciation"<br/>      },<br/>      {<br/>        "start_time": "1.310",<br/>        "end_time": "1.520",<br/>        "alternatives": [<br/>          {<br/>            "confidence": "1.0000",<br/>            "content": "my"<br/>          }<br/>        ],<br/>        "type": "pronunciation"<br/>      },<br/>      {<br/>        "start_time": "1.520",<br/>        "end_time": "1.680",<br/>        "alternatives": [<br/>          {<br/>            "confidence": "1.0000",<br/>            "content": "name"<br/>          }<br/>        ],<br/>        "type": "pronunciation"<br/>      },<br/>      {<br/>        "start_time": "1.680",<br/>        "end_time": "1.810",<br/>        "alternatives": [<br/>          {<br/>            "confidence": "1.0000",<br/>            "content": "is"<br/>          }<br/>        ],<br/>        "type": "pronunciation"<br/>      },<br/>      {<br/>        "start_time": "1.810",<br/>        "end_time": "2.280",<br/>        "alternatives": [<br/>          {<br/>            "confidence": "0.9775",<br/>            "content": "julian"<br/>          }<br/>        ],<br/>        "type": "pronunciation"<br/>      },</pre><p class="graf-after--pre" id="fc67">Cool new service. Please join the preview and send us <strong class="markup--p-strong">feedback</strong>. I’m very curious to see what you’re going to build with this!</p><p id="2d22">As always, thank you for reading.</p></div></div></section>
+</section>
+</article></body></html>

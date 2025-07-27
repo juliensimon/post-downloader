@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>A quick look at Natural Language Processing with Amazon Comprehend</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="ddf0">A quick look at Natural Language Processing with Amazon Comprehend</h3><p id="6c90"><a href="http://aws.amazon.com/comprehend" target="_blank">Amazon Comprehend</a> is a new service announced at AWS re:Invent 2017. At the time of writing, it is available in the US (Virginia, Ohio, Oregon) and in Europe (Ireland).</p><h4 id="3b12">Features</h4><p id="1552">This is what Amazon Comprehend is capable of right now:</p><ul class="postList"><li id="e8ae"><strong class="markup--li-strong">Language</strong> detection (single document or batch mode),</li><li id="0d14"><strong class="markup--li-strong">Entity</strong> detection (single document or batch mode),</li><li id="2881"><strong class="markup--li-strong">Key phrases</strong> extraction (single document or batch mode),</li><li id="da8a"><strong class="markup--li-strong">Sentiment</strong> analysis (single document or batch mode),</li><li id="fa6d"><strong class="markup--li-strong">Topic</strong> <strong class="markup--li-strong">modeling</strong> on large document collection.</li></ul><h4 id="0001">Detection, extraction and analysis</h4><p id="7d34">Let’s look at the first four features with a simple example in the console. Here’s a sample text from an Associated Press data set:</p><p id="f36d"><em class="markup--p-em">“A suspect bit the ear of a 4-year-old police dog and injured the animal’s neck during a chase and arrest, police said today. The dog, Rex, was on patrol with Constable Philip Rajah in the Natal provincial capital during the weekend when they came across two suspicious individuals,’’ police said. While Rajah searched one man, Rex chased the other and got the worst of it when his quarry turned on the animal and bit him. Rajah had to yank the man off the dog, police said. They said the dog was being treated for a serious neck injury at a veterinary clinic. The man who bit the dog may face a charge of malicious injury to state property”.</em></p><p id="e3bd">What does Comprehend make of this crazy story?</p><figure id="6ccf"><img class="graf-image" src="image04.webp"/></figure><p id="1f83">As you can see, <strong class="markup--p-strong">key entities</strong> are properly identified: the police officer, Rex, the two individuals, the date and the location. Language is also detected as ‘English’.</p><p id="2e10">What about key phrases?</p><figure id="1160"><img class="graf-image" src="image05.webp"/></figure><p id="89de">Once again, <strong class="markup--p-strong">key phrases </strong>are understood. It’s quite likely that indexing them in a backend would let us find this article quickly and accurately.</p><p id="124c">Now, what about <strong class="markup--p-strong">sentiment</strong>?</p><figure id="7904"><img class="graf-image" src="image01.webp"/></figure><p id="65b0">Tone is indeed pretty neutral, although I’m quite sure poor Rex would think this is a pretty negative story :D</p><h4 id="d28c">Language detection</h4><p id="a79b">Let’s take another shot at language detection. Comprehend is able to detect 100 languages, so let’s use tweets in three different languages: <a href="https://twitter.com/bbcswahili/status/94351680560744448" target="_blank"><strong class="markup--p-strong">Swahili</strong></a>, <a href="https://twitter.com/filipinofood/status/939472973420937218" target="_blank"><strong class="markup--p-strong">Tagalog</strong></a> and <a href="https://twitter.com/tyzhdenUA/status/943498398199615488" target="_blank"><strong class="markup--p-strong">Ukrainian</strong></a>. As you can see, these are rather short sentences, which are more difficult to detect than longer texts.</p><pre class="graf--pre" id="6d22">aws comprehend detect-dominant-language --text "Wabunge wapitisha muswada wa ukomo wa rais Uganda kusomwa kwa mara ya pili"<br/>{<br/>    "Languages": [<br/>        {<br/>            "LanguageCode": "sw",<br/>            "Score": 0.994857907295227<br/>        }<br/>    ]<br/>}</pre><pre class="graf--pre graf-after--pre" id="818f">aws comprehend detect-dominant-language --text "Nakabibili pala ng durian sa U.S. supermarkets kasama ng mga epol. Galing siguro sa Thailand."<br/>{<br/>    "Languages": [<br/>        {<br/>            "LanguageCode": "tl",<br/>            "Score": 0.9984232187271118<br/>        }<br/>    ]<br/>}</pre><pre class="graf--pre graf-after--pre" id="347c">aws comprehend detect-dominant-language --text "Помер відомий тренер та функціонер київського Динамо"<br/>{<br/>    "Languages": [<br/>        {<br/>            "LanguageCode": "uk",<br/>            "Score": 0.9999969005584717<br/>        }<br/>    ]<br/>}</pre><p class="graf-after--pre" id="443c">All three are correctly detected. Good job, Comprehend!</p><h4 id="a9d8">Topic modeling</h4><p id="b26d">Now, let’s take a look at <strong class="markup--p-strong">topic modeling</strong>, a powerful technique allowing us to automatically:</p><ul class="postList"><li id="56b5"><strong class="markup--li-strong">build a list of topics</strong> from a large document collection,</li><li id="38ba"><strong class="markup--li-strong">group documents</strong> according to these topics.</li></ul><p id="57b6">First of all, we need a <strong class="markup--p-strong">data set</strong>. We’ll use a collection of 2,246 news items from Associated Press (<a href="http://www.cs.columbia.edu/~blei/lda-c/" target="_blank">source</a>), stored in a TSV file.</p><p id="e31e">First, we have to remove the first two columns (we don’t need them) and save the file in UTF-8 format, which is what Comprehend expects.</p><blockquote class="graf--blockquote" id="f8ce">Amazon Comprehend expects documents to be stored in an S3 bucket: either one file per document, or a single file with one document per line. We’ll use the second option, as this is how our data set is structured.</blockquote><p class="graf-after--blockquote" id="352a">Creating the job is straightforward: S3 bucket, file format, number of topics to detect, etc. Once the job is complete, we can download the results from S3.</p><figure id="7020"><img class="graf-image" src="image02.webp"/></figure><p id="c880">The output file contains two CSV files: <strong class="markup--p-strong">doc-topics.csv</strong> and <strong class="markup--p-strong">topic-terms.csv</strong>.</p><h4 id="9d8e">Documents and topics</h4><p id="c093">The <strong class="markup--p-strong">doc-topics.csv</strong> file stores the list of <strong class="markup--p-strong">topics</strong> and <strong class="markup--p-strong">weights </strong>detected in each document (here each line in the file),</p><p id="5837">For example, let’s look at topics for document #648:</p><figure id="8c31"><img class="graf-image" src="image06.webp"/></figure><p id="8983">Here are the first few lines of this document: “<em class="markup--p-em">Savings institution depositors withdrew more money from their accounts than they deposited in May for the first time in seven months, while losses continued to erode the ailing industry’s capital, the government said Monday. The Federal Home Loan Bank Board said net withdrawals at the nation’s 3,102 federally insured S &amp;Ls totaled $941 million in May. But the decline came after seven consecutive months of net deposit gains totaling $28 billion</em>”.</p><p id="5c9b">Looks like ‘finance’ is the key topic here.</p><h4 id="63d9">Topics and terms</h4><p id="c336">The <strong class="markup--p-strong">topic-terms.csv</strong> file stores the list of topics that have been detected in the document collection. For each topic, we see a list of words and their weights.</p><p id="21fe">The dominant topic in document #648 is topic #3: let’s check what it’s about.</p><figure id="9234"><img class="graf-image" src="image03.webp"/></figure><p id="59d6">These words could reasonably be associated with a ‘finance’ topic, so it’s a pretty good match for the document above.</p><p id="1151">Curious about this works? Read on :)</p><h3 id="79b8">Latent Dirichlet Allocation (LDA)</h3><p id="9908"><a href="https://en.wikipedia.org/wiki/Latent_Dirichlet_allocation" target="_blank">LDA</a> is an <strong class="markup--p-strong">unsupervised learning algorithm</strong> which is commonly used to discover a user-specified number of <strong class="markup--p-strong">topics</strong> shared by <strong class="markup--p-strong">documents</strong> within a text <strong class="markup--p-strong">collection</strong>.</p><blockquote class="graf--blockquote" id="6bf4">As a sidenote, LDA is one of the built-algorithms available in <a class="markup--blockquote-anchor" href="http://aws.amazon.com/sagemaker" target="_blank">Amazon SageMaker</a> . You’ll find a high-level description <a class="markup--blockquote-anchor" href="http://docs.aws.amazon.com/sagemaker/latest/dg/lda-how-it-works.html" target="_blank">here</a>.</blockquote><p class="graf-after--blockquote" id="18de">If you want to dive deeper (and I mean ‘deeper’) on topic modeling and LDA, I strongly recommend this re:Invent video by my colleague Anima Anandkumar.</p><figure id="20b3"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/mINfveR9VVE?feature=oembed" width="700"></iframe></figure><p id="7d98">That’s it for today. Thank you for reading.</p></div></div></section>
+</section>
+</article></body></html>

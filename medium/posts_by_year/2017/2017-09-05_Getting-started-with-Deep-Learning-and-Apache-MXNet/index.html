@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Getting started with Deep Learning and Apache MXNet</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+
+
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="aebd">Getting started with Deep Learning and Apache MXNet</h3><p id="8220">Deep Learning has become one of the hottest — if not THE hottest — topic in the IT industry. Indeed, this technology can efficiently solve complex problems such as image recognition or natural language speech, as demonstrated by services such as <a href="https://aws.amazon.com/rekognition/" target="_blank">Amazon Rekognition</a>, <a href="https://aws.amazon.com/polly/" target="_blank">Amazon Polly</a> or <a href="https://aws.amazon.com/lex/" target="_blank">Amazon Lex</a>.</p><p id="387f">However, some use cases require that customers build their own Deep Learning application. For a long time, this was a very complex task involving arcane knowledge and tools which only expert scientists could master. Unfortunately, this discouraged a lot of software developers from even trying.</p><p id="5f4d">Now, high-level Open Source libraries such as <a href="http://mxnet.io/" target="_blank">Apache MXNet</a> enable non-experts to design, train and re-use state of the art deep neural networks. Thanks to its high-level API, its support of languages such as Python or R and its ability to train quickly on multiple GPUs, Apache MXNet is well-suited for exploration and experimentation. Let’s get you started!</p><p id="efb9">For a no-nonsense introduction in less than 30 minutes, you should listen to the <a href="https://soundcloud.com/amazon-web-services-306355661/200-introduction-to-apache-mxnet-on-aws" target="_blank">AWS podcast</a> I recorded a few months ago.</p><figure id="7e78"><iframe frameborder="0" height="145" scrolling="no" src="https://w.soundcloud.com/player/?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F331248651&amp;show_artwork=true" width="700"></iframe></figure><p id="e921">For a deeper dive into the Apache MXNet API, here are two series of articles I recently wrote. They are specifically targeted at software developers with a basic knowledge of Python and a strong desire to learn: everyone is welcome!</p><h4 id="c768">Introduction to the Apache MXNet API</h4><p id="122c">· <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-1-848febdcf8ab" target="_blank">Part 1</a>: installing MXNet and a look at the NDArray API.</p><p id="0972">· <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-2-ce761513124e" target="_blank">Part 2</a>: understanding imperative programming vs. symbolic programming and a look at the Symbol API.</p><p id="5d16">· <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-3-1803112ba3a8" target="_blank">Part 3</a>: training a first model and a look at the Module API.</p><p id="55c0">· <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-4-df22560b83fe" target="_blank">Part 4</a>: recognizing images with Inception v3, a pre-trained model from the model zoo.</p><p id="a805">· <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-5-9e78534096db" target="_blank">Part 5</a>: using more pre-trained models, VGG16 and ResNet-152.</p><p id="bd37">· <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-6-fcdd7521ae87" target="_blank">Part 6</a>: recognizing images with a pre-trained model on a Raspberry Pi.</p><h4 id="f3b6">Training Apache MXNet</h4><p id="b7ee">· <a href="https://medium.com/@julsimon/training-mxnet-part-1-mnist-6f0dc4210c62" target="_blank">Part 1</a>: learning the MNIST data set, first with a Multi-Layer Perceptron then with the LeNet on a GPU instance.</p><p id="a686">· <a href="https://medium.com/@julsimon/training-mxnet-part-2-cifar-10-c7b0b729c33c" target="_blank">Part 2</a>: learning the CIFAR-10 data set with ResNext-101, then fine-tuning a pre-trained network.</p><p id="6cec">· <a href="https://medium.com/@julsimon/training-mxnet-part-3-cifar-10-redux-ecab17346aa0" target="_blank">Part 3</a>: optimizing CIFAR-10 with variable learning rate and AdaDelta.</p><p id="99f0">· <a href="https://medium.com/@julsimon/training-mxnet-part-4-distributed-training-91def5ea3bb7" target="_blank">Part 4</a>: using the <a href="https://aws.amazon.com/marketplace/pp/B01M0AXXQB" target="_blank">Deep Learning AMI</a> and multiple GPU instances for distributed training.</p><p id="c6ea">· <a href="https://medium.com/@julsimon/training-mxnet-part-5-distributed-training-efs-edition-1c2a13cd5460" target="_blank">Part 5</a>: using <a href="https://aws.amazon.com/efs/" target="_blank">Amazon EFS</a> to optimize data set storage for distributed training.</p><h4 id="d009">Training Apache MXNet on the ImageNet dataset</h4><p id="b6d2">· <a href="https://medium.com/@julsimon/imagenet-part-1-going-on-an-adventure-c0a62976dc72" target="_blank">Part 1</a></p><p id="4976">· <a href="https://medium.com/@julsimon/imagenet-part-2-the-road-goes-ever-on-and-on-578f09a749f9" target="_blank">Part 2</a></p><h4 id="382f">Keras shoot-out</h4><p id="cd05">· <a href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" target="_blank">Part 1</a>: TensorFlow vs MXNet</p><p id="4d22">· <a href="https://medium.com/@julsimon/keras-shoot-out-part-2-a-deeper-look-at-memory-usage-8a2dd997de81" target="_blank">Part 2</a>: a deeper look at memory usage</p><p id="303c">· <a href="https://medium.com/@julsimon/keras-shoot-out-part-3-fine-tuning-7d1548c51a41" target="_blank">Part 3</a>: fine-tuning</p><h4 id="5e9a">Speeding up Apache MXNet</h4><p id="3bda">· <a href="https://medium.com/@julsimon/speeding-up-apache-mxnet-with-the-nnpack-library-7427f367490f" target="_blank">Part 1</a>: NNPACK on Intel-based platforms</p><p id="2dd3">· <a href="https://medium.com/@julsimon/speeding-up-apache-mxnet-with-the-nnpack-library-raspberry-pi-edition-e444b446a180" target="_blank">Part 2</a>: NNPACK on Raspberry Pi platforms</p><p id="d24d">· <a href="https://medium.com/@julsimon/speeding-up-apache-mxnet-part-3-lets-smash-it-with-c5-and-intel-mkl-90ab153b8cc1" target="_blank">Part 3</a>: C5 instances and Intel MKL</p><h4 id="69be">Generative Adversarial Networks on Apache MXNet</h4><p id="8a39">· <a href="https://medium.com/@julsimon/generative-adversarial-networks-on-apache-mxnet-part-1-b6d39e6b5df1" target="_blank">Part 1</a>: generating new MNIST-like images.</p><h4 id="6909">Open Source projects based on Apache MXNet</h4><p id="c4b6">· <a href="https://medium.com/mlreview/10-deep-learning-projects-based-on-apache-mxnet-8231109f3f64" target="_blank">Part 1</a></p><p id="7cad">· <a href="https://medium.com/@julsimon/10-more-deep-learning-projects-based-on-apache-mxnet-a2dababe455f" target="_blank">Part 2</a></p><p id="ea60">I hope that you will enjoy these articles and that they will help you get started on your first Deep Learning project. Please follow me on <a href="http://medium.com/@julsimon" target="_blank">Medium</a> and <a href="http://twitter.com/julsimon" target="_blank">Twitter</a> for more AWS and AI content.</p></div></div></section>
+</section>
+</article></body></html>

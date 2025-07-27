@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Using Arcee Orchestra to Augment and Localize YouTube Content</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Using Arcee Orchestra to Augment and Localize YouTube Content</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+Introduction
+</section>
+<section data-field="body" class="e-content">
+<section name="90e8" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="d66e" id="d66e" class="graf graf--h3 graf--leading graf--title"><strong class="markup--strong markup--h3-strong">Using Arcee Orchestra to Augment and Localize YouTube Content</strong></h3><figure name="8355" id="8355" class="graf graf--figure graf-after--h3"><img class="graf-image" data-image-id="1*ZiUFpsVhTmR0pI41uB4HXw.png" data-width="1922" data-height="1080" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/1*ZiUFpsVhTmR0pI41uB4HXw.png"></figure><p name="94a3" id="94a3" class="graf graf--p graf-after--figure"><strong class="markup--strong markup--p-strong">Introduction</strong></p><p name="851a" id="851a" class="graf graf--p graf-after--p">In today’s digital age, content creators are constantly looking for innovative ways to reach a broader audience and provide value in multiple languages. Julien from Arcee, a platform that leverages AI to streamline content creation, has shared a compelling workflow that demonstrates how to use Arcee Orchestra to augment and localize YouTube content. This process involves extracting captions, generating a technical blog post, and translating it into multiple languages, all while maintaining the integrity and quality of the original content.</p><figure name="268c" id="268c" class="graf graf--figure graf--iframe graf-after--p"><iframe src="https://www.youtube.com/embed/yOcPWvjFI8E?feature=oembed" width="700" height="393" frameborder="0" scrolling="no"></iframe></figure><p name="ffb0" id="ffb0" class="graf graf--p graf-after--figure"><strong class="markup--strong markup--p-strong">Extracting Captions</strong></p><p name="d786" id="d786" class="graf graf--p graf-after--p">The workflow begins with a single input variable: the <strong class="markup--strong markup--p-strong">YouTube video ID</strong>. This ID is extracted from the YouTube URL and is used to interact with YouTube’s API to retrieve the list of available caption tracks. By calling the <strong class="markup--strong markup--p-strong">List Caption Tracks API</strong> and passing the video ID, Julien retrieves a JSON document that lists the different caption tracks available for the video. From this list, the English caption track is identified, and its unique ID is extracted.</p><h3 name="3782" id="3782" class="graf graf--h3 graf-after--p">Cleaning and Preparing Captions</h3><p name="5c52" id="5c52" class="graf graf--p graf-after--h3">Once the English caption track is identified, the <strong class="markup--strong markup--p-strong">Load Captions API</strong> is used to download the actual captions. These captions often come with timestamps and may contain hesitations, misheard names, and missing punctuation. Julien uses a small language model to clean up the captions and perform minor fixes. This includes correcting the company name to “Arcee” instead of “RC,” ensuring the model name is “Virtuoso” instead of “virtual virtuals,” and adding punctuation where necessary. The result is a clean, coherent text that serves as the foundation for the blog post.</p><h3 name="b8ff" id="b8ff" class="graf graf--h3 graf-after--p">Generating the Blog Post</h3><p name="d320" id="d320" class="graf graf--p graf-after--h3">With the cleaned captions, Julien uses the <strong class="markup--strong markup--p-strong">Virtuoso Large model</strong> to generate a technical blog post. The model is prompted to write a blog post based on the video’s theme, adding its knowledge and perspective to enrich the content. The blog post includes a proper introduction, conclusion, and a call to action with links, all formatted in Markdown. The output is a well-structured and informative blog post that can be easily stored in Google Docs.</p><h3 name="275b" id="275b" class="graf graf--h3 graf-after--p">Translating the Blog Post</h3><p name="93e5" id="93e5" class="graf graf--p graf-after--h3">To reach a wider audience, Julien translates the blog post into Hindi and Chinese using the <strong class="markup--strong markup--p-strong">Virtuoso Small model</strong>. The translation process is straightforward, with a simple prompt to translate the English post into the desired languages. The translated posts are then stored in Google Docs, with titles that include the video ID and the language. The final output is three Google Docs: one in English, one in Hindi, and one in Chinese.</p><h3 name="1eec" id="1eec" class="graf graf--h3 graf-after--p">Verifying Translations</h3><p name="50f4" id="50f4" class="graf graf--p graf-after--h3">To ensure the quality of the translations, Julien uses a service called Gemini to back-translate the Hindi and Chinese posts into English. The back-translations are accurate, with service names and technical terms correctly preserved. While native speakers might notice minor inconsistencies, the translations are of high quality and effectively communicate the content of the original blog post.</p><h3 name="1a37" id="1a37" class="graf graf--h3 graf-after--p">Conclusion</h3><p name="4be1" id="4be1" class="graf graf--p graf-after--h3">By leveraging Arcee Orchestra and a combination of YouTube APIs and language models, Julien has demonstrated a powerful workflow for augmenting and localizing YouTube content. This approach not only enhances the viewer’s experience by providing a structured and detailed blog post but also broadens the reach of the content by making it accessible in multiple languages.</p><p name="364b" id="364b" class="graf graf--p graf-after--p">If you’re interested in learning more about Arcee Orchestra, you can read the <a href="https://blog.arcee.ai/taking-the-stage-arcee-orchestra/" data-href="https://blog.arcee.ai/taking-the-stage-arcee-orchestra/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">launch blog post</a> for a deeper dive into its capabilities. Don’t forget to check out more videos on the <a href="https://www.youtube.com/@ArceeAI" data-href="https://www.youtube.com/@ArceeAI" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Arcee AI YouTube channel</a> and follow Arcee AI on <a href="https://www.linkedin.com/company/arcee-ai" data-href="https://www.linkedin.com/company/arcee-ai" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">LinkedIn</a> to stay updated on the latest developments and insights in AI-driven content creation.</p><p name="85fb" id="85fb" class="graf graf--p graf-after--p graf--trailing">Keep exploring, and keep rocking! 🚀</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/08dba0029baa"><time class="dt-published" datetime="2025-02-21T12:39:14.384Z">February 21, 2025</time></a>.</p><p><a href="https://medium.com/@julsimon/using-arcee-orchestra-to-augment-and-localize-youtube-content-08dba0029baa" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

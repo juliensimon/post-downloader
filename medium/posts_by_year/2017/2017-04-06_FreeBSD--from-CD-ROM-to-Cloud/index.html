@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>FreeBSD, from CD-ROM to Cloud</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="1ef0">FreeBSD, from CD-ROM to Cloud</h3><figure id="2cd4"><img class="graf-image" src="image07.webp"/></figure><p class="graf--hasDropCapModel graf--hasDropCap" id="2d7c"><span class="graf-dropCap">I’</span>ve been using Open Source for <a href="https://medium.com/@julsimon/a-unix-bi-bli-ography-and-then-some-f6b93847aed3" target="_blank">25 years</a> (man, what a depressing way to start this article). Linux has taken over the world, but I still have a soft spot for the <a href="https://en.wikipedia.org/wiki/Berkeley_Software_Distribution" target="_blank">BSD family</a> in general and for <a href="https://www.freebsd.org/" target="_blank">FreeBSD</a> in particular. Blame it on the colourful cast of characters who build the BSD OSes: <strong class="markup--p-strong">Bill Joy</strong>, <strong class="markup--p-strong">Kirk McKusick</strong> and so on. And yeah, blame it on the Daemon t-shirts ;)</p><p id="b943">So, for the sake of having fun and perpetuating the legacy, how about we start a FreeBSD instance on AWS and see where this could lead us?</p><p id="c712">The good news is that it couldn’t be easier. Just log in to your AWS account and head for the <strong class="markup--p-strong">AWS Marketplace</strong>: in a couple of clicks, you’ll find images for FreeBSD 10 &amp; 11. Kudos to Colin Perceval for maintaining them.</p><figure id="c699"><img class="graf-image" src="image03.webp"/></figure><p id="1111">Next, we need to pick an instance type. One of the perks of working for AWS is not paying for infrastructure, so why not pick something really large, like <strong class="markup--p-strong">i2.8xlarge</strong>: 32 vCPUs, 244GB RAM, 8x800GB local SSD storage, 10Gb networking. I’d have gone for the i3 family, but for reasons unknown to me, the FreeBSD AMI doesn’t support it. Probably a driver issue, I’ll look into it.</p><p id="4b38">A few minutes later, the instance is ready.</p><figure id="05a4"><img class="graf-image" src="image01.webp"/></figure><p id="dc5a">What now? Back in the day, I loved rebuilding everything from source. It was a great way to learn and that mystical “make world” command fascinated me. It would be fun to do that again, hey? Let’s go!</p><p id="ec20">First things first: storage. The source distribution is pretty large and building it requires even more space of course. Well, this instance does have an EBS volume attached, but it also has a ton of ultra-fast local storage (aka <strong class="markup--p-strong">instance store</strong> in AWS terminology). Isn’t this a great opportunity to use <a href="https://en.wikipedia.org/wiki/ZFS" target="_blank">ZFS</a> (another one of my obsessions)? Of course it is.</p><p id="6968">This is how these 8 disks appear on the instance:</p><figure id="1a1e"><img class="graf-image" src="image05.webp"/></figure><p id="963c">Let’s switch to root and initialise them with a single slice. First, I need to run an arcane ‘sysctl’ command allowing me to do this without having to drop to single-user mode (yes, I’m lazy…and I want to keep this short!).</p><figure id="fe73"><img class="graf-image" src="image10.webp"/></figure><p id="9017">Now we can create our ZFS storage. Let’s use 4 disks for source files and 4 disks for object files. This is all it takes:</p><figure id="a46a"><img class="graf-image" src="image02.webp"/></figure><p id="b36f">Let’s now fetch all FreeBSD 11 sources and extract them:</p><figure id="4168"><img class="graf-image" src="image08.webp"/></figure><p id="5dae">We’re ready to build. This instance has <strong class="markup--p-strong">32 vCPUs</strong>, so let’s take advantage of them and run a parallel build:</p><figure id="1f1e"><img class="graf-image" src="image09.webp"/></figure><p id="6303">While we wait for this to complete, ‘top’ is interesting to look at. All cores busy, 96% user time, <strong class="markup--p-strong">0.1% idle</strong> (instance store FTW). Perfect!</p><figure id="ea02"><img class="graf-image" src="image04.webp"/></figure><p id="164b">And the result is…</p><figure id="8447"><img class="graf-image" src="image06.webp"/></figure><p id="d6e9"><strong class="markup--p-strong">17 minutes</strong>. Back in the day, this would take <strong class="markup--p-strong">12+ hours</strong> on my high-end PC. I would leave it on all night, only to find out at breakfast that the goddamn build had failed in the middle of the night. And yes, that would ruin my day.</p><blockquote class="graf--blockquote" id="9b32">Now, thanks to Moore’s Law and to Cloud computing, I can get the same work done about <strong class="markup--blockquote-strong">50 times faster</strong>. Ain’t life grand!</blockquote><p class="graf-after--blockquote" id="6552">Of course, there would plenty more to explore — and maybe we’ll dive deeper in future stories — but that’s it for now. Thanks for reading.</p></div></div></section>
+</section>
+</article></body></html>

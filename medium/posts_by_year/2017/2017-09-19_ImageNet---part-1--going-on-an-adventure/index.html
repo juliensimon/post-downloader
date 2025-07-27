@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>ImageNet — part 1: going on an adventure</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="cf22">ImageNet — part 1: going on an adventure</h3><p id="6dd6">When it comes to building image classifiers, <a href="http://www.image-net.org/" target="_blank">ImageNet</a> is probably the most well known data set. It’s also used for the annual <a href="http://www.image-net.org/challenges/LSVRC/" target="_blank">ILSVRC</a> competition, where researchers from all over the world compete to build the most efficient models.</p><p id="99ea">As <a href="https://becominghuman.ai/training-mxnet-part-2-cifar-10-c7b0b729c33c" target="_blank">previously discussed</a>, models are frequently trained on ImageNet before being fine-tuned on other image sets. Fine-tuning is a much faster process and a great way to get very good accuracy in just a few epochs.</p><p id="1314">Still, what does it take to actually grab ImageNet and prepare it for training. Let’s find out. We’ll start with <a href="http://mxnet.io" target="_blank">Apache MXNet</a>, but who knows where we’ll end up?</p><figure id="2b84"><img class="graf-image" src="image01.webp"/><figcaption>You do know that there is a dragon under that mountain, don’t you?</figcaption></figure><h4 id="9bef">ImageNet in numbers</h4><p id="6a29">Clocking in at <strong class="markup--p-strong">150 GB</strong>, ImageNet is quite a beast. It holds <strong class="markup--p-strong">1,281,167 images</strong> for training and 50,000 images for validation, organised in <strong class="markup--p-strong">1,000 categories</strong>. We’re pretty far from <a href="http://yann.lecun.com/exdb/mnist/" target="_blank">MNIST</a> or <a href="https://www.cs.toronto.edu/~kriz/cifar.html" target="_blank">CIFAR-10</a>!</p><p id="83f3">This creates all kinds of interesting problems that need to be solved before training even starts, namely:</p><ul class="postList"><li id="2c0a">Downloading the data set,</li><li id="de29">Organising the data set for training,</li><li id="c9fc">Creating RecordIO files to optimize I/O,</li><li id="d6eb">Backing up the data set, because who wants to download 150GB again?</li><li id="cbdd">Deploying the data set efficiently to GPU instances for training,</li></ul><p id="5980">We’re going to look at all these steps. As always, the devil is in the details.</p><h4 id="c9c2">Starting up a download instance</h4><p id="d737">We need to download 150GB. That’s gonna take a while (think days) and it’s gonna fill, well, just about 150GB of disk space. So you’d better plan ahead.</p><p id="c753">Here’s how I did it: I started a <em class="markup--p-em">t2.large</em> instance (but <em class="markup--p-em">t2.micro</em> should work too), which is more than powerful enough to handle the download. I also attached a 1000GB <a href="https://aws.amazon.com/ebs/" target="_blank"><strong class="markup--p-strong">EBS</strong></a> volume to it (because we’ll need additional space later on). As I/O performance is not important here, I picked the least expensive <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html" target="_blank">volume type</a> (<em class="markup--p-em">sc1</em>).</p><p id="ea78">Then I <em class="markup--p-em">ssh</em>’ed into the instance, formatted the volume, mounted it on <em class="markup--p-em">/data</em> and <em class="markup--p-em">chown</em>’ed it recursively to <em class="markup--p-em">ec2-user:ec2-user</em>. I hope you don’t need me to show you these steps, but here’s the <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-using-volumes.html" target="_blank">tutorial</a>, just in case ;)</p><h4 id="acef">Downloading the data set</h4><p id="0eee">It starts easy. Head out to the <a href="http://www.image-net.org/" target="_blank">ImageNet</a> website, register, accept conditions and voila. You’ll get a <strong class="markup--p-strong">username</strong> and an <strong class="markup--p-strong">access key</strong> which will let you download the data set, which is composed of several very large files: no way we can right click and “save as”.</p><p id="b9fb">Fortunately, one of the Tensorflow <a href="https://github.com/tensorflow/models/" target="_blank">repositories</a> includes a nice <strong class="markup--p-strong">download script</strong>, <a href="https://github.com/tensorflow/models/tree/master/research/inception/inception/data/download_imagenet.sh" target="_blank"><em class="markup--p-em">download_imagenet.sh</em></a>. It’s quite straightforward, this is how to use it.</p><figure id="0123"><script src="https://gist.github.com/juliensimon/ac77f37dcbcfb9442725cd7ac390c4e9.js"></script></figure><p id="0719">And then, you have to wait for a bit: my download took about <strong class="markup--p-strong">5 days</strong>…</p><p id="ba98">Once the script has completed, your directory should look like this.</p><figure id="4f6b"><script src="https://gist.github.com/juliensimon/d43955c25e7754be743bf3e98b22fa08.js"></script></figure><h4 id="8245">Organising the data set for training</h4><p id="c245">Let’s take a look at the data set. If you list the <em class="markup--p-em">imagenet/train</em> directory, you’ll see <strong class="markup--p-strong">1,000 directories</strong>, each of them holding images for a given ImageNet category. Yes, they have weird names, which is why you need to grab <a href="https://github.com/juliensimon/aws/blob/master/mxnet/imagenet/synsets_with_descriptions.txt" target="_blank">this file</a> to know what’s what, e.g. <em class="markup--p-em">n02510455</em> is the category for giant pandas.</p><p id="a3a0">If you list the <em class="markup--p-em">imagenet/validation</em> directory, you see 50,000 images in a <strong class="markup--p-strong">single directory</strong>. That’s not really practical, we’d like to have them in 1,000 directories as well. <a href="https://github.com/juliensimon/aws/blob/master/mxnet/imagenet/build_validation_tree.sh" target="_blank">This script</a> will take care of it: simply run it inside the <em class="markup--p-em">validation</em> directory.</p><h4 id="8fdf">Creating RecordIO files to optimize I/O</h4><p id="7c91">During training, we could definitely load images from disk. However, this would require <strong class="markup--p-strong">a lot of I/O</strong>, especially when using multiple GPUs: these beasts are very hungry and you need to keep feeding them with data at the proper throughout. Failing to do so will <strong class="markup--p-strong">stall</strong> the GPUs and your training speed will drop (more on this in a future post).</p><p id="7bf9">Another problem arises when distributed training is used, i.e. when multiple GPU instances are learning the same data set. Sure, we could copy the full data set to each instance, but that may be impractical for huge ones.</p><p id="8df5">In order to solve both issues, we’re going to convert the data set into <a href="https://mxnet.incubator.apache.org/architecture/note_data_loading.html" target="_blank"><strong class="markup--p-strong">RecordIO files</strong></a>. This compact format is both I/O efficient and easily shareable across instances.</p><p id="0773">The process is pretty simple: we’re going to <strong class="markup--p-strong">pack</strong> the training set and the validation set in their own RecordIO file. We’re also going to <strong class="markup--p-strong">resize</strong> and <strong class="markup--p-strong">compress</strong> the images a bit to save some space: this won’t have any impact on training quality, since most of the ImageNet models require 224x244 images. Feel free to create plenty of threads to maximize throughput :)</p><p id="a669">Let’s start with the validation set. It only takes a couple of minutes.</p><figure id="a1ee"><script src="https://gist.github.com/juliensimon/5fce1bd30f893b944d096af672638435.js"></script></figure><p id="ccf7">Now, let’s do the same thing for the training set. This is going to run for a while (about 1h30 on my <em class="markup--p-em">t2.xlarge</em>).</p><figure id="c595"><script src="https://gist.github.com/juliensimon/f1668ebe3f8874a46a382503256f4bac.js"></script></figure><h4 id="4038">Backing up</h4><p id="71bd">At this point, losing all this would suck beyond belief, wouldn’t it? Let’s make sure we <strong class="markup--p-strong">back everything up</strong> in S3. Just create a bucket and <strong class="markup--p-strong">sync</strong> it with <em class="markup--p-em">/data</em>. Yes, that’s going to take a while.</p><figure id="9815"><script src="https://gist.github.com/juliensimon/3a3f92597e61268b46bc79dd1238eb2e.js"></script></figure><p id="6df2">Once the backup is over, you should:</p><ul class="postList"><li id="0905">terminate the download instance,</li><li id="b080">create a <strong class="markup--li-strong">snapshot</strong> of the EBS volume: it’s another long operation but better safe than sorry, plus it’s going to help us deploy the data set to as many instances as we need, including <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-modifying-snapshot-permissions.html" target="_blank">across accounts and regions</a> if needed.</li></ul><h4 id="8201"><em class="markup--h4-em">Deploying the data set</em></h4><p id="7632">Deploying the data set to a new GPU instance is now as easy as:</p><ul class="postList"><li id="b998">creating a new EBS volume from the snapshot (make sure you create it in the <strong class="markup--li-strong">same AZ</strong> as your instance),</li><li id="ca3f">attaching it to the instance,</li><li id="0f3d">mounting the filesystem.</li></ul><p id="b0a8">This will only take <strong class="markup--p-strong">a few seconds</strong> and can easily be <strong class="markup--p-strong">scripted</strong> and <strong class="markup--p-strong">scaled</strong> to as many instances as needed (<em class="markup--p-em">aws ec2 create volume</em>, <em class="markup--p-em">aws ec2 attach-volume</em>). For full automation, you could perform these operations as <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html" target="_blank">User Data</a> commands at instance launch.</p><h4 id="1795">Conclusion</h4><p id="127f">Sure, it takes a while to download ImageNet, but thanks to the flexibility of EBS, we’re now able to deploy it <strong class="markup--p-strong">as many times as needed in just a few seconds</strong>. Of course, you can easily apply this fast and cost-effective technique to other data sets :)</p><p id="fe11">In the next post, we’ll train a model from scratch and focus on making sure that we get <strong class="markup--p-strong">as much performance</strong> as possible from our GPU instance.</p><p id="0551">That’s it for today. As always, thank you for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="fdf4">This article was written while listening to vintage AC/DC songs: “<em class="markup--p-em">It’s a long way to the top if you wanna… train ImageNet</em>” ;)</p></div></div></section>
+</section>
+</article></body></html>

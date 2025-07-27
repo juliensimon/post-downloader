@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>FreeBSD, from CD-ROM to Cloud</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">FreeBSD, from CD-ROM to Cloud</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+I’ve been using Open Source for 25 years (man, what a depressing way to start this article). Linux has taken over the world, but I still…
+</section>
+<section data-field="body" class="e-content">
+<section name="02a4" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="1ef0" id="1ef0" class="graf graf--h3 graf--leading graf--title">FreeBSD, from CD-ROM to Cloud</h3><figure name="2cd4" id="2cd4" class="graf graf--figure graf-after--h3"><img class="graf-image" data-image-id="1*IFF8-HwNjijE9WaGXFcI7A.jpeg" data-width="240" data-height="320" src="https://cdn-images-1.medium.com/max/800/1*IFF8-HwNjijE9WaGXFcI7A.jpeg"></figure><p name="2d7c" id="2d7c" class="graf graf--p graf--hasDropCapModel graf--hasDropCap graf-after--figure"><span class="graf-dropCap">I’</span>ve been using Open Source for <a href="https://medium.com/@julsimon/a-unix-bi-bli-ography-and-then-some-f6b93847aed3" data-href="https://medium.com/@julsimon/a-unix-bi-bli-ography-and-then-some-f6b93847aed3" class="markup--anchor markup--p-anchor" target="_blank">25 years</a> (man, what a depressing way to start this article). Linux has taken over the world, but I still have a soft spot for the <a href="https://en.wikipedia.org/wiki/Berkeley_Software_Distribution" data-href="https://en.wikipedia.org/wiki/Berkeley_Software_Distribution" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">BSD family</a> in general and for <a href="https://www.freebsd.org/" data-href="https://www.freebsd.org/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">FreeBSD</a> in particular. Blame it on the colourful cast of characters who build the BSD OSes: <strong class="markup--strong markup--p-strong">Bill Joy</strong>, <strong class="markup--strong markup--p-strong">Kirk McKusick</strong> and so on. And yeah, blame it on the Daemon t-shirts ;)</p><p name="b943" id="b943" class="graf graf--p graf-after--p">So, for the sake of having fun and perpetuating the legacy, how about we start a FreeBSD instance on AWS and see where this could lead us?</p><p name="c712" id="c712" class="graf graf--p graf-after--p">The good news is that it couldn’t be easier. Just log in to your AWS account and head for the <strong class="markup--strong markup--p-strong">AWS Marketplace</strong>: in a couple of clicks, you’ll find images for FreeBSD 10 &amp; 11. Kudos to Colin Perceval for maintaining them.</p><figure name="c699" id="c699" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*JzZdteaKbK1NY4CDPl53ZA.png" data-width="1828" data-height="310" src="https://cdn-images-1.medium.com/max/800/1*JzZdteaKbK1NY4CDPl53ZA.png"></figure><p name="1111" id="1111" class="graf graf--p graf-after--figure">Next, we need to pick an instance type. One of the perks of working for AWS is not paying for infrastructure, so why not pick something really large, like <strong class="markup--strong markup--p-strong">i2.8xlarge</strong>: 32 vCPUs, 244GB RAM, 8x800GB local SSD storage, 10Gb networking. I’d have gone for the i3 family, but for reasons unknown to me, the FreeBSD AMI doesn’t support it. Probably a driver issue, I’ll look into it.</p><p name="4b38" id="4b38" class="graf graf--p graf-after--p">A few minutes later, the instance is ready.</p><figure name="05a4" id="05a4" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*G3XJZxkJYgGDyKt7sqSQtQ.png" data-width="944" data-height="106" src="https://cdn-images-1.medium.com/max/800/1*G3XJZxkJYgGDyKt7sqSQtQ.png"></figure><p name="dc5a" id="dc5a" class="graf graf--p graf-after--figure">What now? Back in the day, I loved rebuilding everything from source. It was a great way to learn and that mystical “make world” command fascinated me. It would be fun to do that again, hey? Let’s go!</p><p name="ec20" id="ec20" class="graf graf--p graf-after--p">First things first: storage. The source distribution is pretty large and building it requires even more space of course. Well, this instance does have an EBS volume attached, but it also has a ton of ultra-fast local storage (aka <strong class="markup--strong markup--p-strong">instance store</strong> in AWS terminology). Isn’t this a great opportunity to use <a href="https://en.wikipedia.org/wiki/ZFS" data-href="https://en.wikipedia.org/wiki/ZFS" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">ZFS</a> (another one of my obsessions)? Of course it is.</p><p name="6968" id="6968" class="graf graf--p graf-after--p">This is how these 8 disks appear on the instance:</p><figure name="1a1e" id="1a1e" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*c1qYbF6rFy__KHE-lswFLQ.png" data-width="1076" data-height="346" src="https://cdn-images-1.medium.com/max/800/1*c1qYbF6rFy__KHE-lswFLQ.png"></figure><p name="963c" id="963c" class="graf graf--p graf-after--figure">Let’s switch to root and initialise them with a single slice. First, I need to run an arcane ‘sysctl’ command allowing me to do this without having to drop to single-user mode (yes, I’m lazy…and I want to keep this short!).</p><figure name="fe73" id="fe73" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*55if5x3f3Rkb_CNvuSeJnQ.png" data-width="636" data-height="476" src="https://cdn-images-1.medium.com/max/800/1*55if5x3f3Rkb_CNvuSeJnQ.png"></figure><p name="9017" id="9017" class="graf graf--p graf-after--figure">Now we can create our ZFS storage. Let’s use 4 disks for source files and 4 disks for object files. This is all it takes:</p><figure name="a46a" id="a46a" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*X9QwLopzomolprx7_3UPTQ.png" data-width="1336" data-height="450" src="https://cdn-images-1.medium.com/max/800/1*X9QwLopzomolprx7_3UPTQ.png"></figure><p name="b36f" id="b36f" class="graf graf--p graf-after--figure">Let’s now fetch all FreeBSD 11 sources and extract them:</p><figure name="4168" id="4168" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*Op7GORljYVbJD3gmPWfSsw.png" data-width="1742" data-height="150" src="https://cdn-images-1.medium.com/max/800/1*Op7GORljYVbJD3gmPWfSsw.png"></figure><p name="5dae" id="5dae" class="graf graf--p graf-after--figure">We’re ready to build. This instance has <strong class="markup--strong markup--p-strong">32 vCPUs</strong>, so let’s take advantage of them and run a parallel build:</p><figure name="1f1e" id="1f1e" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*94yaksfKFlLchLFLioRWrQ.png" data-width="1124" data-height="100" src="https://cdn-images-1.medium.com/max/800/1*94yaksfKFlLchLFLioRWrQ.png"></figure><p name="6303" id="6303" class="graf graf--p graf-after--figure">While we wait for this to complete, ‘top’ is interesting to look at. All cores busy, 96% user time, <strong class="markup--strong markup--p-strong">0.1% idle</strong> (instance store FTW). Perfect!</p><figure name="ea02" id="ea02" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*CgW82eQq64u2C1i9szMgMA.png" data-width="1092" data-height="720" src="https://cdn-images-1.medium.com/max/800/1*CgW82eQq64u2C1i9szMgMA.png"></figure><p name="164b" id="164b" class="graf graf--p graf-after--figure">And the result is…</p><figure name="8447" id="8447" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*JNbs0rJEEs-pmB44gSthHw.png" data-width="1384" data-height="192" src="https://cdn-images-1.medium.com/max/800/1*JNbs0rJEEs-pmB44gSthHw.png"></figure><p name="d6e9" id="d6e9" class="graf graf--p graf-after--figure"><strong class="markup--strong markup--p-strong">17 minutes</strong>. Back in the day, this would take <strong class="markup--strong markup--p-strong">12+ hours</strong> on my high-end PC. I would leave it on all night, only to find out at breakfast that the goddamn build had failed in the middle of the night. And yes, that would ruin my day.</p><blockquote name="9b32" id="9b32" class="graf graf--blockquote graf-after--p">Now, thanks to Moore’s Law and to Cloud computing, I can get the same work done about <strong class="markup--strong markup--blockquote-strong">50 times faster</strong>. Ain’t life grand!</blockquote><p name="6552" id="6552" class="graf graf--p graf-after--blockquote graf--trailing">Of course, there would plenty more to explore — and maybe we’ll dive deeper in future stories — but that’s it for now. Thanks for reading.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/1322e5591d99"><time class="dt-published" datetime="2017-04-06T19:52:23.396Z">April 6, 2017</time></a>.</p><p><a href="https://medium.com/@julsimon/freebsd-from-cd-rom-to-cloud-1322e5591d99" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

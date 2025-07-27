@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Training MXNet — part 5: distributed training, EFS edition</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="6d50">Training MXNet — part 5: distributed training, EFS edition</h3><p id="f4f3"><a href="https://medium.com/@julsimon/training-mxnet-part-4-distributed-training-91def5ea3bb7" target="_blank">In part 4</a>, we learned how to speed up training by using multiple GPU instances. We saw that the job launcher, a Python script named <em class="markup--p-em">launch.py</em>, used <em class="markup--p-em">rsync </em>to copy the data set to each one of these instances. For a small data set like CIFAR-10, that’s not really a problem. However, it would be <strong class="markup--p-strong">slow</strong> and <strong class="markup--p-strong">wasteful</strong> to copy a much larger data set.</p><p id="ce03">In this article, I will show you how to <strong class="markup--p-strong">share</strong> the data set across all instances with <a href="https://aws.amazon.com/efs/" target="_blank">Amazon EFS</a>, a managed service fully compatible with NFS v4.1.</p><h4 id="cd27">The song remains the same</h4><p id="f880">Everything we did in <a href="https://medium.com/@julsimon/training-mxnet-part-4-distributed-training-91def5ea3bb7" target="_blank">part 4</a> still stands. In particular, we do need password-less <em class="markup--p-em">ssh</em> between all instances, because the launcher uses <em class="markup--p-em">ssh</em> to start the training script.</p><p id="a056">So, if you haven’t done so already, please read <a href="https://medium.com/@julsimon/training-mxnet-part-4-distributed-training-91def5ea3bb7" target="_blank">part 4</a> and come back here when you reach the “Launching distributed training” section :)</p><h4 id="aad5">Creating an EFS file system</h4><p id="6325">This is very simple. Go the EFS console and click on “Create file system”. Select the VPC in which your instances are running. Then, select all available AZs and make sure you use the <strong class="markup--p-strong">Security Group attached to your instances</strong> (not the default Security Group selected by the console).</p><figure id="df19"><img class="graf-image" src="image03.webp"/></figure><p id="bc41">Click “Next”, select the “General purpose” performance mode and create the file system. After a few minutes, the file system will be ready for mounting. Don’t try to mount it until it’s available, you’ll get a “Name or service not known” error. I know, I tried :)</p><figure id="cd14"><img class="graf-image" src="image01.webp"/></figure><p id="3fe7">Amazon EFS is NFS-compatible, so mounting the file system is done the way you’d expect it. <strong class="markup--p-strong">Mount instructions</strong> are available in the console.</p><figure id="75e0"><script src="https://gist.github.com/juliensimon/9e287ab3941333a0ed10d65c623a3cb2.js"></script></figure><p id="3240">Obviously, we need to do this on <strong class="markup--p-strong">all</strong> instances. If your instances are already up, just run the commands above on each of them.</p><p id="3316">If they’re not up yet, then you can mount the file system automatically at instance launch thanks to <strong class="markup--p-strong">User Data</strong> (just copy the commands in the “Advanced Details” section of the EC2 console).</p><figure id="7de9"><img class="graf-image" src="image06.webp"/></figure><h4 id="b7cd">Sharing the data set</h4><p id="4c10">Now that the file system has been mounted on all instances, it’s time to share the data set. Actually, we’ll share the full MXNet source tree, in order to include all necessary scripts.</p><figure id="86fc"><script src="https://gist.github.com/juliensimon/b3a121ca90c3c7c7b5c6fae5b794bfca.js"></script></figure><p id="8b9f">You should now see the <em class="markup--p-em">mxnet</em> directory on all instances. We’re ready to launch training.</p><h4 id="50d9">Launching distributed training</h4><p id="269a">The command is identical to the one we used in part 4, minus the “ — <em class="markup--p-em">sync-dst-dir /tmp/mxnet</em>” parameter.</p><figure id="c4c0"><script src="https://gist.github.com/juliensimon/b4f7c447be03ced23ab3010211fd8dd6.js"></script></figure><p id="5acd">That’s it! Now you know how to do distributed training using shared storage. As a bonus, we also shared the sources and that will come in handy next time we need to build and install MXNet :)</p><p id="d0db">Thanks for reading.</p><figure id="bcd8"><iframe frameborder="0" height="350" scrolling="no" src="https://upscri.be/8f5f8b?as_embed=true" width="700"></iframe></figure></div><div><figure id="10db"><img class="graf-image" src="image02.webp"/></figure></div><div><figure id="3d0e" style="width: 33.333%;"><a href="https://medium.com/becoming-human/artificial-intelligence-communities-c305f28e674c"><img class="graf-image" src="image07.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="aa8d" style="width: 33.333%;"><a href="https://upscri.be/8f5f8b" target="_blank"><img class="graf-image" src="image04.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="5348" style="width: 33.333%;"><a href="https://medium.com/becoming-human/write-for-us-48270209de63"><img class="graf-image" src="image05.webp"/></a></figure></div></div></section>
+</section>
+</article></body></html>

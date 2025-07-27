@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>SageMaker Fridays Season 3, Episode 6 — Cost optimization with Machine Learning</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="7446">SageMaker Fridays Season 3, Episode 6 — Cost optimization with Machine Learning</h3><p id="1a8a">In the first section, we have a chat with our special guest Greg Coquillo, a Technology Risk Manager working for Amazon. We walk through an automation project that he’s currently working on for a B2B customer operating in chemicals. In order to build material safety data sheets, the project automatically extracts image and text data from over 100,000 documents a month, using AI services like Amazon Textract, Amazon Comprehend and Amazon Translate. We’ll discuss the key phases of the project, its benefits, and best practices learned along the way.</p><p id="e31f">In the second section, we dive into a large-scale computer vision workload running on SageMaker, and from image labeling to training to predicting, we’ll pull out all the stops to optimize cost. Along the way, you’ll learn about labeling with SageMaker Ground Truth, right-sizing your training infrastructure, training with Managed Spot Training and Pipe Mode, deploying with Elastic Inference, and more. Get ready to save money!</p><figure id="a8c5"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/u0qYgR8d-y0?feature=oembed" width="700"></iframe></figure><div class="graf--mixtapeEmbed" id="3d4e"><a class="markup--mixtapeEmbed-anchor" href="https://gitlab.com/juliensimon/amazon-studio-demos/-/tree/master/sagemaker_fridays" title="https://gitlab.com/juliensimon/amazon-studio-demos/-/tree/master/sagemaker_fridays"><strong class="markup--mixtapeEmbed-strong">sagemaker_fridays · master · Julien Simon / amazon-studio-demos</strong><br/><em class="markup--mixtapeEmbed-em">GitLab.com</em>gitlab.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="eac2694ec29716c9fdbd1c2eb5fb9bae" data-thumbnail-img-id="0*60RczzEmKHMVmCL1" href="https://gitlab.com/juliensimon/amazon-studio-demos/-/tree/master/sagemaker_fridays" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*60RczzEmKHMVmCL1);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="2f02"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/machine-learning/intelligent-governance-of-document-processing-pipelines-for-regulated-industries/" title="https://aws.amazon.com/blogs/machine-learning/intelligent-governance-of-document-processing-pipelines-for-regulated-industries/"><strong class="markup--mixtapeEmbed-strong">Intelligent governance of document processing pipelines for regulated industries | Amazon Web…</strong><br/><em class="markup--mixtapeEmbed-em">Processing large documents like PDFs and static images is a cornerstone of today's highly regulated industries. From…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="f33141f0ddfcc7dda90725ee6620993e" data-thumbnail-img-id="0*rI7J92vm8K-XrXfQ" href="https://aws.amazon.com/blogs/machine-learning/intelligent-governance-of-document-processing-pipelines-for-regulated-industries/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*rI7J92vm8K-XrXfQ);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="49f7"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-debugger-debug-your-machine-learning-models/" title="https://aws.amazon.com/blogs/aws/amazon-sagemaker-debugger-debug-your-machine-learning-models/"><strong class="markup--mixtapeEmbed-strong">Amazon SageMaker Debugger - Debug Your Machine Learning Models | Amazon Web Services</strong><br/><em class="markup--mixtapeEmbed-em">Today, we're extremely happy to announce Amazon SageMaker Debugger, a new capability of Amazon SageMaker that…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="8e3bc08864e0e87abbd5bd280b8478c5" data-thumbnail-img-id="0*Qe5v_jMplAX0pT1J" href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-debugger-debug-your-machine-learning-models/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*Qe5v_jMplAX0pT1J);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="eac5"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/aws/profile-your-machine-learning-training-jobs-with-amazon-sagemaker-debugger/" title="https://aws.amazon.com/blogs/aws/profile-your-machine-learning-training-jobs-with-amazon-sagemaker-debugger/"><strong class="markup--mixtapeEmbed-strong">New - Profile Your Machine Learning Training Jobs With Amazon SageMaker Debugger | Amazon Web…</strong><br/><em class="markup--mixtapeEmbed-em">Today, I'm extremely happy to announce that Amazon SageMaker Debugger can now profile machine learning models, making…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="2e1d11bb9d4bb50c06e81e35ac19d2b8" data-thumbnail-img-id="0*Ec-u8xgYnhu1jvyR" href="https://aws.amazon.com/blogs/aws/profile-your-machine-learning-training-jobs-with-amazon-sagemaker-debugger/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*Ec-u8xgYnhu1jvyR);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="32fc"><a class="markup--mixtapeEmbed-anchor" href="https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-cloudwatch-lambda.html" title="https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-cloudwatch-lambda.html"><strong class="markup--mixtapeEmbed-strong">Create Actions on Rules Using Amazon CloudWatch and AWS Lambda</strong><br/><em class="markup--mixtapeEmbed-em">Amazon CloudWatch collects Amazon SageMaker model training job logs and Amazon SageMaker Debugger rule processing job…</em>docs.aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage mixtapeImage--empty u-ignoreBlock" data-media-id="ccd47000af0f93bc44b866f42a46412c" href="https://docs.aws.amazon.com/sagemaker/latest/dg/debugger-cloudwatch-lambda.html"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="41ef"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-now-supports-random-search-and-hyperparameter-scaling/" title="https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-now-supports-random-search-and-hyperparameter-scaling/"><strong class="markup--mixtapeEmbed-strong">Amazon SageMaker automatic model tuning now supports random search and hyperparameter scaling |…</strong><br/><em class="markup--mixtapeEmbed-em">We are excited to introduce two highly requested features to automatic model tuning in Amazon SageMaker: random search…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="53a9a9b1b11e84c5744f200c706319ef" data-thumbnail-img-id="0*25MMgbj6Gc-eGx3v" href="https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-now-supports-random-search-and-hyperparameter-scaling/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*25MMgbj6Gc-eGx3v);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="46e4"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/aws/managed-spot-training-save-up-to-90-on-your-amazon-sagemaker-training-jobs/" title="https://aws.amazon.com/blogs/aws/managed-spot-training-save-up-to-90-on-your-amazon-sagemaker-training-jobs/"><strong class="markup--mixtapeEmbed-strong">Managed Spot Training: Save Up to 90% On Your Amazon SageMaker Training Jobs | Amazon Web Services</strong><br/><em class="markup--mixtapeEmbed-em">Amazon SageMaker is a fully-managed, modular machine learning (ML) service that enables developers and data scientists…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="968d229035a164d0d2a86adb3a67b5b1" data-thumbnail-img-id="0*7qR_rUZozSdg7jOX" href="https://aws.amazon.com/blogs/aws/managed-spot-training-save-up-to-90-on-your-amazon-sagemaker-training-jobs/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*7qR_rUZozSdg7jOX);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="e47e"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/aws/amazon-elastic-inference-gpu-powered-deep-learning-inference-acceleration/" title="https://aws.amazon.com/blogs/aws/amazon-elastic-inference-gpu-powered-deep-learning-inference-acceleration/"><strong class="markup--mixtapeEmbed-strong">Amazon Elastic Inference - GPU-Powered Deep Learning Inference Acceleration | Amazon Web Services</strong><br/><em class="markup--mixtapeEmbed-em">One of the reasons for the recent progress of Artificial Intelligence and Deep Learning is the fantastic computing…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="99098835eb04e229052a7eede191e169" data-thumbnail-img-id="0*S-_sQMdsMZA3sQkt" href="https://aws.amazon.com/blogs/aws/amazon-elastic-inference-gpu-powered-deep-learning-inference-acceleration/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*S-_sQMdsMZA3sQkt);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="69f8"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/aws/slash-your-machine-learning-costs-with-instance-price-reductions-and-savings-plans-for-amazon-sagemaker/" title="https://aws.amazon.com/blogs/aws/slash-your-machine-learning-costs-with-instance-price-reductions-and-savings-plans-for-amazon-sagemaker/"><strong class="markup--mixtapeEmbed-strong">Decrease Your Machine Learning Costs with Instance Price Reductions and Savings Plans for Amazon…</strong><br/><em class="markup--mixtapeEmbed-em">Launched at AWS re:Invent 2017, Amazon SageMaker is a fully-managed service that has already helped tens of thousands…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="fb5fc7d7702a6137849d0d5b1c50f3a3" data-thumbnail-img-id="0*14hkl2YPMKPg5nIG" href="https://aws.amazon.com/blogs/aws/slash-your-machine-learning-costs-with-instance-price-reductions-and-savings-plans-for-amazon-sagemaker/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*14hkl2YPMKPg5nIG);"></a></div></div></div></section>
+</section>
+</article></body></html>

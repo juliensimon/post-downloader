@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Running Folding@home on Amazon EC2 instances</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="dc3d">Running Folding@home on Amazon EC2 instances</h3><p id="c429"><a href="https://foldingathome.org/" target="_blank">Folding@home</a> is a long running project focused on disease research using distributed computing, and they recently launched a number of <a href="https://github.com/FoldingAtHome/coronavirus" target="_blank">projects</a> related to COVID-19.</p><p id="86d6">This blog post will show you how to use Amazon EC2 GPU instances with Folding@home.<strong class="markup--p-strong"> This is a great way to help researchers, so please consider donating some GPU time</strong>.</p><h3 id="756c">Initial setup</h3><p id="a31c">First, I fire up an <a href="https://aws.amazon.com/ec2/instance-types/p3" target="_blank">Amazon EC2 P3</a> instance, which hosts an NVIDIA V100 GPU. I use the <a href="https://aws.amazon.com/marketplace/pp/NVIDIA-NVIDIA-Deep-Learning-AMI/B076K31M1S" target="_blank">NVIDIA Deep Learning AMI 19.11.3</a> in order to make sure that I have the latest NVIDIA drivers. This should also work on other AMIs, but your mileage may vary.</p><blockquote class="graf--blockquote" id="e129"><a class="markup--blockquote-anchor" href="https://aws.amazon.com/ec2/spot/" target="_blank">Spot instances</a> would be a great choice here!</blockquote><p class="graf-after--blockquote" id="29e8">Then, I simply follow these <a href="https://foldingathome.org/support/faq/installation-guides/linux/manual-installation-advanced/" target="_blank">instructions</a> to manually install the Folding@home client. Here are my exact steps:</p><pre class="graf--pre" id="a0fc">wget <a class="markup--pre-anchor" href="https://download.foldingathome.org/releases/public/release/fahclient/debian-testing-64bit/v7.4/fahclient_7.4.4_amd64.deb" target="_blank">https://download.foldingathome.org/releases/public/release/fahclient/debian-testing-64bit/v7.4/fahclient_7.4.4_amd64.deb</a></pre><pre class="graf--pre graf-after--pre" id="26ba">wget <a class="markup--pre-anchor" href="https://download.foldingathome.org/releases/public/release/fahcontrol/debian-testing-64bit/v7.4/fahcontrol_7.4.4-1_all.deb" target="_blank">https://download.foldingathome.org/releases/public/release/fahcontrol/debian-testing-64bit/v7.4/fahcontrol_7.4.4-1_all.deb</a></pre><pre class="graf--pre graf-after--pre" id="ce24">sudo dpkg -i --force-depends fahclient_7.4.4_amd64.deb</pre><pre class="graf--pre graf-after--pre" id="a692">sudo dpkg -i --force-depends fahcontrol_7.4.4-1_all.deb</pre><p class="graf-after--pre" id="800b">Once I’ve completed the wizard setup, the client starts automatically. ‘<em class="markup--p-em">htop</em>’ confirms that the ‘<em class="markup--p-em">a7</em>’ Folding@Home core is crunching data.</p><figure id="fc53"><img class="graf-image" src="image02.webp"/></figure><p id="a9c0">By default, training is only running on the CPU. Let’s put that GPU to work!</p><h3 id="409c">Enabling GPU training</h3><p id="e9ec">I need to edit <em class="markup--p-em">/etc/fahclient/config.xml </em>(sudo required):</p><pre class="graf--pre" id="3359">&lt;config&gt;<br/> &lt;! — Client Control →<br/> &lt;fold-anon v=’true’/&gt;</pre><pre class="graf--pre graf-after--pre" id="ebc7">&lt;! — Folding Slot Configuration →<br/> <strong class="markup--pre-strong">&lt;gpu v=’true’/&gt;</strong></pre><pre class="graf--pre graf-after--pre" id="bda5">&lt;! — Slot Control →<br/> &lt;power v=’full’/&gt;</pre><pre class="graf--pre graf-after--pre" id="1d2d">&lt;! — User Information →<br/> &lt;user v=’JulienS’/&gt;</pre><pre class="graf--pre graf-after--pre" id="d803">&lt;! — Folding Slots →<br/> &lt;slot id=’0' type=’CPU’/&gt;<br/> <strong class="markup--pre-strong">&lt;slot id=’1' type=’GPU’/&gt;</strong><br/>&lt;/config&gt;</pre><p class="graf-after--pre" id="aca5">Then, I just stop and start the client:</p><pre class="graf--pre" id="fb78"><code class="markup--code markup--pre-code">sudo /etc/init.d/FAHClient stop</code></pre><pre class="graf--pre graf-after--pre" id="91a1"><code class="markup--code markup--pre-code">sudo /etc/init.d/FAHClient start</code></pre><p class="graf-after--pre" id="ada0">This fires up a GPU-optimized Folding@home core (core ‘22’).</p><figure id="838d"><img class="graf-image" src="image03.webp"/></figure><p id="af7e">Pretty soon, <em class="markup--p-em">nvidia-smi</em> tells me that the GPU is now crunching as well.</p><figure id="bdd3"><img class="graf-image" src="image01.webp"/></figure><p id="17c3">Take that, COVID-19. Your days are counted.</p><p id="9203">Again, please consider donating some GPU time if you can. Thank you.</p></div></div></section>
+</section>
+</article></body></html>

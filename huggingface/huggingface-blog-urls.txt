@@ -1,0 +1,36 @@
+# Hugging Face Blog Posts URLs by Julien Simon (2021-2024)
+
+## 2024
+https://huggingface.co/blog/intel-protein-language-model-protst
+https://huggingface.co/blog/cost-efficient-rag-applications-with-intel
+https://huggingface.co/blog/phi2-intel-meteor-lake
+https://huggingface.co/blog/safecoder-vs-closed-source-code-assistants
+https://huggingface.co/blog/stable-diffusion-finetuning-intel
+
+## 2023
+https://huggingface.co/blog/huggingface-and-amd
+https://huggingface.co/blog/hugging-face-endpoints-on-azure
+https://huggingface.co/blog/huggingface-and-ibm
+https://huggingface.co/blog/generative-ai-models-on-intel-cpu
+https://huggingface.co/blog/accelerate-transformers-with-inferentia2
+https://huggingface.co/blog/stable-diffusion-inference-intel
+https://huggingface.co/blog/classification-use-cases
+https://huggingface.co/blog/aws-partnership
+https://huggingface.co/blog/intel-sapphire-rapids-inference
+https://huggingface.co/blog/intel-sapphire-rapids
+
+## 2022
+https://huggingface.co/blog/inference-update
+https://huggingface.co/blog/openvino
+https://huggingface.co/blog/inference-endpoints
+https://huggingface.co/blog/vision-transformers
+https://huggingface.co/blog/intel
+
+## 2021
+https://huggingface.co/blog/getting-started-habana
+https://huggingface.co/blog/graphcore-getting-started
+https://huggingface.co/blog/accelerating-pytorch
+https://huggingface.co/blog/large-language-models
+https://huggingface.co/blog/the-age-of-ml-as-code
+
+# Total: 25 blog posts

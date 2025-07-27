@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Resurrecting a BrickLens</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Resurrecting a BrickLens</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+A unfortunate Linux kernel update has recently wreaked havoc on many DeepLens cameras. While some lucky users have been able to revert this…
+</section>
+<section data-field="body" class="e-content">
+<section name="0a65" class="section section--body section--first"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="8ff8" id="8ff8" class="graf graf--h3 graf--leading graf--title">Resurrecting a BrickLens</h3><p name="6e86" id="6e86" class="graf graf--p graf-after--h3">A unfortunate Linux kernel update has recently wreaked havoc on many DeepLens cameras. While some lucky users have been able to <a href="https://forums.aws.amazon.com/ann.jspa?annID=5367" data-href="https://forums.aws.amazon.com/ann.jspa?annID=5367" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">revert this update</a>, many of them (myself included) have found themselves the proud owner of, well… a BrickLens :D</p><figure name="e71a" id="e71a" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*63O-NTLocowNFFtUs4MEZg.png" data-width="640" data-height="360" src="https://cdn-images-1.medium.com/max/800/1*63O-NTLocowNFFtUs4MEZg.png"><figcaption class="imageCaption">Not quite, but working on it.</figcaption></figure><p name="6780" id="6780" class="graf graf--p graf-after--figure">Here’s a detailed procedure to perform a full system restore on DeepLens. It builds upon the <a href="https://s3.amazonaws.com/deeplens-public/DeepLens_Troubleshooting_Guide.pdf" data-href="https://s3.amazonaws.com/deeplens-public/DeepLens_Troubleshooting_Guide.pdf" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">official troubleshooting guide</a>.<br> <br><strong class="markup--strong markup--p-strong">DISCLAMER: THIS WILL ERASE ALL EXISTING CONTENT ON THE CAMERA.</strong></p><h4 name="1629" id="1629" class="graf graf--h4 graf-after--p">Hardware shopping list</h4><ul class="postList"><li name="5ca2" id="5ca2" class="graf graf--li graf-after--h4">A USB key (2GB minimum),</li><li name="b30a" id="b30a" class="graf graf--li graf-after--li">A micro-SD card (16GB minimum),</li><li name="f5bc" id="f5bc" class="graf graf--li graf-after--li">An adapter to connect the microSD card to your computer (micro-SD to SD, micro-SD to USB, card reader),</li><li name="2abe" id="2abe" class="graf graf--li graf-after--li">An external monitor, with an HDMI to micro-HDMI cable,</li><li name="f726" id="f726" class="graf graf--li graf-after--li">A USB keyboard (no mouse needed, both USB ports on DeepLens will be occupied anyway).</li></ul><h4 name="4509" id="4509" class="graf graf--h4 graf-after--li">Software shopping list</h4><ul class="postList"><li name="26dc" id="26dc" class="graf graf--li graf-after--h4">The <a href="https://www.ubuntu.com/download/desktop" data-href="https://www.ubuntu.com/download/desktop" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">Ubuntu 16.04 ISO image</a>,</li><li name="4f65" id="4f65" class="graf graf--li graf-after--li">The <a href="https://s3.amazonaws.com/deeplens-public/factory-restore/DeepLensRestore_1.1.17.zip" data-href="https://s3.amazonaws.com/deeplens-public/factory-restore/DeepLensRestore_1.1.17.zip" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">DeepLens system image</a>,</li><li name="1e44" id="1e44" class="graf graf--li graf-after--li"><a href="https://etcher.io/" data-href="https://etcher.io/" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">Etcher</a>.</li></ul><p name="77aa" id="77aa" class="graf graf--p graf-after--li">You’ll also need the ability to format the micro-SD card with NTFS:</p><ul class="postList"><li name="64f6" id="64f6" class="graf graf--li graf-after--p">Windows users: natively supported</li><li name="b270" id="b270" class="graf graf--li graf-after--li">Linux users: <a href="https://linux.die.net/man/8/mkfs.ntfs" data-href="https://linux.die.net/man/8/mkfs.ntfs" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">mkfs.ntfs (8)</a></li><li name="e823" id="e823" class="graf graf--li graf-after--li">Mac users: no native support, best option is to use <a href="https://www.paragon-software.com/home/ntfs-mac/" data-href="https://www.paragon-software.com/home/ntfs-mac/" class="markup--anchor markup--li-anchor" rel="noopener" target="_blank">Paragon NTFS</a> (Free 10-day evaluation period, then $19.95)</li></ul><h3 name="2dc7" id="2dc7" class="graf graf--h3 graf-after--li">Procedure</h3><p name="738e" id="738e" class="graf graf--p graf-after--h3">On your computer:</p><ul class="postList"><li name="5d3f" id="5d3f" class="graf graf--li graf-after--p">Use Etcher to burn the Ubuntu ISO image on the USB key.</li><li name="5170" id="5170" class="graf graf--li graf-after--li">Format the micro-SD card in NTFS format and name the volume <strong class="markup--strong markup--li-strong">Storage</strong> (with a capital S).</li><li name="2774" id="2774" class="graf graf--li graf-after--li">Extract the DeepLens system image at the root of the micro-SD card.</li><li name="4d26" id="4d26" class="graf graf--li graf-after--li">Eject the USB key and the micro-SD card safely.</li></ul><p name="ff3a" id="ff3a" class="graf graf--p graf-after--li">On DeepLens:</p><ul class="postList"><li name="0a7e" id="0a7e" class="graf graf--li graf-after--p">Connect the keyboard and micro-HDMI cable.</li><li name="cc0c" id="cc0c" class="graf graf--li graf-after--li">Connect the USB key.</li><li name="7586" id="7586" class="graf graf--li graf-after--li">Insert the micro-SD card.</li><li name="9283" id="9283" class="graf graf--li graf-after--li">Connect the power adapter.</li><li name="4205" id="4205" class="graf graf--li graf-after--li">Power on the camera and keep pressing the ESC key.</li><li name="e4cd" id="e4cd" class="graf graf--li graf-after--li">When the BIOS menu appears, select ‘Boot Menu’ and boot from the USB key (not the DeepLens volume).</li><li name="1b8f" id="1b8f" class="graf graf--li graf-after--li">When the Ubuntu menu appears, select ‘Try Ubuntu without installing’.</li><li name="e5a4" id="e5a4" class="graf graf--li graf-after--li">The Ubuntu desktop will open (no password needed).</li><li name="2f10" id="2f10" class="graf graf--li graf-after--li">Using ALT-F1, open a Terminal and go to<em class="markup--em markup--li-em"> /media/ubuntu/Storage.</em></li></ul><p name="89d9" id="89d9" class="graf graf--p graf-after--li">The <em class="markup--em markup--p-em">flashing.py</em> Python script uses <em class="markup--em markup--p-em">dd</em> to perform a raw copy the system image (<em class="markup--em markup--p-em">image.bin</em>) to the DeepLens internal storage (partition 2 on <em class="markup--em markup--p-em">/dev/mmcblk1</em> aka <em class="markup--em markup--p-em">/dev/mmcblk1p2</em>). It then resizes the partition to the correct size.<br> <br>A word of warning: there’s no error management in the script. To avoid messing up your filesystem and having to flash it again, I would suggest commenting out the filesystem commands.</p><pre name="21dc" id="21dc" class="graf graf--pre graf-after--p">sudo umount <em class="markup--em markup--pre-em">/dev/mmcblk1p2<br></em>sudo parted <em class="markup--em markup--pre-em">/dev/mmcblk1 resizepart2 15758<br></em>sudo fsck -fy <em class="markup--em markup--pre-em">/dev/mmcblk1p2<br></em>sudo resize2fs <em class="markup--em markup--pre-em">/dev/mmcblk1p2</em></pre><p name="9fd8" id="9fd8" class="graf graf--p graf-after--pre">Once you’ve run the modified script and flashed the image, you could run the filesystem commands one by one, carefully checking that each one has completed successfully before running the next.<br> <br>If you think I’m just old-fashioned and paranoid, just go ahead and run the script as-is.</p><pre name="8449" id="8449" class="graf graf--pre graf-after--p">python flashing.py</pre><p name="3ac8" id="3ac8" class="graf graf--p graf-after--pre">The whole process takes about 15 minutes. Once it’s complete, you can shut DeepLens down.</p><pre name="9ac2" id="9ac2" class="graf graf--pre graf-after--p">sudo shutdown -h now</pre><p name="d602" id="d602" class="graf graf--p graf-after--pre">Disconnect the USB key and remove the micro-SD card. Store them somewhere safe, chances are you’ll need them again ;)<br> <br>Your DeepLens is now operational. Power it on and follow the <a href="https://docs.aws.amazon.com/deeplens/latest/dg/deeplens-getting-started.html" data-href="https://docs.aws.amazon.com/deeplens/latest/dg/deeplens-getting-started.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">setup instructions</a> in the AWS documentation.<br> <br>One last thing: unless you really enjoyed running this procedure, may I suggest that you disable automatic updates, either at registration time or by running:</p><pre name="6552" id="6552" class="graf graf--pre graf-after--p">sudo <code class="markup--code markup--pre-code">apt-get remove unattended-upgrades</code></pre><p name="c5fe" id="c5fe" class="graf graf--p graf-after--pre graf--trailing">Have fun with DeepLens!<br> <br>Questions and comments welcome on <a href="https://twitter.com/julsimon" data-href="https://twitter.com/julsimon" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Twitter</a>.</p></div></div></section><section name="0e23" class="section section--body section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><p name="0b9b" id="0b9b" class="graf graf--p graf--leading">Obvious choice…</p><figure name="674e" id="674e" class="graf graf--figure graf--iframe graf-after--p graf--trailing"><iframe src="https://www.youtube.com/embed/8CoGDjtBtVE?feature=oembed" width="640" height="480" frameborder="0" scrolling="no"></iframe></figure></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/5596f38931b3"><time class="dt-published" datetime="2018-01-26T14:20:12.098Z">January 26, 2018</time></a>.</p><p><a href="https://medium.com/@julsimon/resurrecting-a-bricklens-5596f38931b3" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <style>
+   body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 2.5em; }
+        h2 { font-size: 2em; }
+        h3 { font-size: 1.5em; }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 1em 0;
+        }
+        /* Image alignment classes for text wraparound */
+        img.alignleft {
+            float: left;
+            margin: 0.5em 1.5em 1em 0;
+        }
+        img.alignright {
+            float: right;
+            margin: 0.5em 0 1em 1.5em;
+        }
+        img.aligncenter {
+            display: block;
+            margin: 1em auto;
+            float: none;
+        }
+        img.alignnone {
+            float: none;
+            margin: 1em 0;
+        }
+        /* Clear floats after images */
+        .wp-block-image::after,
+        p:has(img.alignleft)::after,
+        p:has(img.alignright)::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1em;
+            overflow-x: auto;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 1em 0;
+            padding-left: 1em;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+  </style>
+ </head>
+ <body>
+  <h1>
+   Paging Doctor Cloud! Amazon HealthLake Is Now Generally Available
+  </h1>
+  <p style="color: #666; font-style: italic; margin-bottom: 1em;">
+   Published: 2021-07-15
+  </p>
+  <p style="color: #666; font-style: italic; margin-bottom: 2em;">
+   Originally published at
+   <a href="https://aws.amazon.com/blogs/aws/paging-doctor-cloud-amazon-healthlake-is-now-generally-available/">
+    https://aws.amazon.com/blogs/aws/paging-doctor-cloud-amazon-healthlake-is-now-generally-available/
+   </a>
+  </p>
+  <p>
+   At AWS re:Invent 2020, we previewed
+   <a href="https://aws.amazon.com/healthlake/">
+    Amazon HealthLake
+   </a>
+   , a fully managed, HIPAA-eligible service that allows healthcare and life sciences customers to aggregate their health information from different silos and formats into a structured, centralized AWS data lake, and extract insights from that data with analytics and machine learning (ML). Today, I’m very happy to announce that
+   <a href="https://aws.amazon.com/healthlake/">
+    Amazon HealthLake
+   </a>
+   is generally available to all AWS customers.
+  </p>
+  <p>
+   The ability to store, transform, and analyze health data quickly and at any scale is critical in driving high-quality health decisions. In their daily practice, doctors need a complete chronological view of patient history to identify the best course of action. During an emergency, giving medical teams the right information at the right time can dramatically improve patient outcomes. Likewise, healthcare and life sciences researchers need high-quality, normalized data that they can analyze and build models with, to identify population health trends or drug trial recipients.
+  </p>
+  <p>
+   Traditionally, most health data has been locked in unstructured text such as clinical notes, and stored in IT silos. Heterogeneous applications, infrastructure, and data formats have made it difficult for practitioners to access patient data, and extract insights from it. We built
+   <a href="https://aws.amazon.com/healthlake/">
+    Amazon HealthLake
+   </a>
+   to solve that problem.
+  </p>
+  <p>
+   If you can’t wait to get started, you can jump to the
+   <a href="https://console.aws.amazon.com/healthlake/home">
+    AWS console
+   </a>
+   for Amazon HealthLake now. If you’d like to learn more, read on!
+  </p>
+  <p>
+   <strong>
+    <span style="text-decoration: underline;">
+     Introducing Amazon HealthLake
+    </span>
+   </strong>
+   <br/>
+   <a href="https://aws.amazon.com/healthlake/">
+    Amazon HealthLake
+   </a>
+   is backed by fully-managed AWS infrastructure. You won’t have to procure, provision, or manage a single piece of IT equipment. All you have to do is create a new data store, which only takes a few minutes. Once the data store is ready, you can immediately create, read, update, delete, and query your data. HealthLake exposes a simple REST Application Programming Interface (API) available in the
+   <a href="https://aws.amazon.com/tools/">
+    most popular languages
+   </a>
+   , which customers and partners can easily integrate in their business applications.
+  </p>
+  <p>
+   Security is job zero at AWS. By default, HealthLake encrypts data at rest with
+   <a href="https://aws.amazon.com/kms/">
+    AWS Key Management Service (AWS KMS)
+   </a>
+   . You can use an AWS-managed key or your own key. KMS is designed so that no one, including AWS employees, can retrieve your plaintext keys from the service. For data in transit, HealthLake uses industry-standard TLS 1.2 encryption end to end.
+  </p>
+  <p>
+   At launch, HealthLake supports both structured and unstructured text data typically found in clinical notes, lab reports, insurance claims, and so on. The service stores this data in the
+   <a href="https://www.hl7.org/fhir/">
+    Fast Healthcare Interoperability Resource
+   </a>
+   (FHIR, pronounced ‘fire’) format, a standard designed to enable exchange of health data. HealthLake is compatible with the latest revision (R4) and currently supports
+   <a href="https://docs.aws.amazon.com/healthlake/latest/devguide/crud-healthlake.html">
+    71 FHIR resource types
+   </a>
+   , with additional resources to follow.
+  </p>
+  <p>
+   If your data is already in FHIR format, great! If not, you can convert it yourself, or rely on partner solutions available in
+   <a href="https://aws.amazon.com/marketplace">
+    AWS Marketplace
+   </a>
+   . At launch, HealthLake includes validated connectors for
+   <a href="https://www.redoxengine.com/">
+    Redox
+   </a>
+   ,
+   <a href="https://www.healthlx.com/">
+    HealthLX
+   </a>
+   ,
+   <a href="https://www.diameterhealth.com/">
+    Diameter Health
+   </a>
+   , and
+   <a href="https://www.intersystems.com">
+    InterSystems
+   </a>
+   applications. They make it easy to convert your HL7v2, CCDA, and flat file data to FHIR, and to upload it to HealthLake.
+  </p>
+  <p>
+   As data is uploaded, HealthLake uses integrated natural language processing to extract entities present in your documents and stores the corresponding metadata. These entities include anatomy, medical conditions, medication, protected health information, test, treatments, and procedures. They are also matched to industry-standard ICD-10-CM and RxNorm entities.
+  </p>
+  <p>
+   After you’ve uploaded your data, you can start querying it, by assigning parameter values to FHIR resources and extracted entities. Whether you need to access information on a single patient, or want to export many documents to build a research dataset, all it takes is a single API call.
+  </p>
+  <p>
+   Let’s do a quick demo.
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Querying FHIR Data in Amazon HealthLake
+    </strong>
+   </span>
+   <br/>
+   Opening the
+   <a href="https://console.aws.amazon.com/healthlake/home">
+    AWS console
+   </a>
+   for HealthLake, I click on ‘Create a Data Store’. Then, I simply pick a name for my data store, and decide to encrypt it with an AWS managed key. I also tick the box that preloads sample synthetic data, which is a great way to quickly kick the tires of the service without having to upload my own data.
+  </p>
+  <p>
+   <img alt="Creating a data store" class="size-full wp-image-53169 aligncenter" data-wp-editing="1" height="850" src="image01.webp" style="border: 1px solid black;" width="731"/>
+  </p>
+  <p>
+   After a few minutes, the data store is active, and I can send queries to its HTTPS endpoint. In the example below, I look for clinical notes (and clinical notes only) that contain the ICD-CM-10 entity for ‘hypertension’ with a confidence score of 99% or more. Under the hood, the AWS console is sending an HTTP GET request to the endpoint. I highlighted the corresponding query string.
+  </p>
+  <p>
+   <img alt="Querying HealthLake" class="aligncenter wp-image-53174 size-full" height="744" loading="lazy" src="image02.webp" style="border: 1px solid black;" width="1542"/>
+  </p>
+  <p>
+   The query runs in seconds. Examining the JSON response in my browser, I see that it contains two documents. For each one, I can see lots of information: when it was created, which organization owns it, who the author is, and more. I can also see that HealthLake has automatically extracted a long list of entities, with names, descriptions, and confidence scores, and added them to the document.
+  </p>
+  <p>
+   <img alt="HealthLake entities" class="aligncenter wp-image-53176 size-full" height="238" loading="lazy" src="image03.webp" style="border: 1px solid black;" width="510"/>
+  </p>
+  <p>
+   The document is attached in the response in base64 format.
+  </p>
+  <p>
+   <img alt="HealthLake document" class="aligncenter wp-image-53178 size-full" height="100" loading="lazy" src="image04.webp" style="border: 1px solid black;" width="507"/>
+  </p>
+  <p>
+   Saving the string to a text file, and decoding it with a command-line tool, I see the following:
+  </p>
+  <p>
+   <code>
+    Mr Nesser is a 52 year old Caucasian male with an extensive past medical history that includes coronary artery disease , atrial fibrillation , hypertension , hyperlipidemia , presented to North ED with complaints of chills , nausea , acute left flank pain and some numbness in his left leg
+   </code>
+  </p>
+  <p>
+   This document is spot on. As you can see, it’s really easy to query and retrieve data stored in
+   <a href="https://aws.amazon.com/healthlake/">
+    Amazon HealthLake
+   </a>
+   .
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Analyzing Data Stored in Amazon HealthLake
+    </strong>
+   </span>
+   <br/>
+   You can
+   <a href="https://docs.aws.amazon.com/healthlake/latest/devguide/export-datastore.html">
+    export data
+   </a>
+   from HealthLake, store it in an
+   <a href="https://aws.amazon.com/s3/">
+    Amazon Simple Storage Service (Amazon S3)
+   </a>
+   bucket and use it for analytics and ML tasks. For example, you could transform your data with
+   <a href="https://aws.amazon.com/glue/">
+    AWS Glue
+   </a>
+   , query it with
+   <a href="https://aws.amazon.com/athena">
+    Amazon Athena
+   </a>
+   , and visualize it with
+   <a href="https://quicksight.aws">
+    Amazon QuickSight
+   </a>
+   . You could also use this data to build, train and deploy ML models on
+   <a href="https://aws.amazon.com/sagemaker/">
+    Amazon SageMaker
+   </a>
+   .
+  </p>
+  <p>
+   The following blog posts show you end-to-end analytics and ML workflows based on data stored in HealthLake:
+  </p>
+  <ul>
+   <li>
+    <a href="https://aws.amazon.com/blogs/machine-learning/population-health-applications-with-amazon-healthlake-part-1-analytics-and-monitoring-using-amazon-quicksight/">
+     Population health applications with Amazon HealthLake: Analytics and monitoring using Amazon QuickSight
+    </a>
+   </li>
+   <li>
+    <a href="https://aws.amazon.com/blogs/machine-learning/building-predictive-disease-models-using-amazon-sagemaker-with-amazon-healthlake-normalized-data/">
+     Building predictive disease models using Amazon SageMaker with Amazon HealthLake normalized data
+    </a>
+   </li>
+   <li>
+    <a href="https://aws.amazon.com/blogs/machine-learning/build-patient-outcome-prediction-applications-using-amazon-healthlake-and-amazon-sagemaker/">
+     Build patient outcome prediction applications using Amazon HealthLake and Amazon SageMaker
+    </a>
+   </li>
+   <li>
+    <a href="https://aws.amazon.com/blogs/machine-learning/build-a-cognitive-search-and-a-health-knowledge-graph-using-amazon-healthlake-amazon-kendra-and-amazon-neptune/">
+     Build a cognitive search and a health knowledge graph using AWS AI services
+    </a>
+   </li>
+  </ul>
+  <p>
+   Last but not least, this
+   <a href="https://amazon-healthlake.workshop.aws/">
+    self-paced workshop
+   </a>
+   will show you how to import and export data with HealthLake, process it with AWS Glue and Amazon Athena, and build an Amazon QuickSight dashboard.
+  </p>
+  <p>
+   Now, let’s see what our customers are building with HealthLake.
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Customers Are Already Using Amazon HealthLake
+    </strong>
+   </span>
+   <br/>
+   Based in Chicago,
+   <a href="https://www.rush.edu/">
+    Rush University Medical Center
+   </a>
+   is an early adopter of HealthLake. They used it to build a public health analytics platform on behalf of the Chicago Department of Public Health. The platform aggregates, combines, and analyzes multi-hospital data related to patient admissions, discharges and transfers, electronic lab reporting, hospital capacity, and clinical care documents for COVID-19 patients who are receiving care in and across Chicago hospitals. 17 of the 32 hospitals in Chicago are currently submitting data, and Rush plans to integrate all 32 hospitals by this summer. You can learn more in this
+   <a href="https://aws.amazon.com/blogs/publicsector/rush-medical-center-aws-analytics-hub/">
+    blog post
+   </a>
+   .
+  </p>
+  <p>
+   Recently, Rush launched another project to identify communities that are most exposed to high blood pressure risks, understand the social determinants of health, and improve healthcare access. For this purpose, they collect all sorts of data, such as clinical notes, ambulatory blood pressure measurements from the community, and Medicare claims data. This data is then ingested it into HealthLake and stored in FHIR format for further analysis.
+  </p>
+  <p>
+   <img alt="Dr. Hota" class="size-full wp-image-53253 alignleft" height="128" loading="lazy" src="image05.webp" width="128"/>
+  </p>
+  <p>
+   Says
+   <a href="https://www.linkedin.com/in/balahota/">
+    Dr. Bala Hota
+   </a>
+   , Vice President and Chief Analytics Officer at Rush University Medical Center: “
+   <em>
+    We don’t have to spend time building extraneous items or reinventing something that already exists. This allows us to move to the analytics phase much quicker. Amazon HealthLake really accelerates the sort of insights that we need to deliver
+   </em>
+   <em>
+    results for the population. We don’t want to be spending all our time building infrastructure. We want to deliver the insights.
+   </em>
+   ”
+  </p>
+  <p>
+  </p>
+  <p>
+   <a href="https://www.corticacare.com/">
+    Cortica
+   </a>
+   is on a mission to revolutionize healthcare for children with autism and other developmental differences. Today, Cortica use HealthLake to store all patient data in a standardized, secured, and compliant manner. Building ML models with that data, they can track the progress of their patients with sentiment analysis, and they can share with parents the progress that their children are doing on speech development and motor skills. Cortica can also validate the effectiveness of treatment models and optimize medication regimens.
+  </p>
+  <p>
+   <img alt="Ernesto DiMarino" class="size-full wp-image-53314 alignleft" height="128" loading="lazy" src="image06.webp" width="128"/>
+   <a href="https://www.linkedin.com/in/ernesto-david-dimarino-20687015/">
+    Ernesto DiMarino
+   </a>
+   , Head of Enterprise Applications and Data at Cortica told us: “
+   <em>
+    In a matter of weeks rather than months, Amazon HealthLake empowered us to create a centralized platform that securely stores patients’ medical history, medication history, behavioral assessments, and lab reports. This platform gives our clinical team deeper insight into the care progression of our patients. Using predefined notebooks in Amazon SageMaker with data from Amazon HealthLake, we can apply machine learning models to track and prognosticate each patient’s progression toward their goals in ways not otherwise possible. Through this technology, we can also share HIPAA-compliant data with our patients, researchers, and healthcare partners in an interoperable manner, furthering important research into autism treatment.
+   </em>
+   ”
+  </p>
+  <p>
+   MEDHOST provides products and services to more than 1,000 healthcare facilities of all types and sizes. These customers want to develop solutions to standardize patient data in FHIR format and build dashboards and advanced analytics to improve patient care, but that is difficult and time consuming today.
+  </p>
+  <p>
+   <img alt="" class="size-full wp-image-53380 alignleft" height="128" loading="lazy" src="image07.webp" width="128"/>
+   Says
+   <a href="https://www.linkedin.com/in/sivalingapandian-velayutham-704110a6/">
+    Pandian Velayutham
+   </a>
+   , Sr. Director Of Engineering at MEDHOST: “
+   <em>
+    With Amazon HealthLake we can meet our customers’ needs by creating a compliant FHIR data store in just days rather than weeks with integrated natural language processing and analytics to improve hospital operational efficiency and provide better patient care.
+   </em>
+   ”
+  </p>
+  <p>
+  </p>
+  <p>
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Getting Started
+    </strong>
+   </span>
+   <br/>
+   <a href="https://aws.amazon.com/healthlake/">
+    Amazon HealthLake
+   </a>
+   is available today in the US East (N. Virginia), US East (Ohio), and US West (Oregon) Regions.
+  </p>
+  <p>
+   Give our
+   <a href="https://amazon-healthlake.workshop.aws/">
+    self-paced workshop
+   </a>
+   a try, and let us know what you think. As always, we look forward to your feedback. You can send it through your usual AWS Support contacts, or post it on the
+   <a href="https://forums.aws.amazon.com/index.jspa">
+    AWS Forums
+   </a>
+   .
+  </p>
+  <p>
+   Want to learn more about Amazon HealthLake?
+   <a href="https://aws.amazon.com/podcasts/460-introducing-amazon-healthlake/">
+    Listen to the latest episode of the Official AWS Podcast to hear all about it
+   </a>
+   .
+  </p>
+  <a href="https://aws.amazon.com/developer/community/evangelists/julien-simon/">
+   - Julien
+  </a>
+  <!-- '"` -->
+ </body>
+</html>

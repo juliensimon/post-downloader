@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>AWS re:Invent 2021 — Serverless Inference on SageMaker! FOR REAL!</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">AWS re:Invent 2021 — Serverless Inference on SageMaker! FOR REAL!</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+At long last, Amazon SageMaker supports serverless endpoints.
+</section>
+<section data-field="body" class="e-content">
+<section name="c2f0" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="85f4" id="85f4" class="graf graf--h3 graf--leading graf--title">AWS re:Invent 2021 — Serverless Inference on SageMaker! FOR REAL!</h3><h4 name="2d8c" id="2d8c" class="graf graf--h4 graf-after--h3 graf--subtitle">At long last, <a href="https://aws.amazon.com/sagemaker" data-href="https://aws.amazon.com/sagemaker" class="markup--anchor markup--h4-anchor" rel="noopener" target="_blank">Amazon SageMaker</a> supports serverless endpoints.</h4><figure name="f5d5" id="f5d5" class="graf graf--figure graf-after--h4"><img class="graf-image" data-image-id="0*lYFZAWYTHWN9IZBA" data-width="5864" data-height="3922" data-unsplash-photo-id="lzh3hPtJz9c" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/0*lYFZAWYTHWN9IZBA"><figcaption class="imageCaption">Photo by <a href="https://unsplash.com/@joshua_j_woroniecki?utm_source=medium&amp;utm_medium=referral" data-href="https://unsplash.com/@joshua_j_woroniecki?utm_source=medium&amp;utm_medium=referral" class="markup--anchor markup--figure-anchor" rel="photo-creator noopener" target="_blank">Joshua Woroniecki</a> on <a href="https://unsplash.com?utm_source=medium&amp;utm_medium=referral" data-href="https://unsplash.com?utm_source=medium&amp;utm_medium=referral" class="markup--anchor markup--figure-anchor" rel="photo-source noopener" target="_blank">Unsplash</a></figcaption></figure><p name="e575" id="e575" class="graf graf--p graf-after--figure">In this video, I demo this newly launched capability, named <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html" data-href="https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Serverless Inference</a>. Starting from a pre-trained <a href="https://huggingface.co/distilbert-base-uncased" data-href="https://huggingface.co/distilbert-base-uncased" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">DistilBERT</a> model on the Hugging Face model hub, I fine-tune it for sentiment analysis on the IMDB movie review <a href="https://huggingface.co/datasets/imdb" data-href="https://huggingface.co/datasets/imdb" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">dataset</a>. Then, I deploy the model to a serverless endpoint, and I run multi-threaded benchmarks with short and long token sequences. Finally, I plot latency numbers and compute latency quantiles.</p><p name="a480" id="a480" class="graf graf--p graf-after--p">⭐️⭐️⭐️ Don’t forget to subscribe to be notified of future videos ⭐️⭐️⭐️</p><figure name="c44b" id="c44b" class="graf graf--figure graf--iframe graf-after--p"><iframe src="https://www.youtube.com/embed/cUhDLoBH80o?feature=oembed" width="700" height="393" frameborder="0" scrolling="no"></iframe></figure><p name="5c5b" id="5c5b" class="graf graf--p graf-after--figure"><em class="markup--em markup--p-em">Notebook: </em><a href="https://gitlab.com/juliensimon/huggingface-demos/-/tree/main/serverless-inference" data-href="https://gitlab.com/juliensimon/huggingface-demos/-/tree/main/serverless-inference" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><em class="markup--em markup--p-em">https://gitlab.com/juliensimon/huggingface-demos/-/tree/main/serverless-inference</em></a></p><p name="b7b1" id="b7b1" class="graf graf--p graf-after--p"><em class="markup--em markup--p-em">Documentation: </em><a href="https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html" data-href="https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><em class="markup--em markup--p-em">https://docs.aws.amazon.com/sagemaker/latest/dg/serverless-endpoints.html</em></a></p><p name="a3fd" id="a3fd" class="graf graf--p graf-after--p"><em class="markup--em markup--p-em">New to Transformers? Check out the Hugging Face course at </em><a href="https://huggingface.co/course" data-href="https://huggingface.co/course" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><em class="markup--em markup--p-em">https://huggingface.co/course</em></a></p><p name="bcf7" id="bcf7" class="graf graf--p graf-after--p graf--trailing"><em class="markup--em markup--p-em">More content at </em><a href="http://plainenglish.io/" data-href="http://plainenglish.io/" class="markup--anchor markup--p-anchor" rel="noopener noreferrer noopener" target="_blank"><em class="markup--em markup--p-em">plainenglish.io</em></a><em class="markup--em markup--p-em">. Sign up for our </em><a href="http://newsletter.plainenglish.io/" data-href="http://newsletter.plainenglish.io/" class="markup--anchor markup--p-anchor" rel="noopener noreferrer noopener" target="_blank"><em class="markup--em markup--p-em">free weekly newsletter here</em></a><em class="markup--em markup--p-em">.</em></p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/daa1ce2a5cd0"><time class="dt-published" datetime="2021-12-08T17:26:50.947Z">December 8, 2021</time></a>.</p><p><a href="https://medium.com/@julsimon/aws-re-invent-2021-serverless-inference-on-sagemaker-for-real-daa1ce2a5cd0" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

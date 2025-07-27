@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Johnny Pi, I am your father — part 6: now I’m pushing your button, ha!</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="265e">Johnny Pi, I am your father — part 6: now I’m pushing your button, ha!</h3><p id="08c8">In previous posts, we gave our robot the gift of sight thanks to <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-4-adding-cloud-based-vision-8830c2676113" target="_blank">Amazon Rekognition</a> and <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-5-adding-mxnet-for-local-image-classification-bc27a5fd2c27" target="_blank">Apache MXNet</a>, as well as the gift of speech thanks to <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-3-adding-cloud-based-speech-fb6e4f207c76" target="_blank">Amazon Polly</a>.</p><p id="9292">In this post, I’ll show you how to send orders to the robot with an <a href="https://aws.amazon.com/iotbutton/" target="_blank">AWS IoT button</a>. Specifically, pushing the button will trigger object detection using the MXNet model.</p><p id="7197">Let’s get started.</p><figure id="e923"><img class="graf-image" src="image01.webp"/></figure><h4 id="043b">Registering the IoT button in AWS IoT</h4><p id="f0d6">Just like for the robot and the joystick, we need to register the IoT button in AWS IoT: create a certificate, a key pair, an IAM policy, etc. <a href="https://docs.aws.amazon.com/iot/latest/developerguide/iot-gs.html" target="_blank">The process</a> is always the same, so just repeat the same steps and download all credentials on your local machine.</p><h4 id="529b">Setting up the IoT button</h4><p id="097d">This couldn’t be simpler. Just press the button for 5 seconds and a new Wi-Fi hotspot will appear. Connect to it, enter the Wi-Fi settings and the endpoint of the IoT gateway, upload the credentials and you’re done.</p><blockquote class="graf--blockquote" id="cd44">If you need help with the two previous steps, here’s a detailed video tutorial I recorded some time ago.</blockquote><figure class="graf-after--blockquote" id="4b53"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/oIPsQhStbnY?feature=oembed" width="700"></iframe></figure><p id="3228">Now let’s take care of the Lambda function which will be invoked when we press the button.</p><h4 id="c703">Creating a role for the Lambda function</h4><p id="5212">You didn’t think you’d escape IAM,did you? ;) Of course, we need to create a role — let’s call <em class="markup--p-em">iotButtonLambdaRole</em> — and a policy allowing the Lambda function to connect to AWS IoT and publish a message to the MQTT topic. Just go the the IAM console, create the role as a Lambda service role and attach the following policy.</p><figure id="5668"><script src="https://gist.github.com/juliensimon/ee51460d0c1e8abcef910ffaeab2f3ee.js"></script></figure><p id="09ae">The last statement is important. It allows the Lambda function to log in CloudWatch logs and you might need it for debugging later on ;)</p><h4 id="713d">Writing the Lambda function</h4><p id="1a58">We’ll keep things very simple: whenever the button is pushed and whatever the click type (short, long or double), we’ll post an message to the <em class="markup--p-em">JohnnyPi/see</em> MQTT topic.</p><blockquote class="graf--blockquote graf--hasDropCapModel" id="a6b3">If you’re curious how to use different click types to do different things, here’s another <a class="markup--blockquote-anchor" href="https://medium.com/@julsimon/how-to-configure-an-aws-iot-button-7f43919afd97" target="_blank">post</a> that shows you how to do that.</blockquote><p class="graf-after--blockquote" id="f56c">Here’s the code for the Lambda function.</p><figure id="a9b5"><script src="https://gist.github.com/juliensimon/08d460a78692a48bec5f4d434b15ed46.js"></script></figure><p id="a5f6">As you can see, this is pretty straightforward. We’re reusing the same IoT code as for the robot. Just make sure you used the right IoT credentials in <em class="markup--p-em">iot_config.py</em>.</p><h4 id="e336">Packaging and creating the Lambda function</h4><p id="fe17">We need to embed the AWS IoT SDK in the function package, so let’s first install it locally.</p><pre class="graf--pre" id="bf42">pip install AWSIoTPythonSDK -t .</pre><p class="graf-after--pre" id="fa73">Then, we simply need to zip everything…</p><pre class="graf--pre" id="0bf5">zip -9r lambda.zip AWSIoTPythonSDK* iot_config.py lambda.py</pre><p class="graf-after--pre" id="4abe">…and we can create the function with the AWS CLI.</p><pre class="graf--pre" id="2e36">aws lambda create-function --function-name iot_pi <br/>--handler func.lambda_handler --zip-file fileb://lambda.zip<br/>--runtime python2.7 --memory-size 128 --region eu-west-1 <br/>--role arn:aws:iam::ACCOUNT_NUMBER:role/iotButtonLambdaRole</pre><p class="graf-after--pre" id="2f15">Or you can click in the console, you devil you!</p><h4 id="ec73">Writing the AWS IoT rule</h4><p id="6894">We’re missing one last part: the IoT rule which will trigger the Lambda function whenever a MQTT message is sent by the IoT button.</p><blockquote class="graf--blockquote" id="6e0e">Read <a class="markup--blockquote-anchor" href="http://docs.aws.amazon.com/iot/latest/developerguide/iot-rules.html" target="_blank">this</a> if you’re unfamiliar with rules.</blockquote><p class="graf-after--blockquote" id="abe2">Just head out to the IoT console and create the rule. It couldn’t be simpler: select every single message…</p><figure id="e2ba"><img class="graf-image" src="image02.webp"/></figure><p id="05e8">…and invoke the Lambda function.</p><figure id="c113"><img class="graf-image" src="image03.webp"/></figure><h4 id="a9ab">Testing and troubleshooting</h4><p id="2bba">Just push the button and see what happens :) If you run into issues, here are some troubleshooting tips:</p><ul class="postList"><li id="5d04">Test that the button successfully connects to the IoT gateway and posts the message. You should see this on the dashboard of the IoT console. If not, check Wi-Fi settings, button credentials and button policy.</li><li id="7c07">Test that the rule works. If the Lambda isn’t invoked, check rule settings, especially the topic name. It’s easy to get the serial number wrong.</li><li id="40d0">Test that the function works. If the Lambda fails, head out directly to CloudWatch Logs and you’ll get more information.</li></ul><p id="29cb">At some point, it’s going to work and it should look something like this. The video below is in French but you’ll get the point, I’m sure. Make sure to enable automatic subtitles for extra fun!</p><figure id="9614"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/L4wLrs6ugzY?feature=oembed" width="700"></iframe></figure><p id="dd0b">That’s it for today. As usual, you’ll find all code on <a href="https://github.com/juliensimon/johnnypi/tree/master/part6" target="_blank">Github</a>. In the next post, we’ll build an Alexa skill to issue voice commands!</p><p id="1c2f">Thanks for reading.</p><p id="5637">Part 0: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-0-1eb537e5a36" target="_blank">a sneak preview</a></p><p id="4525">Part 1: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-1-moving-around-e09fe95bbfce" rel="noopener nofollow nofollow noopener nofollow noopener noopener" target="_blank">moving around</a></p><p id="58a9">Part 2: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-2-the-joystick-db8ac067e86" rel="nofollow noopener nofollow noopener nofollow noopener noopener" target="_blank">the joystick</a></p><p id="a175">Part 3: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-3-adding-cloud-based-speech-fb6e4f207c76" target="_blank">cloud-based speech</a></p><p id="7aa6">Part 4: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-4-adding-cloud-based-vision-8830c2676113" target="_blank">cloud-based vision</a></p><p id="8772">Part 5: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-4-adding-cloud-based-vision-8830c2676113" target="_blank">local vision</a></p></div></div></section><section class="section"><div><hr/></div><div><div><p id="f81a"><em class="markup--p-em">This post was written in the Air France lounge at JFK, the proud home of the crappiest wi-fi connection this side of Alpha Centauri. To make things worse, harmful doses of caffeine and Mercyful Fate were unsuccessful in countering the effects of jet lag. Oh well.</em></p></div></div></section>
+</section>
+</article></body></html>

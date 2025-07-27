@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Mixing Spark with Sagemaker ?</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Mixing Spark with Sagemaker ?</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+This short post comes from a question asked by Manel Maragal (thanks!) on my YouTube channel. It’s a really good question and hopefully my…
+</section>
+<section data-field="body" class="e-content">
+<section name="4504" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="0026" id="0026" class="graf graf--h3 graf--leading graf--title">Mixing Spark with Sagemaker ?</h3><p name="f2e5" id="f2e5" class="graf graf--p graf-after--h3">This short post comes from a question asked by Manel Maragal (thanks!) on my <a href="https://www.youtube.com/user/juliensimonfr" data-href="https://www.youtube.com/user/juliensimonfr" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">YouTube channel</a>. It’s a really good question and hopefully my answer doesn’t suck… so why not share both with everyone?</p><p name="3398" id="3398" class="graf graf--p graf-after--p">Here’s Manel’s question:</p><p name="0275" id="0275" class="graf graf--p graf-after--p"><em class="markup--em markup--p-em">In the line of “Building your own algorithm container”, is it possible to use Spark code entirely (and distributively) on SageMaker? What I get from the documentation is that I’m supposed to do ETL in my Spark Cluster. And then, when fitting the data to the model, use sagemaker_pyspark that will create a Sagemaker job. Moving the dataframe into S3 with protobuf format, to then train with a new Sagemaker instance cluster.</em></p><p name="e156" id="e156" class="graf graf--p graf-after--p"><em class="markup--em markup--p-em">The question is: if I already have my dataframe loaded into my distributed cluster, why would I want to use Sagemaker? I might as well use Spark ML for it, which has a better algorithm support, and avoids creating an additional cluster. Maybe I got the whole thing wrong…</em></p><p name="f274" id="f274" class="graf graf--p graf-after--p">My answer:</p><p name="acd8" id="acd8" class="graf graf--p graf-after--p">Spark and Spark ML are great tools, more power to both :) Still, I see a few reasons why combining them with Sagemaker would make sense:</p><p name="452c" id="452c" class="graf graf--p graf-after--p">1 — <strong class="markup--strong markup--p-strong">Decoupling ETL infrastructure from training infrastructure</strong>. They could have different sizing requirements (compute and/or storage) and you wouldn’t want to oversize your Spark cluster just because one part of the overall process requires more capacity. Sure, you can resize an EMR cluster dynamically, but it’s extra work and potentially troublesome if you have a lot of data. SageMaker will start and terminate instances automatically, which I find cleaner and simpler :)</p><p name="2342" id="2342" class="graf graf--p graf-after--p">2 — In the same vein, imagine you need <strong class="markup--strong markup--p-strong">GPUs for training</strong>. It would be costly and sub-optimal to run your EMR cluster on GPU instances just for this.</p><p name="6ad6" id="6ad6" class="graf graf--p graf-after--p">3 — Spark ML is great and has indeed a lot of algos. SageMaker is just getting started and we’ll keep adding <strong class="markup--strong markup--p-strong">scalable implementions of state-of-the-art algos</strong>, so maybe one of them will actually catch your eye, such as <a href="https://aws.amazon.com/blogs/machine-learning/now-available-in-amazon-sagemaker-deepar-algorithm-for-more-accurate-time-series-forecasting/" data-href="https://aws.amazon.com/blogs/machine-learning/now-available-in-amazon-sagemaker-deepar-algorithm-for-more-accurate-time-series-forecasting/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank"><strong class="markup--strong markup--p-strong">DeepAR</strong></a> (released a couple of days ago).</p><p name="aca6" id="aca6" class="graf graf--p graf-after--p">4 — <strong class="markup--strong markup--p-strong">Deploying models in production on managed infrastructure</strong>. To me, this is the single most important feature in SageMaker: call a single API and deploy an endpoint.</p><p name="c0e8" id="c0e8" class="graf graf--p graf-after--p">If you’re curious about combining SageMaker and Spark, this Github repository has several examples.</p><div name="293d" id="293d" class="graf graf--mixtapeEmbed graf-after--p"><a href="https://github.com/aws/sagemaker-spark" data-href="https://github.com/aws/sagemaker-spark" class="markup--anchor markup--mixtapeEmbed-anchor" title="https://github.com/aws/sagemaker-spark"><strong class="markup--strong markup--mixtapeEmbed-strong">aws/sagemaker-spark</strong><br><em class="markup--em markup--mixtapeEmbed-em">sagemaker-spark - A Spark library for Amazon SageMaker.</em>github.com</a><a href="https://github.com/aws/sagemaker-spark" class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="1c185594d50eb21295d60d2d35fea7a6" data-thumbnail-img-id="0*gclj094Dj1qOWOO6." style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*gclj094Dj1qOWOO6.);"></a></div><p name="9c54" id="9c54" class="graf graf--p graf-after--mixtapeEmbed graf--trailing">Keep the questions coming and have fun testing :)</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/d30d34ffaee7"><time class="dt-published" datetime="2018-01-11T12:45:59.100Z">January 11, 2018</time></a>.</p><p><a href="https://medium.com/@julsimon/mixing-spark-with-sagemaker-d30d34ffaee7" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

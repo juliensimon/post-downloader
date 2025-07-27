@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>A quick look at the Swish activation function in Apache MXNet 1.2</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="766f">A quick look at the Swish activation function in Apache MXNet 1.2</h3><p id="f303"><a href="https://github.com/apache/incubator-mxnet" target="_blank">Apache MXNet</a> 1.2 is <a href="https://github.com/apache/incubator-mxnet/releases/tag/1.2.0.rc1" target="_blank">right around the corner</a>. As hinted at by the change log, this looks like a major release, but in this post, we’ll focus on a new activation function: <strong class="markup--p-strong">Swish</strong>.</p><h4 id="351e">A quick recap on activation functions</h4><p id="3415">In deep neural networks, the purpose of the activation function is to introduce non-linearity, i.e. to <strong class="markup--p-strong">enforce a non-linear decision threshold on neuron outputs</strong>. In a way, we’re trying to mimic — in a simplistic way, no doubt — the behavior of biological neurons which either fire or not.</p><p id="7d85">Over time, a number of <a href="https://en.wikipedia.org/wiki/Activation_function" target="_blank">activation functions</a> have been designed, each new one trying to overcome the shortcomings of its predecessors. For example, the popular <a href="https://en.wikipedia.org/wiki/Rectifier_%28neural_networks%29" target="_blank"><strong class="markup--p-strong">Rectified Linear Unit function</strong></a> (aka ReLU) improved on the Sigmoid function by solving the <a href="https://en.wikipedia.org/wiki/Vanishing_gradient_problem" target="_blank">vanishing gradient problem</a>.</p><p id="0977">Of course, the race for better activation function never stopped. In late 2017, a new function was discovered: <strong class="markup--p-strong">Swish</strong>.</p><h4 id="4c8d">The Swish function</h4><p id="5efc">By automatically combining different mathematical operators, Prajit Ramachandran, Barret Zoph and Quoc V evaluated the performance of a large number of candidate activation functions (“Searching for Activation Functions”, <a href="https://arxiv.org/abs/1710.05941" target="_blank">research paper</a>). One of them, which they named <strong class="markup--p-strong">Swish</strong>, turned out to be better than others.</p><figure id="c0ff"><img class="graf-image" src="image01.webp"/><figcaption><strong class="markup--figure-strong"><em class="markup--figure-em">f</em>(<em class="markup--figure-em">x</em>)=<em class="markup--figure-em">x</em>⋅sigmoid(<em class="markup--figure-em">βx</em>)</strong> — Source: research paper.</figcaption></figure><p id="f92a">As you can see, if the <em class="markup--p-em">β </em>parameter is small, Swish is close to the linear when the <em class="markup--p-em">β </em>parameter is small and close to ReLU when it’s large. The sweet spot for <em class="markup--p-em">β </em>seems to be <strong class="markup--p-strong">between 1 and 2</strong>: it creates a non-monotonic “bump” for negative values which seems to have interesting properties (more details in the research paper).</p><p id="249d">As highlighted by the authors: “<em class="markup--p-em">simply replacing ReLUs with Swish units improves top-1 classification accuracy on ImageNet by 0.9% for Mobile NASNet-A and 0.6% for Inception-ResNet-v2</em>”.</p><p id="1a34">This sounds like an easy improvement, doesn’t it? Let’s test it on MXNet!</p><h4 id="3f2d">Swish in MXNet</h4><p id="3739">Swish is available for the <a href="https://mxnet.incubator.apache.org/api/python/gluon/gluon.html" target="_blank"><strong class="markup--p-strong">Gluon API</strong></a> in MXNet 1.2. It’s defined in <em class="markup--p-em">incubator-mxnet/python/mxnet/gluon/nn/activations.py</em> and using it in our Gluon code is as easy as: <em class="markup--p-em">nn.Swish().</em></p><p id="2b6c">In order to evaluate its performance, we’re going to train <strong class="markup--p-strong">two different versions of the </strong><a href="https://arxiv.org/abs/1409.1556" target="_blank"><strong class="markup--p-strong">VGG16</strong></a><strong class="markup--p-strong"> convolution neural network on </strong><a href="https://www.cs.toronto.edu/~kriz/cifar.html" target="_blank"><strong class="markup--p-strong">CIFAR-10</strong></a>:</p><ul class="postList"><li id="32ed">VGG16 with batch normalization as implemented in the <a href="https://mxnet.incubator.apache.org/api/python/gluon/model_zoo.html" target="_blank">Gluon model zoo</a>, i.e. using ReLU (<em class="markup--li-em">incubator-mxnet/python/mxnet/gluon/model_zoo/vision/vgg.py</em>)</li><li id="c5b0">The same network <strong class="markup--li-strong">modified to use Swish for the convolution layers and the fully connected layers</strong>.</li></ul><p id="cb9e">This is pretty straightforward: starting from the master branch, we simply create a <em class="markup--p-em">vggswish.py</em> file and replace ReLU by Swish, e.g.:</p><pre class="graf--pre" id="1fb9">self.features.add(nn.Dense(4096, activation='relu', weight_initializer='normal', bias_initializer='zeros'))</pre><pre class="graf--pre graf-after--pre" id="9290">---&gt; </pre><pre class="graf--pre graf-after--pre" id="0d37">self.features.add(nn.Dense(4096, weight_initializer='normal', bias_initializer='zeros'))<br/>self.features.add(nn.Swish())</pre><p class="graf-after--pre" id="f51d">Then, we plug this new set of models into <em class="markup--p-em">incubator-mxnet/python/mxnet/gluon/model_zoo/__init__.py</em> and voila!</p><p id="2190">Here’s the full <a href="https://gist.github.com/juliensimon/a464b762e39eafce1b2958f99f1398a7" target="_blank">diff</a> if you’re interested. There’s really not much to it.</p><blockquote class="graf--blockquote" id="b30c">Of course, you’ll need to build and install: you should know how to do this by now ;) If you’ve already built the master branch, you can get away with just installing the Python API again. If you’re not comfortable with this, no worries: just wait for an official 1.2 installation package :)</blockquote><h4 class="graf-after--blockquote" id="c909">Training on CIFAR-10</h4><p id="6ba7">MXNet contains an <strong class="markup--p-strong">image classification script</strong> which lets us train with a variety of network architectures and data sets (<em class="markup--p-em">incubator-mxnet/example/gluon/image_classification.py</em>). Exactly what we need!</p><p id="d759">We’ll use <strong class="markup--p-strong">SGD with epochs steps</strong>, dividing the learning rate by 10 each time.</p><pre class="graf--pre" id="ac4a">python image_classification.py --model vgg16_bn --batch-size=128 --lr=0.1 --lr-steps='10,20,30' --epochs=40</pre><pre class="graf--pre graf-after--pre" id="b209">python image_classification.py --model vgg16_bn_swish --batch-size=128 --lr=0.1 --lr-steps='10,20,30' --epochs=40</pre><p class="graf-after--pre" id="ad4a">Here are the results.</p><figure id="4a14"><img class="graf-image" src="image02.webp"/><figcaption>VGG16 with ReLU vs VGG16 with Swish</figcaption></figure><p id="5178">It’s always difficult to draw conclusions from a single example (although I did run a bunch of different trainings with consistent results). Here, we can see than <strong class="markup--p-strong">the Swish version seems to train faster and validate as well as the ReLU version</strong>.</p><p id="eb14">Top validation accuracies are respectively 0.866186 at epoch #14 and 0.866001 at epoch #19. A minimal difference, but then again VGG16 isn’t a very deep network.</p><h4 id="3fba">Conclusion</h4><p id="7c8c">So now we have <strong class="markup--p-strong">another activation function in our arsenal</strong>. It’s still quite new, so we need to experiment and learn when to use it or not. In case you’re curious, MXNet 1.2 also adds support for the ELU and SELU functions, so why not read about these as well? A Deep Learning engineer’s day is never done :)</p><p id="3837">That’s it for today. Thank you for reading. Happy to read your feedback here or on <a href="https://twitter.com/julsimon" target="_blank">Twitter</a>.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="c9ce"><em class="markup--p-em">This post was written in New Orleans, so obviously…</em></p><figure id="378d"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/poD-gi3A4zw" width="640"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

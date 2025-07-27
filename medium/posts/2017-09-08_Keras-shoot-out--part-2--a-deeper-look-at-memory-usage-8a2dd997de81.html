@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Keras shoot-out, part 2: a deeper look at memory usage</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Keras shoot-out, part 2: a deeper look at memory usage</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+In a previous article, I used Apache MXNet and Tensorflow as Keras backends to learn the CIFAR-10 dataset on multiple GPUs.
+</section>
+<section data-field="body" class="e-content">
+<section name="ced1" class="section section--body section--first section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="73fb" id="73fb" class="graf graf--h3 graf--leading graf--title">Keras shoot-out, part 2: a deeper look at memory usage</h3><figure name="b245" id="b245" class="graf graf--figure graf-after--h3"><img class="graf-image" data-image-id="1*1dHAgBrmUpdcQqhovcu-1A.jpeg" data-width="610" data-height="280" src="https://cdn-images-1.medium.com/max/800/1*1dHAgBrmUpdcQqhovcu-1A.jpeg"></figure><p name="1003" id="1003" class="graf graf--p graf-after--figure">In a <a href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" data-href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" class="markup--anchor markup--p-anchor" target="_blank">previous article</a>, I used Apache MXNet and Tensorflow as Keras backends to learn the CIFAR-10 dataset on multiple GPUs.</p><p name="a7eb" id="a7eb" class="graf graf--p graf-after--p">One of the striking differences was memory usage. Whereas MXNet allocated a conservative 670MB on each GPU, Tensorflow allocated close to 100% of available memory (a tad under 11GB).</p><p name="46de" id="46de" class="graf graf--p graf-after--p">I was a little shocked by this state of affairs (must be the old-school embedded software developer in me). The model and data set (respectively Resnet-50 and CIFAR-10) didn’t seem to require that much memory after all. Diving a little deeper, I learned that this is indeed the default behaviour in Tensorflow: use all available RAM to speed things up. Fair enough :)</p><p name="a565" id="a565" class="graf graf--p graf-after--p">Still, a fact is a fact: in this particular setup, MXNet is faster AND memory-efficient. I couldn’t help but wonder how Tensorflow would behave if I constrained its memory usage. Let’s find out, shall we?</p><h4 name="2dd6" id="2dd6" class="graf graf--h4 graf-after--p">Tensorflow settings</h4><p name="6df7" id="6df7" class="graf graf--p graf-after--h4">As a number of folks pointed out, you can easily restrict the number of GPUs that Tensorflow uses, as well as the fraction of GPU memory that it allocates (a float value between 0 and 1). Additional information is available in the <a href="https://www.tensorflow.org/tutorials/using_gpu" data-href="https://www.tensorflow.org/tutorials/using_gpu" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Tensorflow documentation</a>.</p><p name="6e78" id="6e78" class="graf graf--p graf-after--p">Just take a look at the example below.</p><figure name="2a77" id="2a77" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/d27654818342f42635f399c1f2ee2bcb.js"></script></figure><p name="bcf5" id="bcf5" class="graf graf--p graf-after--figure">With this in mind, let’s start restricting memory usage. I’m curious to find out how low we can actually go and if there’s any consequence on training time.</p><h4 name="a4c9" id="a4c9" class="graf graf--h4 graf-after--p">Test setup</h4><p name="12e3" id="12e3" class="graf graf--p graf-after--h4">I’ll run the same script as in the <a href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" data-href="https://medium.com/@julsimon/keras-shoot-out-tensorflow-vs-mxnet-51ae2b30a9c0" class="markup--anchor markup--p-anchor" target="_blank">previous article</a> (<em class="markup--em markup--p-em">keras/examples/cifar10_resnet50.py</em>), with the following parameters:</p><ul class="postList"><li name="f73f" id="f73f" class="graf graf--li graf-after--p">1 GPU on p2.8xlarge instance,</li><li name="0e19" id="0e19" class="graf graf--li graf-after--li">batch size set to 32,</li><li name="ac4d" id="ac4d" class="graf graf--li graf-after--li">no data augmentation.</li><li name="4aab" id="4aab" class="graf graf--li graf-after--li">increasingly harsher memory usage constraints: none, 0.8, 0.6, 0.4, 0.2 and lower… if we can!</li></ul><p name="beb3" id="beb3" class="graf graf--p graf-after--li">Our reference point will be MXNet: <strong class="markup--strong markup--p-strong">658MB</strong> of allocated memory, <strong class="markup--strong markup--p-strong">155 seconds</strong> per epoch.</p><figure name="230f" id="230f" class="graf graf--figure graf--iframe graf-after--p"><script src="https://gist.github.com/juliensimon/7c1295e7008e7d4b1f2d38410eba2462.js"></script></figure><h4 name="6ebe" id="6ebe" class="graf graf--h4 graf-after--figure">Test results</h4><p name="c900" id="c900" class="graf graf--p graf-after--h4">After a little while, here are the results for memory usage and epoch time.</p><ul class="postList"><li name="2321" id="2321" class="graf graf--li graf-after--p"><strong class="markup--strong markup--li-strong">No restriction</strong>: 10938MB, 211 seconds.</li><li name="555b" id="555b" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.8</strong>: 9282MB, 211 seconds.</li><li name="0d20" id="0d20" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.6</strong>: 6994MB, 211 seconds.</li><li name="f8ea" id="f8ea" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.4</strong>: 4706MB, 211 seconds.</li><li name="0232" id="0232" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.2</strong>: 2418MB, 211 seconds.</li><li name="d503" id="d503" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.1</strong>: 1274MB, 212 seconds.</li><li name="2bd3" id="2bd3" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.08</strong>: 1045MB, 212 seconds.</li><li name="b16b" id="b16b" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.06</strong>: 816MB, 211 seconds.</li><li name="2195" id="2195" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.05</strong>: 702MB, 211 seconds.</li><li name="d771" id="d771" class="graf graf--li graf-after--li"><strong class="markup--strong markup--li-strong">0.045</strong>: not working (OOM error).</li></ul><h4 name="22cf" id="22cf" class="graf graf--h4 graf-after--li">Conclusion</h4><p name="5beb" id="5beb" class="graf graf--p graf-after--h4">Again, this is a single test and YMMV. Still, a few remarks.</p><p name="0a24" id="0a24" class="graf graf--p graf-after--p">By default, Tensorflow allocates as much memory as possible, but more memory doesn’t mean faster. So why behave like a hog in the first place?Especially since Tensorflow can actually get to a memory footprint similar to MXNet (although it’s really a trial and error process).</p><p name="a1bf" id="a1bf" class="graf graf--p graf-after--p">This behaviour still raises a lot of questions that trouble my restless mind :)</p><ol class="postList"><li name="0157" id="0157" class="graf graf--li graf-after--p">What about very large models? Would they run out of memory and would I need to tweak the memory setting to make them fit?</li><li name="3588" id="3588" class="graf graf--li graf-after--li">What about CPU training? It’s possible to limit the number of cores used by Tensorflow, but I couldn’t find any way to limit RAM usage (please correct me if I’m wrong).</li><li name="9077" id="9077" class="graf graf--li graf-after--li">What about inference? Is Tensorflow memory usage just as “liberal”? Would this be a problem for constrained devices like my beloved Raspberry Pi?</li></ol><p name="86d2" id="86d2" class="graf graf--p graf-after--li">Oh boy. More questions than when I started. Typical :) I’ll have to investigate!</p><p name="d8b2" id="d8b2" class="graf graf--p graf-after--p">All in all, I guess I’m more comfortable with a library like MXNet that allocates memory as needed and gives me a clear view on how much is left, what the impacts are when parameters are tweaked, etc.</p><p name="07e9" id="07e9" class="graf graf--p graf-after--p">Call it personal preference. And of course, MXNet is quite faster too.</p><p name="f5f3" id="f5f3" class="graf graf--p graf-after--p graf--trailing">Thanks for reading. Stay tuned for more articles!</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/8a2dd997de81"><time class="dt-published" datetime="2017-09-08T15:00:47.822Z">September 8, 2017</time></a>.</p><p><a href="https://medium.com/@julsimon/keras-shoot-out-part-2-a-deeper-look-at-memory-usage-8a2dd997de81" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

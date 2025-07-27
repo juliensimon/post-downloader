@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Amazon AI: the Christmas post</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="7d87">Amazon AI: the Christmas post</h3><p id="128a">’Tis the season to be silly^H^H^H^H^Hmerry, so here’s a light-hearted post on how to combine <a href="http://aws.amazon.com/rekognition" target="_blank">Amazon Rekognition</a>, <a href="http://aws.amazon.com/comprehend" target="_blank">Amazon Comprehend</a>, <a href="http://aws.amazon.com/translate" target="_blank">Amazon Translate</a> and <a href="http://aws.amazon.com/polly" target="_blank">Amazon Polly</a> for no other reason than to have a little bit of fun.</p><p id="5eb2">Surely, that’s all right with you, yeah? ;) As usual, code is available on <a href="https://github.com/juliensimon/aws/tree/master/AmazonAI/billboard" target="_blank">Github</a>.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="950e">Let’s start with a proper business problem: we want to build the capacity to automatically <strong class="markup--p-strong">turn billboard text into multi-language speech</strong>. No doubt that this has to be a billion dollar business.</p><p id="2c4c">Let start with a data sample.</p><figure id="0ad1"><img class="graf-image" src="image01.webp"/></figure><p id="97cf">Apparently, this ad did run for a while in Las Vegas before being taken down due to a number of complaints. Complaining about alcohol abuse in Las Vegas??? Consider moving, dude ;)</p><p id="1143">Anyway, our goal today is to:</p><ul class="postList"><li id="cf10">use Rekognition to <strong class="markup--li-strong">detect the text</strong> on this billboard,</li><li id="daa1">use Comprehend to <strong class="markup--li-strong">detect the language</strong> of the text,</li><li id="4e0a">use Translate to <strong class="markup--li-strong">translate the text</strong> to different languages,</li><li id="f955">use Polly to <strong class="markup--li-strong">speak the translated text</strong>.</li></ul><p id="0d60">Let’s get to work.</p><h4 id="e775">Installation</h4><p id="bcbf">As these services are quite recent, we need to make sure we have the latest AWS Python SDK aka <a href="https://boto3.readthedocs.io/" target="_blank"><strong class="markup--p-strong">boto3</strong></a>. We’ll also need <a href="https://www.pygame.org/" target="_blank"><strong class="markup--p-strong">Pygame</strong></a> to play sounds in a portable way.</p><pre class="graf--pre" id="8d03">pip install boto3 pygame --upgrade</pre><h4 class="graf-after--pre" id="8127">Text detection</h4><p id="97c0">Text detection in Amazon Rekognition allows us to detect <strong class="markup--p-strong">words</strong>, <strong class="markup--p-strong">lines</strong> and their respective <strong class="markup--p-strong">positions</strong> in the picture. Here’s, we only care about full lines of text, so we’re going to append all lines into a single string.</p><figure id="759f"><script src="https://gist.github.com/juliensimon/84b9bb766466b13914aa095169d985fe.js"></script></figure><h4 id="bc77">Language detection</h4><p id="0e51">Amazon Comprehend has a dedicated API for this. We’ll simply call it and return the <strong class="markup--p-strong">language code</strong>.</p><figure id="8604"><script src="https://gist.github.com/juliensimon/4140af3f52d40dd7ac41192c619cc444.js"></script></figure><h4 id="d861">Translation</h4><p id="9318">Amazon Translate is straightforward: provide the <strong class="markup--p-strong">text string</strong>, the <strong class="markup--p-strong">source language</strong> (detected by Comprehend) and the <strong class="markup--p-strong">destination language</strong>. We’re returning a text string holding the translation.</p><figure id="512a"><script src="https://gist.github.com/juliensimon/f49dd52ca8f2b5039de0f2b7043aa0ac.js"></script></figure><h4 id="4eec">Text to speech</h4><p id="fbf1">Last but not least, let’s use Amazon Polly (combined to Pygame) to <strong class="markup--p-strong">speak</strong> the translated text.</p><figure id="156e"><script src="https://gist.github.com/juliensimon/9d591ed93ea856379b4e488d79b72cbd.js"></script></figure><h4 id="5458">Putting it all together</h4><p id="cb93">OK, here’s our test program. Super simple.</p><figure id="71e2"><script src="https://gist.github.com/juliensimon/cf3c25e0640356cd9133ca0f3adee54f.js"></script></figure><p id="1da9">It works great. Here’s the output:</p><pre class="graf--pre" id="fc64">Alcohol: It's cheaper than therapy.<br/>en<br/>Alcohol: Es más barato que la terapia.<br/>É mais barato que terapia.<br/>Alcool : C'est moins cher que la thérapie.<br/>Alkohol: Es ist billiger als Therapie.</pre><p class="graf-after--pre" id="1831">We have solved our business problem. No doubt the Executive Committee will be pleased :D</p><h4 id="ec57">Conclusion</h4><p id="7347">Joking aside (for a minute), I find it pretty amazing that we’re able to build this kind of application with <strong class="markup--p-strong">so little code</strong> and <strong class="markup--p-strong">without knowing anything about AI</strong>. Amazon AI rocks!</p><p id="639a">That’s it for today. Have a great Christmas, everybody. Party like a wild animal if that’s your thing but <strong class="markup--p-strong">please stay safe</strong>, ok?</p><p id="d8ae">Thanks for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="a89e"><em class="markup--p-em">The soundtrack to this post? Obvious choice :)</em></p><figure id="9577"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/evClXCS568U?feature=oembed" width="640"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

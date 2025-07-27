@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>C5 instances: fast… and then some</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="92e9">C5 instances: fast… and then some</h3><p id="6cda"><a href="https://medium.com/@julsimon/i3-instances-and-nvme-booya-57fbf452a1c1" target="_blank">In a previous post</a>, I used the largest i3 instance to build FreeBSD 11 in <strong class="markup--p-strong">10 minutes and 54 seconds</strong>.</p><blockquote class="graf--blockquote" id="b0e4">i3.16xlarge instance, 64 vCPUs, 488GB RAM, 8x1900GB local NVMe storage, 20Gb networking</blockquote><p class="graf-after--blockquote" id="15a3">This was a massive improvement over the <a href="https://medium.com/@julsimon/freebsd-from-cd-rom-to-cloud-1322e5591d99" target="_blank">i2 family</a>, thanks to super-fast NVMe storage. Now that the <a href="https://aws.amazon.com/fr/blogs/aws/now-available-compute-intensive-c5-instances-for-amazon-ec2/" target="_blank">c5 family</a> is available, let’s see if we can do even better :)</p><figure id="8c4b"><img class="graf-image" src="image02.webp"/><figcaption>C5, the ultimate face rippin’ experience</figcaption></figure><h4 id="2de8">The C5 family</h4><p id="9419">As usual, c5 instances come in different sizes.</p><figure id="cff2"><img class="graf-image" src="image01.webp"/></figure><p id="9299">Let’s pick the largest one and see how the new <a href="https://aws.amazon.com/intel/" target="_blank">Intel Skylake architecture</a> performs. For storage, we’ll use a 100GB EBS SSD volume with 5,000 IOPS.</p><h4 id="c18c">Building FreeBSD</h4><p id="455f">We’ve done this a few times already, here are the commands. Let’s start 4 threads per vCPU, hopefully this will be enough to keep them busy.</p><figure id="fb7a"><script src="https://gist.github.com/juliensimon/b6892fbedc2a0ef2d5b469d0337c125b.js"></script></figure><p id="c1a8"><strong class="markup--p-strong">8 minutes and 30 seconds.</strong> Holy hell. <strong class="markup--p-strong">21% faster</strong> than i3. For reference, the same test on the largest c4 (c4.8xlarge) takes 11 minutes and 32 seconds. The c5 instance is <strong class="markup--p-strong">26% faster</strong> in this case.</p><p id="e109">Thanks for reading and happy testing.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="b007"><em class="markup--p-em">This post was written in 15 minutes in London. Both far beyond the sun and at full speed, then. Yngwie-style \m/</em></p><figure id="3c82"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/MI_ft3iJrfM?feature=oembed" width="640"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

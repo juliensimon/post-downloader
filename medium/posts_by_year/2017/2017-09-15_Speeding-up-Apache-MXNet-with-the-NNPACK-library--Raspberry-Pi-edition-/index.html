@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Speeding up Apache MXNet with the NNPACK library (Raspberry Pi edition)</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="08e7">Speeding up Apache MXNet with the NNPACK library (Raspberry Pi edition)</h3><p id="4f07">In a <a href="https://medium.com/@julsimon/speeding-up-apache-mxnet-with-the-nnpack-library-7427f367490f" target="_blank">previous post</a>, I showed you how to add the <a href="https://github.com/Maratyszcza/NNPACK" target="_blank">NNPACK</a> library to <a href="http://mxnet.io" target="_blank">Apache MXNet</a> and how this did speed up CPU-based inference for networks such as Alexnet or VGG by a factor of 2 to 3. Definitely worth the effort.</p><p id="dede">I also mentioned that NNPACK supports ARM 7 processors with the <a href="https://en.wikipedia.org/wiki/ARM_architecture#Advanced_SIMD_.28NEON.29" target="_blank">NEON</a> instruction set (similar to <a href="https://en.wikipedia.org/wiki/Advanced_Vector_Extensions" target="_blank">AVX</a> for Intel chips), as well as ARM v8 processors (which include NEON by default).</p><p id="fb67">As the Raspberry Pi 3 is built on the <a href="https://en.wikipedia.org/wiki/ARM_Cortex-A53" target="_blank">Cortex-A53</a> CPU (ARM v8-based), I figured I’d give it a go and see how NNPACK could help us for embedded applications.</p><figure id="5f89"><img class="graf-image" src="image01.webp"/><figcaption>Yeah, it’s on fire but it’s FASTER!</figcaption></figure><h4 id="764e">Setup</h4><p id="48d2">The steps required to build NNPACK and MXNet are strictly identical to the ones we used on our AWS instance, so please refer to the <a href="https://medium.com/@julsimon/speeding-up-apache-mxnet-with-the-nnpack-library-7427f367490f" target="_blank">previous article</a>.</p><h4 id="3cc6">Benchmarks</h4><p id="7db6">Given the limited RAM available on the Raspberry Pi 3, we won’t be able to load larger models like VGG16 (as I found out when I <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-6-fcdd7521ae87" target="_blank">first tried</a> loading models on the Pi). Thus, I had to stick to the multi-layer perceptron and the Alexnet convolutional network, with the largest batch sizes possible.</p><p id="f33d">Let’s start with the MLP.</p><figure id="30ad"><img class="graf-image" src="image02.webp"/><figcaption>batch size vs image per seconds for Multi-Layer Perceptron</figcaption></figure><p id="468a">Wow. When processing a single image, we get a <strong class="markup--p-strong">consistent 4x speedup</strong>. Then, things tend to level (not sure why) before improving again when we really start processing larger batch sizes: 4x speedup is reached again at batch size 256.</p><p id="a7cb">Now, let’s try Alexnet now and see what performance boost we get for convolutional networks.</p><figure id="6f00"><img class="graf-image" src="image03.webp"/><figcaption>batch size vs image per seconds for Alexnet</figcaption></figure><p id="3f67">Very impressive. We still get <strong class="markup--p-strong">4x speedup</strong> for single-image prediction and exceed <strong class="markup--p-strong">6x speedup</strong> for bulk prediction.</p><h4 id="2fee">Conclusion</h4><p id="7610">We did get a nice speedup on Intel processors, but the optimised code of NNPACK really shines on the less powerful ARM v8. MXNet inference gets a massive performance boost for both single images and larger batches. Kudos to Marat Dukhan, the author of NNPACK.</p><blockquote class="graf--blockquote graf--hasDropCapModel" id="bb92">From this day, NNPACK will be a mandatory build option for MXNet on my Pi. I will definitely keep an eye on future releases :)</blockquote><p class="graf-after--blockquote" id="ed69">That’s it for today, thanks for reading!</p></div></div></section>
+</section>
+</article></body></html>

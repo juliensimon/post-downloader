@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>ImageNet — part 2: the road goes ever on and on</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="fdfa">ImageNet — part 2: the road goes ever on and on</h3><p id="1f24"><a href="https://medium.com/@julsimon/imagenet-part-1-going-on-an-adventure-c0a62976dc72" target="_blank">In a previous post</a>, we looked at what it took to download and prepare the <a href="http://www.image-net.org/" target="_blank">ImageNet</a> dataset. Now it’s time to train!</p><figure id="c3d8"><img class="graf-image" src="image04.webp"/><figcaption>Can you see it, Mister Frodo? Our first ImageNet model! Oh wait, we have to cross Mordor first…</figcaption></figure><p id="5be2">The MXNet repository has a nice <a href="https://github.com/apache/incubator-mxnet/blob/master/example/image-classification/train_imagenet.py" target="_blank">script</a>, let’s use it right away.</p><pre class="graf--pre" id="94ba">python train_imagenet.py --network resnet --num-layers 50 \<br/>--gpus 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 \<br/>--data-train /data/im2rec/imagenet_training.rec \<br/>--data-val /data/im2rec/imagenet_validation.rec</pre><p class="graf-after--pre" id="4e3d">Easy enough. How fast is this running?</p><figure id="37a5"><img class="graf-image" src="image11.webp"/></figure><p id="7620">About <strong class="markup--p-strong">400 images per second</strong>, which means about <strong class="markup--p-strong">53 minutes per epoch</strong>. Over <strong class="markup--p-strong">three and a half days for 100 epochs</strong>. Come on, we don’t want to wait this long. Think, think… Didn’t we read somewhere that a <strong class="markup--p-strong">larger batch size</strong> will speed up training and help the model generalize better? Let’s figure this out :)</p><h4 id="ab1e">Picking the largest batch size</h4><p id="0023">In this context, the largest batch size means the <strong class="markup--p-strong">largest that will fit on one of our GPUs</strong>: each of them has <strong class="markup--p-strong">11439MB</strong> of RAM.</p><p id="809a">Using the <em class="markup--p-em">nvidia-smi</em> command, we can see that the current training only uses about <strong class="markup--p-strong">1500MB</strong>. As we didn’t pass a batch size parameter to our script, it’s using the default value of 128. That’s not efficient at all.</p><figure id="2b3f"><img class="graf-image" src="image09.webp"/></figure><p id="7f70">By trial and error, we can quickly figure out that the largest possible batch size is <strong class="markup--p-strong">1408</strong>. Let’s give it a try.</p><pre class="graf--pre" id="2a87">python train_imagenet.py --network resnet --num-layers 50 \<br/>--gpus 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 \<br/>--data-train /data/im2rec/imagenet_training.rec \<br/>--data-val /data/im2rec/imagenet_validation.rec \<br/>--batch-size 1408</pre><figure class="graf-after--pre" id="8327"><img class="graf-image" src="image05.webp"/></figure><p id="8c39">That’s more like it: the GPU RAM is maxed out. Training speed should be much higher… right?</p><figure id="d423"><img class="graf-image" src="image06.webp"/></figure><p id="d1c4">Nope. Something is definitely not right. Let’s pop the hood.</p><h4 id="12b8">Detecting stalled GPUs</h4><p id="213d">GPU RAM is fully used, but what about the actual GPU cores? As it turns out, there’s an easy way to find out. Let’s look at the “volatile GPU information” returned by <em class="markup--p-em">nvidia-smi, </em>it’ll give us an idea on how hard GPUs actually work.</p><figure id="fc2e"><img class="graf-image" src="image02.webp"/></figure><p id="d2ca">That’s not good. One second, our GPUs are running at 100% and the next they’re idle.</p><p id="ad10">It looks like they’re stalling over and over, which probably means that we can’t maintain a fast enough stream of data to keep them busy all the time. Let’s take a look at our Python process…</p><h4 id="a0e7">Scaling the Python process</h4><p id="1ddc">The RecordIO files storing the training set are hosted on an EBS volume (built from a snapshot, as explained before). Our Python script reads the images using a default value of 4 threads. Then, it performs data augmentation on them(resizing, changing aspect ratio, etc.) before feeding them to the GPUs. The bottleneck is probably in there.</p><figure id="429a"><img class="graf-image" src="image01.webp"/></figure><p id="5999">Idle time is extremely high (id=<strong class="markup--p-strong">80.5%</strong>), but there are no I/O waits (wa=0%). It looks like this system is simply not working hard enough. The p2.16xlarge has 64 vCPUs, so let’s add more <strong class="markup--p-strong">decoding threads</strong>.</p><pre class="graf--pre" id="9c91">python train_imagenet.py --network resnet --num-layers 50 \<br/>--gpus 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 \<br/>--data-train /data/im2rec/imagenet_training.rec \<br/>--data-val /data/im2rec/imagenet_validation.rec \<br/>--batch-size 1408 --data-nthreads=32</pre><h4 class="graf-after--pre" id="781a">Firing on all sixteen</h4><p id="33ba">Our GPUs look pretty busy now.</p><figure id="caa4"><img class="graf-image" src="image07.webp"/></figure><p id="c728">What about our python process?</p><figure id="a912"><img class="graf-image" src="image03.webp"/></figure><p id="eaed">It’s working harder as well, with <strong class="markup--p-strong">all 32 threads running in parallel</strong>. Still no I/O wait in sight, though (thank you EBS). In fact, we seem to have a nice safety margin when it comes to I/O: we could certainly add more threads to support a larger batch size or faster GPUs if we had them.</p><p id="4eb4">What about training speed? It’s nicely crusing at a stable <strong class="markup--p-strong">700+ images per second</strong>. That’s a <strong class="markup--p-strong">75%</strong> increase from where we started, so it sure was worth tweaking.</p><p id="b25d">An epoch will complete in <strong class="markup--p-strong">30 minutes</strong>, which gives us just a little over <strong class="markup--p-strong">2 days for 100 epochs</strong>. Not too bad.</p><figure id="3d1e"><img class="graf-image" src="image08.webp"/></figure><h4 id="e96c">Optimizing cost</h4><p id="5d9c">At on-demand price in us-east-1, 50 hours of training would cost us <strong class="markup--p-strong">$720</strong>. Ouch. Surely we can optimize this as well?</p><p id="2d38">Let’s look at <a href="https://aws.amazon.com/ec2/spot/" target="_blank">spot prices</a> for the p2.16xlarge. They vary a lot from region to region, but here’s what I found in us-west-2 (hint: using the <a href="https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-spot-price-history.html" target="_blank">describe-spot-price</a> API should help you find good deals really quick).</p><figure id="3a98"><img class="graf-image" src="image10.webp"/></figure><p id="92ae">Yes, ladies and gentlemen. That’s an <strong class="markup--p-strong">89% discount</strong> right there. Training would now cost something like <strong class="markup--p-strong">$80</strong>.</p><h4 id="c93c">Conclusion</h4><p id="8be9">As you can see, there is much more to Deep Learning than data sets and models. Making sure that your infrastructure runs at <strong class="markup--p-strong">full capacity</strong> and at the <strong class="markup--p-strong">best possible price</strong> also requires some attention. Hopefully, this post will help you do both.</p><p id="de8f">In the next post, I think we’ll look at training ImageNet with Keras, but I’m not quite sure yet :D</p><p id="b732">As always, thank you for reading.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="e6cc"><em class="markup--p-em">Congratulations if you caught the Bilbo </em><a href="https://en.wikipedia.org/wiki/The_Road_Goes_Ever_On_%28song%29" target="_blank"><em class="markup--p-em">reference</em></a><em class="markup--p-em"> in the title. You’re a proper Tolkien nerd ;)</em></p></div></div></section>
+</section>
+</article></body></html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>An introduction to the MXNet API — part 5</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="c86e">An introduction to the MXNet API — part 5</h3><p id="4e74">In <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-4-df22560b83fe" target="_blank">part 4</a>, we saw how easy it was to use a pre-trained version of the Inception v3 model for object detection. In this article, we’re going to load two other famous <a href="https://en.wikipedia.org/wiki/Convolutional_neural_network" target="_blank">Convolutional Neural Networks</a> (VGG19 and ResNet-152) and we’ll compare them to Inception v3.</p><figure id="09d1"><img class="graf-image" src="image03.webp"/><figcaption>Architecture of a CNN (Source: Nvidia)</figcaption></figure><h4 id="58b9">VGG16</h4><p id="599c">Published in 2014, VGG16 is a model built from <strong class="markup--p-strong">16 layers</strong> (<a href="https://arxiv.org/abs/1409.1556" target="_blank">research paper</a>). It won the <a href="http://image-net.org/challenges/LSVRC/2014/" target="_blank">2014 ImageNet challenge</a> by achieving a <strong class="markup--p-strong">7.4%</strong> error rate on object classification.</p><h4 id="1159">ResNet-152</h4><p id="4a3d">Published in 2015, ResNet-152 is a model built from <strong class="markup--p-strong">152 layers</strong> (<a href="https://arxiv.org/abs/1512.03385" target="_blank">research paper</a>). It won the <a href="http://image-net.org/challenges/LSVRC/2015/" target="_blank">2015 ImageNet challenge</a> by achieving a record <strong class="markup--p-strong">3.57%</strong> error rate on object detection. That’s much better than the typical human error rate which is usually measured at 5%.</p><h4 id="8cfe">Downloading the models</h4><p id="fd89">Time to visit the <a href="http://mxnet.io/model_zoo/index.html" target="_blank">model zoo</a> once again. Just like for Inception v3, we need to download model definitions and parameters. All three models have been trained on the same categories, so we can reuse our <em class="markup--p-em">synset.txt</em> file.</p><pre class="graf--pre" id="7c23">$ wget <a class="markup--pre-anchor" href="http://data.dmlc.ml/models/imagenet/vgg/vgg16-symbol.json" rel="nofollow noopener noopener" target="_blank">http://data.dmlc.ml/models/imagenet/vgg/vgg16-symbol.json</a></pre><pre class="graf--pre graf-after--pre" id="622b">$ wget <a class="markup--pre-anchor" href="http://data.dmlc.ml/models/imagenet/vgg/vgg16-0000.params" rel="nofollow noopener noopener" target="_blank">http://data.dmlc.ml/models/imagenet/vgg/vgg16-0000.params</a></pre><pre class="graf--pre graf-after--pre" id="2e43">$ wget <a class="markup--pre-anchor" href="http://data.dmlc.ml/models/imagenet/resnet/152-layers/resnet-152-symbol.json" rel="nofollow noopener" target="_blank">http://data.dmlc.ml/models/imagenet/resnet/152-layers/resnet-152-symbol.json</a></pre><pre class="graf--pre graf-after--pre" id="e43d">$ wget <a class="markup--pre-anchor" href="http://data.dmlc.ml/models/imagenet/resnet/152-layers/resnet-152-0000.params" rel="nofollow noopener" target="_blank">http://data.dmlc.ml/models/imagenet/resnet/152-layers/resnet-152-0000.params</a></pre><h4 class="graf-after--pre" id="b30d">Loading the models</h4><p id="f17d">All three models have been trained on the <a href="http://www.image-net.org/" target="_blank">ImageNet</a> data set, with a typical image size of 224 x 224. Since data shape and categories are identical, we can <strong class="markup--p-strong">reuse</strong> our previous <a href="https://gist.github.com/juliensimon/4a5e999d9c851f0b036ab3870eccd59d#file-mxnet_example2-py" target="_blank">code</a> as-is.</p><p id="389e">All we have to change is the model name :) Let’s just add a parameter to our <em class="markup--p-em">loadModel</em>() and <em class="markup--p-em">init</em>() functions.</p><pre class="graf--pre" id="ca2e">def loadModel(modelname):<br/>        sym, arg_params, aux_params = mx.model.load_checkpoint(modelname, 0)<br/>        mod = mx.mod.Module(symbol=sym)<br/>        mod.bind(for_training=False, data_shapes=[('data', (1,3,224,224))])<br/>        mod.set_params(arg_params, aux_params)<br/>        return mod</pre><pre class="graf--pre graf-after--pre" id="5edf">def init(modelname):<br/>        model = loadModel(modelname)<br/>        cats = loadCategories()<br/>        return model, cats</pre><h4 class="graf-after--pre" id="0f3d">Comparing predictions</h4><p id="730d">Let’s compare these models on a couple of images.</p><figure id="a980"><img class="graf-image" src="image01.webp"/></figure><pre class="graf--pre" id="626c">*** VGG16<br/>[(0.58786136, 'n03272010 electric guitar'), (0.29260877, 'n04296562 stage'), (0.013744719, 'n04487394 trombone'), (0.013494448, 'n04141076 sax, saxophone'), (0.00988709, 'n02231487 walking stick, walkingstick, stick insect')]</pre><p class="graf-after--pre" id="b07a">Good job on the top two categories, but the other three are wildly wrong. Looks like the vertical shape of the microphone stand confused the model.</p><pre class="graf--pre" id="f35b">*** ResNet-152<br/>[(0.91063803, 'n04296562 stage'), (0.039011702, 'n03272010 electric guitar'), (0.031426914, 'n03759954 microphone, mike'), (0.011822623, 'n04286575 spotlight, spot'), (0.0020199812, 'n02676566 acoustic guitar')]</pre><p class="graf-after--pre" id="8728">Very high on the top category. The other four are all meaningful.</p><pre class="graf--pre" id="196c">*** Inception v3<br/>[(0.58039135, 'n03272010 electric guitar'), (0.27168664, 'n04296562 stage'), (0.090769522, 'n04456115 torch'), (0.023762707, 'n04286575 spotlight, spot'), (0.0081428187, 'n03250847 drumstick')]</pre><p class="graf-after--pre" id="218a">Very similar results to VGG16 for the top two categories. The other three are a mixed bag.</p><p id="88f0">Let’s try another picture.</p><figure id="4a3e"><img class="graf-image" src="image02.webp"/></figure><pre class="graf--pre" id="9542">*** VGG16<br/>[(0.96909302, 'n04536866 violin, fiddle'), (0.026661994, 'n02992211 cello, violoncello'), (0.0017284016, 'n02879718 bow'), (0.00056815811, 'n04517823 vacuum, vacuum cleaner'), (0.00024804732, 'n04090263 rifle')]</pre><pre class="graf--pre graf-after--pre" id="c581">*** ResNet-152<br/>[(0.96826887, 'n04536866 violin, fiddle'), (0.028052919, 'n02992211 cello, violoncello'), (0.0008367821, 'n02676566 acoustic guitar'), (0.00070532493, 'n02787622 banjo'), (0.00039021231, 'n02879718 bow')]</pre><pre class="graf--pre graf-after--pre" id="97b3">*** Inception v3<br/>[(0.82023674, 'n04536866 violin, fiddle'), (0.15483995, 'n02992211 cello, violoncello'), (0.0044540241, 'n02676566 acoustic guitar'), (0.0020963412, 'n02879718 bow'), (0.0015099624, 'n03447721 gong, tam-tam')]</pre><p class="graf-after--pre" id="52e3">All three models score very high on the top category. One can suppose that the shape of a violin is a very unambiguous pattern for a neural network.</p><p id="6ee4">Obviously, it’s impossible to draw conclusions from a couple of samples. If you’re looking for a pre-trained model, you should definitely look at the training set, run tests on your own data and make up your mind!</p><h4 id="fa03">Comparing technical performance</h4><p id="0ad9">You’ll find extensive model benchmarks in research papers such as <a href="https://arxiv.org/abs/1605.07678" target="_blank">this one</a>. For developers, the two most important factors will probably be:</p><ul class="postList"><li id="7187"><strong class="markup--li-strong">how much memory</strong> does the model require?</li><li id="4696"><strong class="markup--li-strong">how fast</strong> can it predict?</li></ul><p id="17c0">To answer the first question, we could take an educated guess by looking at the size of the parameters file:</p><ul class="postList"><li id="d71d">VGG16: 528MB (about 140 million parameters)</li><li id="58cd">ResNet-152: 230MB (about 60 million parameters)</li><li id="2999">Inception v3: 43MB (about 25 million parameters)</li></ul><p id="a08e">As we can see, the current trend is to use <strong class="markup--p-strong">deeper networks</strong> with l<strong class="markup--p-strong">ess parameters</strong>. This has a double benefit: <strong class="markup--p-strong">faster training time</strong> (since the network has to learn less parameters) and <strong class="markup--p-strong">reduced memory usage</strong>.</p><p id="606e">The second question is more complex and depends on many parameters such as batch size. Let’s time the prediction call and run our examples again.</p><pre class="graf--pre" id="673e">t1 = time.time()<br/>model.forward(Batch([array]))<br/>t2 = time.time()<br/>t = 1000*(t2-t1)<br/>print("Predicted in %2.2f millisecond" % t)</pre><p class="graf-after--pre" id="d420">This is what we see (values have been averaged over a few calls).</p><pre class="graf--pre" id="3ba8">*** VGG16<br/>Predicted in 0.30 millisecond<br/>*** ResNet-152<br/>Predicted in 0.90 millisecond<br/>*** Inception v3<br/>Predicted in 0.40 millisecond</pre><p class="graf-after--pre" id="d5eb">To sum things up (standard disclaimer applies):</p><ul class="postList"><li id="c502">ResNet-152 has the best accuracy of all three networks (by far) but it’s also 2–3 times slower.</li><li id="c2fb">VGG16 is the fastest — due its small number of layers? — but it has the highest memory usage and the worst accuracy.</li><li id="3871">Inception v3 is almost as fast, while delivering better accuracy and the most conservative memory usage. This last point makes it a good candidate for constrained environments. More on this in part 6 :)</li></ul><p id="3287">That’s it for today! Full code below.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="4b79">Next:</p><ul class="postList"><li id="2b71"><a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-6-fcdd7521ae87" target="_blank">Part 6</a>: Real-time object detection on a Raspberry Pi (and it speaks, too!)</li></ul><figure id="8fc9"><script src="https://gist.github.com/juliensimon/ed9ef71ae35ae1d5048dd14bbefc552a.js"></script></figure></div></div></section>
+</section>
+</article></body></html>

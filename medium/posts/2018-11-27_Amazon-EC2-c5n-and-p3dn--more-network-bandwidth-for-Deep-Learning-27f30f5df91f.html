@@ -1,0 +1,72 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>Amazon EC2 c5n and p3dn: more network bandwidth for Deep Learning</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<header>
+<h1 class="p-name">Amazon EC2 c5n and p3dn: more network bandwidth for Deep Learning</h1>
+</header>
+<section data-field="subtitle" class="p-summary">
+Training a Deep Learning model isn’t only a compute intensive task: a lot of I/O is also required. Let’s see why.
+</section>
+<section data-field="body" class="e-content">
+<section name="1e0b" class="section section--body section--first"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><h3 name="6881" id="6881" class="graf graf--h3 graf--leading graf--title">AWS re:Invent — Amazon EC2 c5n and p3dn: more network bandwidth for Deep Learning</h3><p name="cae5" id="cae5" class="graf graf--p graf-after--h3">Training a Deep Learning model isn’t only a compute intensive task: a lot of I/O is also required. Let’s see why.</p><figure name="d958" id="d958" class="graf graf--figure graf-after--p"><img class="graf-image" data-image-id="1*NhigyAYDlXCVGXACdlTa7Q.jpeg" data-width="852" data-height="480" data-is-featured="true" src="https://cdn-images-1.medium.com/max/800/1*NhigyAYDlXCVGXACdlTa7Q.jpeg"></figure><h4 name="8df3" id="8df3" class="graf graf--h4 graf-after--figure">Loading training and inference data</h4><p name="969f" id="969f" class="graf graf--p graf-after--h4">Large datasets are usually stored on network storage, such as Amazon S3. Thus, during the training process, data needs to be loaded from network storage to instance RAM. This data loading process needs to happen as fast and as steadily as possible to keep CPUs and GPUs busy. As they are blazingly fast, any delay or unexpected latency in loading data is likely to stall them and to waste valuable training time.</p><p name="8706" id="8706" class="graf graf--p graf-after--p">I/O speed and latency are also critical to inference performance. Although many applications predict one sample at a time, overall throughput is likely to suffer if I/O isn’t consistently fast.</p><h4 name="93d1" id="93d1" class="graf graf--h4 graf-after--p">Exchanging information during distributed training</h4><p name="661c" id="661c" class="graf graf--p graf-after--h4">The purpose of training a Deep Learning model is to gradually discover the optimal set of weights (aka parameters) for that model, i.e. the set of weights that minimizes a specific metric (usually the validation error).</p><p name="c4be" id="c4be" class="graf graf--p graf-after--p">This involves running an <a href="https://medium.com/@julsimon/tumbling-down-the-sgd-rabbit-hole-part-1-740fa402f0d7" data-href="https://medium.com/@julsimon/tumbling-down-the-sgd-rabbit-hole-part-1-740fa402f0d7" class="markup--anchor markup--p-anchor" target="_blank">optimization function</a> (SGD or one of its many variants) to compute gradients, which reflect the difference between ground truth and predictions. When training on a distributed cluster of nodes, each node receives a batch of data, forwards it through the model and computes the gradients for that batch. Then, each node pushes the gradients to a master server where results from all nodes are consolidated. Before processing a new batch, a node first pulls the latest results, which guarantees that all nodes share the same state.</p><blockquote name="c247" id="c247" class="graf graf--blockquote graf-after--p">This is a general description and there are nuances to this behavior. If you’re curious about the details, you can read about how distributed training works in <a href="https://mxnet.incubator.apache.org/faq/distributed_training.html" data-href="https://mxnet.incubator.apache.org/faq/distributed_training.html" class="markup--anchor markup--blockquote-anchor" rel="noopener" target="_blank">Apache MXNet</a> and <a href="https://www.tensorflow.org/deploy/distributed" data-href="https://www.tensorflow.org/deploy/distributed" class="markup--anchor markup--blockquote-anchor" rel="noopener" target="_blank">TensorFlow</a>.</blockquote><p name="e7dc" id="e7dc" class="graf graf--p graf-after--blockquote">Gradients for large models can be huge: 97MB for Resnet-50. That’s a lot of data that each node has to push and pull again and again. This puts a lot of strain on network bandwidth and can become a serious performance bottleneck. A number of techniques have been designed to compress and quantize gradients, and they help reduce the amount of data that needs to be exchanged [1, 2]. Still, network performance remains a very important factor in speeding up large distributed training jobs.</p><h4 name="f245" id="f245" class="graf graf--h4 graf-after--p">c5n and p3dn: 100 Gbit networking on Amazon EC2</h4><p name="0513" id="0513" class="graf graf--p graf-after--h4">The newly-announced <a href="https://aws.amazon.com/blogs/aws/new-c5n-instances-with-100-gbps-networking/" data-href="https://aws.amazon.com/blogs/aws/new-c5n-instances-with-100-gbps-networking/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">c5n</a> and <a href="https://aws.amazon.com/ec2/instance-types/p3/" data-href="https://aws.amazon.com/ec2/instance-types/p3/" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">p3dn</a> instances support 100 Gbit networking, bringing low latency and high throughput to demanding applications like HPC and Deep Learning. Give them a try!</p><p name="a37b" id="a37b" class="graf graf--p graf-after--p graf--trailing">Happy to answer any question! Please follow me on <a href="https://twitter.com/julsimon" data-href="https://twitter.com/julsimon" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Twitter</a> for similar news and content.</p></div></div></section><section name="ee65" class="section section--body section--last"><div class="section-divider"><hr class="section-divider"></div><div class="section-content"><div class="section-inner sectionLayout--insetColumn"><p name="6261" id="6261" class="graf graf--p graf--leading">[1] “<a href="https://arxiv.org/abs/1712.01887" data-href="https://arxiv.org/abs/1712.01887" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Deep Gradient Compression: Reducing the Communication Bandwidth for Distributed Training</a>”, Yujun Lin, Song Han, Huizi Mao, Yu Wang, William J. Dally, 2017</p><p name="4cfe" id="4cfe" class="graf graf--p graf-after--p graf--trailing">[2] “<a href="https://mxnet.incubator.apache.org/faq/gradient_compression.html" data-href="https://mxnet.incubator.apache.org/faq/gradient_compression.html" class="markup--anchor markup--p-anchor" rel="noopener" target="_blank">Gradient Compression</a>”, Apache MXNet.</p></div></div></section>
+</section>
+<footer><p>By <a href="https://medium.com/@julsimon" class="p-author h-card">Julien Simon</a> on <a href="https://medium.com/p/27f30f5df91f"><time class="dt-published" datetime="2018-11-27T04:54:44.469Z">November 27, 2018</time></a>.</p><p><a href="https://medium.com/@julsimon/amazon-ec2-c5n-and-p3dn-more-network-bandwidth-for-deep-learning-27f30f5df91f" class="p-canonical">Canonical link</a></p><p>Exported from <a href="https://medium.com">Medium</a> on July 26, 2025.</p></footer></article></body></html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>SageMaker Fridays Season 3, Episode 7 — Building models automatically with AutoML</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="71b6">SageMaker Fridays Season 3, Episode 7 — Building models automatically with AutoML</h3><p id="780c">In this episode, we’ll dive into SageMaker AutoPilot, an AutoML capability. Starting from a tabular dataset, we’ll launch an AutoML job in just a few clicks (or just a few lines of code).</p><p id="62b7">Then, we’ll explore in detail the different steps in AutoPilot, such as automatic feature engineering and model tuning. We’ll show you the auto-generated notebooks, and how you can run them yourself for further optimization.</p><p id="854b">Finally, we look at AutoGluon, an open source library for AutoML.</p><figure id="c4e4"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/bpsp3OAyBoQ?feature=oembed" width="700"></iframe></figure><div class="graf--mixtapeEmbed" id="90c8"><a class="markup--mixtapeEmbed-anchor" href="https://gitlab.com/juliensimon/amazon-studio-demos/-/tree/master/sagemaker_fridays" title="https://gitlab.com/juliensimon/amazon-studio-demos/-/tree/master/sagemaker_fridays"><strong class="markup--mixtapeEmbed-strong">sagemaker_fridays · master · Julien Simon / amazon-studio-demos</strong><br/><em class="markup--mixtapeEmbed-em">GitLab.com</em>gitlab.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="eac2694ec29716c9fdbd1c2eb5fb9bae" data-thumbnail-img-id="0*8BszqTJXSpZh7ehb" href="https://gitlab.com/juliensimon/amazon-studio-demos/-/tree/master/sagemaker_fridays" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*8BszqTJXSpZh7ehb);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="a312"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-autopilot-fully-managed-automatic-machine-learning/" title="https://aws.amazon.com/blogs/aws/amazon-sagemaker-autopilot-fully-managed-automatic-machine-learning/"><strong class="markup--mixtapeEmbed-strong">Amazon SageMaker Autopilot - Automatically Create High-Quality Machine Learning Models With Full…</strong><br/><em class="markup--mixtapeEmbed-em">Today, we're extremely happy to launch Amazon SageMaker Autopilot to automatically create the best classification and…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="32f1847f7baefd1db14ccf89bef82fdf" data-thumbnail-img-id="0*smFJHIpS8qgRZvrQ" href="https://aws.amazon.com/blogs/aws/amazon-sagemaker-autopilot-fully-managed-automatic-machine-learning/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*smFJHIpS8qgRZvrQ);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="50c5"><a class="markup--mixtapeEmbed-anchor" href="https://aws.amazon.com/blogs/opensource/machine-learning-with-autogluon-an-open-source-automl-library/" title="https://aws.amazon.com/blogs/opensource/machine-learning-with-autogluon-an-open-source-automl-library/"><strong class="markup--mixtapeEmbed-strong">Machine learning with AutoGluon, an open source AutoML library | Amazon Web Services</strong><br/><em class="markup--mixtapeEmbed-em">If you work in data science, you might think that the hardest thing about machine learning is not knowing when you'll…</em>aws.amazon.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="1557a66749207f33aecdfaf7d450a6fa" data-thumbnail-img-id="0*y3UaO-Oe1W6g8Vsq" href="https://aws.amazon.com/blogs/opensource/machine-learning-with-autogluon-an-open-source-automl-library/" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*y3UaO-Oe1W6g8Vsq);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="fa4b"><a class="markup--mixtapeEmbed-anchor" href="https://auto.gluon.ai" title="https://auto.gluon.ai"><strong class="markup--mixtapeEmbed-strong">AutoGluon: AutoML for Text, Image, and Tabular Data - AutoGluon Documentation 0.2.0 documentation</strong><br/><em class="markup--mixtapeEmbed-em">AutoGluon enables easy-to-use and easy-to-extend AutoML with a focus on automated stack ensembling, deep learning, and…</em>auto.gluon.ai</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="9be9a5d5ba8da70d6635bdd128367ac5" data-thumbnail-img-id="0*9fK6xVaWQwRDE_ua" href="https://auto.gluon.ai" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*9fK6xVaWQwRDE_ua);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="b1ce"><a class="markup--mixtapeEmbed-anchor" href="https://github.com/awslabs/autogluon" title="https://github.com/awslabs/autogluon"><strong class="markup--mixtapeEmbed-strong">awslabs/autogluon</strong><br/><em class="markup--mixtapeEmbed-em">AutoGluon automates machine learning tasks enabling you to easily achieve strong predictive performance in your…</em>github.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="a80876c24db97da3acc12c67cf00bb6d" data-thumbnail-img-id="0*P2eTMGALe-df7thk" href="https://github.com/awslabs/autogluon" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*P2eTMGALe-df7thk);"></a></div><div class="graf--mixtapeEmbed graf-after--mixtapeEmbed" id="21af"><a class="markup--mixtapeEmbed-anchor" href="https://arxiv.org/abs/2003.06505" title="https://arxiv.org/abs/2003.06505"><strong class="markup--mixtapeEmbed-strong">AutoGluon-Tabular: Robust and Accurate AutoML for Structured Data</strong><br/><em class="markup--mixtapeEmbed-em">We introduce AutoGluon-Tabular, an open-source AutoML framework that requires only a single line of Python to train…</em>arxiv.org</a><a class="js-mixtapeImage mixtapeImage mixtapeImage--empty u-ignoreBlock" data-media-id="708c285ec82ad6db403d28773bcb8b25" href="https://arxiv.org/abs/2003.06505"></a></div></div></div></section>
+</section>
+</article></body></html>

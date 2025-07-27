@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="utf-8"/>
+  <style>
+   body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-top: 2em;
+            margin-bottom: 0.5em;
+        }
+        h1 { font-size: 2.5em; }
+        h2 { font-size: 2em; }
+        h3 { font-size: 1.5em; }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 1em 0;
+        }
+        /* Image alignment classes for text wraparound */
+        img.alignleft {
+            float: left;
+            margin: 0.5em 1.5em 1em 0;
+        }
+        img.alignright {
+            float: right;
+            margin: 0.5em 0 1em 1.5em;
+        }
+        img.aligncenter {
+            display: block;
+            margin: 1em auto;
+            float: none;
+        }
+        img.alignnone {
+            float: none;
+            margin: 1em 0;
+        }
+        /* Clear floats after images */
+        .wp-block-image::after,
+        p:has(img.alignleft)::after,
+        p:has(img.alignright)::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        pre {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1em;
+            overflow-x: auto;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 1em 0;
+            padding-left: 1em;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+  </style>
+ </head>
+ <body>
+  <h1>
+   Scaling Ad Verification with Machine Learning and AWS Inferentia
+  </h1>
+  <p style="color: #666; font-style: italic; margin-bottom: 1em;">
+   Published: 2021-09-22
+  </p>
+  <p style="color: #666; font-style: italic; margin-bottom: 2em;">
+   Originally published at
+   <a href="https://aws.amazon.com/blogs/aws/scaling-ad-verification-with-machine-learning-and-aws-inferentia/">
+    https://aws.amazon.com/blogs/aws/scaling-ad-verification-with-machine-learning-and-aws-inferentia/
+   </a>
+  </p>
+  <p>
+   <a href="https://advertising.amazon.com/">
+    Amazon Advertising
+   </a>
+   helps companies build their brand and connect with shoppers, through ads shown both within and beyond Amazon’s store, including websites, apps, and streaming TV content in more than 15 countries. Businesses or brands of all sizes including registered sellers, vendors, book vendors, Kindle Direct Publishing (KDP) authors, app developers, and agencies on
+   <a href="http://www.amazon.com">
+    Amazon marketplaces
+   </a>
+   can upload their own ad creatives, which can include images, video, audio, and of course products sold on Amazon. To promote an accurate, safe, and pleasant shopping experience, these ads must comply with
+   <a href="https://advertising.amazon.com/resources/ad-specs/">
+    content guidelines
+   </a>
+   .
+  </p>
+  <p>
+   Here’s a simple example. Can you figure out why two of the following ads would not be compliant?
+  </p>
+  <p>
+   <img alt="Amazon Ads" class="size-full wp-image-53153 aligncenter" height="356" src="image01.webp" style="border: 1px solid black;" width="1001"/>
+  </p>
+  <p>
+   The ad in the center doesn’t feature the product in context. It also shows the same product multiple times. The ad on the right looks much better, but it contains text, which is not allowed for this ad format.
+  </p>
+  <p>
+   New ad creatives come in many sizes, shapes, and languages, and at very large scale. Assuming it would even be possible, verifying them manually would be a complex, slow, and error-prone process. Machine learning (ML) to the rescue!
+  </p>
+  <p>
+   <strong>
+    <span style="text-decoration: underline;">
+     Using Machine Learning to Verify Ad Creatives
+     <br/>
+    </span>
+   </strong>
+   Each ad must be evaluated against many rules, which no single model could reasonably learn. In fact, it takes many models to check ad properties, for example:
+  </p>
+  <ul>
+   <li>
+    Media-speciﬁc models that analyze images, video, audio, and text that describe the advertised products.
+   </li>
+   <li>
+    Content-specific models that detect headlines, text, backgrounds, and objects.
+   </li>
+   <li>
+    Language-specific models that validate syntax and grammar, and flag unapproved language.
+   </li>
+  </ul>
+  <p>
+   Some of these capabilities are readily available in
+   <a href="https://aws.amazon.com/machine-learning/ai-services/">
+    AWS AI services
+   </a>
+   . For example, Amazon Advertising teams use
+   <a href="https://aws.amazon.com/rekognition/">
+    Amazon Rekognition
+   </a>
+   to extract metadata information from images and videos.
+  </p>
+  <p>
+   Other capabilities require custom models trained on in-house datasets. For this purpose, Amazon teams labeled large ad datasets with
+   <a href="https://aws.amazon.com/sagemaker/groundtruth/">
+    Amazon SageMaker Ground Truth
+   </a>
+   , using a combination of manual labeling, and automatic labeling with
+   <a href="https://aws.amazon.com/blogs/machine-learning/annotate-data-for-less-with-amazon-sagemaker-ground-truth-and-automated-data-labeling/">
+    active learning
+   </a>
+   . Using these datasets, teams then used
+   <a href="https://aws.amazon.com/sagemaker/">
+    Amazon SageMaker
+   </a>
+   to train models, and deploy them automatically on real-time prediction endpoints with the
+   <a href="https://aws.amazon.com/cdk/">
+    AWS Cloud Development Kit (AWS CDK)
+   </a>
+   and
+   <a href="https://aws.amazon.com/sagemaker/pipelines/">
+    Amazon SageMaker Pipelines
+   </a>
+   .
+  </p>
+  <p>
+   When a business uploads a new ad, relevant models are invoked simultaneously to process specific ad components, extract signals, and output a quality score. All scores are then consolidated, and sent to a final model that predicts whether the ad should be manually reviewed.
+  </p>
+  <p>
+   <span style="color: #000000;">
+    Thanks to this process, most new ads can be verified and published automatically, which means businesses can quickly promote their brand and products, and Amazon can maintain a high-quality shopping experience.
+   </span>
+  </p>
+  <p>
+   However, faced with a growing number of more complex models, Amazon Advertising teams started to look for a solution that could increase prediction throughput while reducing costs. They found it in
+   <a href="https://aws.amazon.com/machine-learning/inferentia/">
+    AWS Inferentia
+   </a>
+   .
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     What is AWS Inferentia?
+    </strong>
+   </span>
+   <br/>
+   Available in Amazon EC2
+   <a href="https://aws.amazon.com/ec2/instance-types/inf1/">
+    Inf1
+   </a>
+   instances,
+   <a href="https://aws.amazon.com/machine-learning/inferentia/">
+    AWS Inferentia
+   </a>
+   is a custom chip built by AWS to accelerate ML inference workloads, and optimize their cost. Each AWS Inferentia chip contains four NeuronCores. Each NeuronCore implements a high-performance
+   <a href="https://en.wikipedia.org/wiki/Systolic_array">
+    systolic array
+   </a>
+   matrix multiply engine, which massively speeds up typical deep learning operations such as convolution and transformers. NeuronCores are also equipped with a large on-chip cache, which helps to cut down on external memory accesses, reduce latency, and increase throughput.
+  </p>
+  <p>
+   Thanks to
+   <a href="https://github.com/aws/aws-neuron-sdk">
+    AWS Neuron
+   </a>
+   , a software development kit for ML inference, AWS Inferentia can be used natively from ML frameworks like
+   <a href="https://www.tensorflow.org">
+    TensorFlow
+   </a>
+   ,
+   <a href="https://pytorch.org/">
+    PyTorch
+   </a>
+   , and
+   <a href="https://mxnet.apache.org">
+    Apache MXNet
+   </a>
+   . It consists of a compiler, runtime, and profiling tools that enable you to run high-performance and low latency inference. For many trained models, compilation is a one-liner with the Neuron SDK, not requiring any additional application code changes. The result is a high performance inference deployment, that can easily scale while keeping costs under control. You’ll find many examples in the
+   <a href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/">
+    Neuron documentation
+   </a>
+   . Alternatively, thanks to
+   <a href="https://aws.amazon.com/sagemaker/neo/">
+    Amazon SageMaker Neo
+   </a>
+   , you can also compile models directly in SageMaker.
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Scaling Ad Verification with AWS Inferentia
+    </strong>
+   </span>
+   <br/>
+   Amazon Advertising teams started compiling their models for Inferentia, and deploying them on SageMaker endpoints powered by Inf1 instances. They compared the Inf1 endpoints to the GPU endpoints they had been using so far. They found that large deep learning models like BERT run more effectively on Inferentia, which decreases latency by 30%, and reduces c
+   <span style="color: #000000;">
+    osts by 71%
+   </span>
+   . A few months ago, ML teams working on Amazon Alexa came to the same
+   <a href="https://aws.amazon.com/blogs/aws/majority-of-alexa-now-running-on-faster-more-cost-effective-amazon-ec2-inf1-instances/">
+    conclusions
+   </a>
+   .
+  </p>
+  <p>
+   What about prediction quality? GPU models are typically trained with single-precision floating-point data (FP32). Inferentia uses the shorter FP16, BF16, and INT8 data types, which can create slight differences in predicted output. Running both GPU and Inferentia models in parallel, teams analyzed probability distributions, tweaked prediction thresholds for their Inferentia models, and made sure that these models would predict ads just like GPU models did. You can learn more about these techniques in the
+   <a href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/neuron-guide/perf/performance-tuning.html">
+    Performance Tuning
+   </a>
+   section of the documentation.
+  </p>
+  <p>
+   With these final adjustments out of the way, the Amazon Advertising teams started phasing out GPU models. All text data is now predicted on Inferentia, and the migration of computer vision pipelines is in progress.
+  </p>
+  <p>
+   <strong>
+    <span style="text-decoration: underline;">
+     AWS Customers Are Successful with AWS Inferentia
+    </span>
+   </strong>
+   <br/>
+   In addition to Amazon teams, customers also report very nice results on scaling and optimizing their ML workloads with Inferentia.
+  </p>
+  <p>
+   <img alt="" class="size-full wp-image-53112 alignleft" height="128" loading="lazy" src="image02.webp" style="border: 1px solid black;" width="128"/>
+   <a href="https://www.linkedin.com/in/binghuiouyang/">
+    Binghui Ouyang
+   </a>
+   , Senior Data Scientist at
+   <a href="https://www.autodesk.com">
+    Autodesk
+   </a>
+   : “
+   <em>
+    Autodesk is advancing the cognitive technology of our AI-powered virtual assistant, Autodesk Virtual Agent (AVA) by using Inferentia. AVA answers over 100,000 customer questions per month by applying natural language understanding (NLU) and deep learning techniques to extract the context, intent, and meaning behind inquiries. Piloting Inferentia, we are able to obtain a 4.9x higher throughput over G4dn for our NLU models, and look forward to running more workloads on the Inferentia-based Inf1 instances.
+   </em>
+   ”
+  </p>
+  <p>
+   <img alt="" class="size-full wp-image-53114 alignleft" height="128" loading="lazy" src="image03.webp" style="border: 1px solid black;" width="128"/>
+   <a href="https://www.linkedin.com/in/paulfryzel/">
+    Paul Fryzel
+   </a>
+   , Principal Engineer, AI Infrastructure at
+   <a href="https://www.condenast.com/">
+    Condé Nast
+   </a>
+   : “
+   <em>
+    Condé Nast’s global portfolio encompasses over 20 leading media brands, including Wired, Vogue, and Vanity Fair. Within a few weeks, our team was able to integrate our recommendation engine with AWS Inferentia chips. This union enables multiple runtime optimizations for state-of-the-art natural language models on SageMaker’s Inf1 instances. As a result, we observed a 72% reduction in cost than the previously deployed GPU instances
+   </em>
+   .”
+  </p>
+  <p>
+   <span style="text-decoration: underline;">
+    <strong>
+     Getting Started
+    </strong>
+   </span>
+   <br/>
+   You can get started with Inferentia and Inf1 instances today, either on Amazon SageMaker or with the Neuron SDK. This
+   <a href="https://introduction-to-inferentia.workshop.aws/overview.html">
+    self-paced workshop
+   </a>
+   walks you through both options.
+  </p>
+  <p>
+   Give it a try, and let us know what you think. As always, we look forward to your feedback. You can send it through your usual AWS Support contacts, post it on the
+   <a href="https://forums.aws.amazon.com/forum.jspa?forumID=285">
+    AWS Forum
+   </a>
+   for SageMaker, or on the Neuron SDK
+   <a href="https://github.com/aws/aws-neuron-sdk/">
+    Github
+   </a>
+   repository.
+  </p>
+  <a href="https://aws.amazon.com/developer/community/evangelists/julien-simon/">
+   - Julien
+  </a>
+  <!-- '"` -->
+ </body>
+</html>

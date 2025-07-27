@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>pre:Invent — catching up on the latest Machine Learning announcements</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="d692">pre:Invent — catching up on the latest Machine Learning announcements</h3><p id="166c"><a href="https://reinvent.awsevents.com/" target="_blank">AWS re:Invent</a> is hours away. As you can imagine, plenty of new services and features will be announced in the next few days. Before the floodgates are opened, let’s take a look at some of our recent Machine Learning announcements.</p><h3 id="336b"><a href="http://aws.amazon.com/rekognition" target="_blank">Amazon Rekognition</a></h3><p id="8e88">The image and video analysis service is constantly improved. The <a href="https://aws.amazon.com/blogs/machine-learning/amazon-rekognition-announces-updates-to-its-face-detection-analysis-and-recognition-capabilities/" target="_blank">latest upgrade</a> makes it even more efficient at detecting faces, even in difficult situations (rotation, poor lighting, partly hidden faces, etc.). Here’s a quick example with one of my refence pictures: 96 faces have been detected.</p><figure id="6343"><img class="graf-image" src="image01.webp"/></figure><h3 id="2599"><a href="http://aws.amazon.com/polly" target="_blank">Amazon Polly</a></h3><p id="32de">Several new voices have been added to the text-to-speech service:</p><ul class="postList"><li class="graf--startsWithSingleQuote" id="4bc4">‘Bianca’, a new female voice for Italian,</li><li class="graf--startsWithSingleQuote" id="9feb">‘Lucia’, a new female voice for Castillian Spanish,</li><li class="graf--startsWithSingleQuote" id="e7e9">‘Mia’, a new female voice for Mexican Spanish.</li></ul><p id="a8df">Amazon Polly now supports 57 voices in 28 languages.</p><h3 id="2832"><a href="http://aws.amazon.com/transcribe" target="_blank">Amazon Transcribe</a></h3><p id="88b9">The speech-to-text service now support <a href="https://aws.amazon.com/blogs/machine-learning/amazon-transcribe-now-supports-real-time-transcriptions/" target="_blank">real-time transcription</a>! You’ll find a sample Java application in this <a href="https://github.com/aws-samples/aws-transcribe-streaming-example-java" target="_blank">Github repository</a>. Here’s a quick demo.</p><figure id="4779"><iframe frameborder="0" height="480" scrolling="no" src="https://www.youtube.com/embed/-LoGnDMKesw?feature=oembed" width="640"></iframe></figure><h3 id="5405"><a href="http://aws.amazon.com/translate" target="_blank">Amazon Translate</a></h3><p id="46d7">The translation service just added 8 new languages: Danish, Dutch, Finnish, Hebrew, Indonesian, Korean, Polish, and Swedish. This brings the total of supported languages to 21, and the total of language pairs to 417. You can view the full list in the <a href="https://docs.aws.amazon.com/translate/latest/dg/pairs.html" target="_blank">documentation</a>.</p><pre class="graf--pre" id="8174">$ aws translate translate-text --source-language-code auto --text "I can now speak 21 different languages" --target-language-code ru<br/>{<br/>    "TranslatedText": "Теперь я могу говорить на 21 разных языках",<br/>    "SourceLanguageCode": "en",<br/>    "TargetLanguageCode": "ru"<br/>}<br/>$ aws translate translate-text --source-language-code auto --text "Теперь я могу говорить на 21 разных языках" --target-language-code he<br/>{<br/>    "TranslatedText": "עכשיו אני יכול לדבר 21 שפות שונות",<br/>    "SourceLanguageCode": "ru",<br/>    "TargetLanguageCode": "he"<br/>}<br/>$ aws translate translate-text --source-language-code auto --text "עכשיו אני יכול לדבר 21 שפות שונות" --target-language-code fr<br/>{<br/>    "TranslatedText": "Maintenant, je peux parler 21 langues différentes",<br/>    "SourceLanguageCode": "he",<br/>    "TargetLanguageCode": "fr"<br/>}</pre><h3 class="graf-after--pre" id="c09a"><a href="http://aws.amazon.com/comprehend" target="_blank">Amazon Comprehend</a></h3><p id="a12b">The natural language processing service now supports two custom features:</p><ul class="postList"><li id="14d5">The ability to extract <a href="https://aws.amazon.com/blogs/machine-learning/getting-started-with-amazon-comprehend-custom-entities/" target="_blank">custom entities</a>.</li><li id="bbca">The ability to build <a href="https://aws.amazon.com/blogs/aws/new-train-custom-document-classifiers-with-amazon-comprehend/" target="_blank">custom document classifiers</a>.</li></ul><p id="bd6f">Traditionally, both techniques would require Machine Learning expertise in order to use advanced algorithms. Here, all you have to do is bring your own labelled data in CSV files, and Comprehend will train a model for you. No expertise required, no infrastructure to deal with.</p><h3 id="56d4"><a href="http://aws.amazon.com/sagemaker" target="_blank">Amazon SageMaker</a></h3><p id="11b2">The Machine Learning service has received quite a few updates recently.</p><h4 id="b5e5">Infrastructure features</h4><ul class="postList"><li id="3b42">Batch transform can now run <a href="https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-sagemaker-batch-transform-now-supports-amazon-virtual-pri/" target="_blank">inside a VPC</a>.</li><li id="aa8b">All SageMaker APIs, including <a href="https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-sagemaker-now-supports-aws-privatelink-for-notebook-insta/" target="_blank">notebook instances</a>, now support AWS Private Link. This guarantees that all traffic stays inside your VPC, without even going through the public Internet.</li><li id="ca3a">SageMaker is now <a href="https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-sagemaker-is-now-integrated-with-apache-airflow/" target="_blank">integrated</a> with Apache Airflow, a workflow management system. Using Airflow, you can build a workflow for SageMaker training, hyperparameter tuning, batch transform and endpoint deployment. You can use any SageMaker Deep Learning framework or Amazon algorithms to perform these operations in Airflow. Here’s an <a href="https://github.com/aws/sagemaker-python-sdk/blob/master/src/sagemaker/workflow/README.rst" target="_blank">example</a>.</li></ul><h4 id="c4d0">Algorithm features</h4><ul class="postList"><li id="4d2a">Training metrics (loss, accuracy, etc.) are now <a href="https://aws.amazon.com/blogs/machine-learning/easily-monitor-and-visualize-metrics-while-training-models-on-amazon-sagemaker/" target="_blank">visible</a> in Amazon CloudWatch. You can also query them using the SageMaker SDK.</li><li id="c243">The TensorFlow <a href="https://aws.amazon.com/about-aws/whats-new/2018/11/amazon-sagemaker-announces-several-enhancements-to-the-built-in-/" target="_blank">built-in container</a> now supports TensorFlow 1.11. You can now also write your script using Python 3.</li><li id="3179">Automatic Model Tuning now support <a href="https://aws.amazon.com/blogs/machine-learning/amazon-sagemaker-automatic-model-tuning-becomes-more-efficient-with-warm-start-of-hyperparameter-tuning-jobs/" target="_blank">warm starts</a>, i.e. you can start a new tuning job based on the results of a previous one. This way, you can keep exploring the same parameter space without tuning from scratch again.</li><li id="943f">Two new built-in algorithms have been added recently: <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/object2vec.html" target="_blank">Object2vec</a>, a general-purpose embedding algorithm, and <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/ip-insights.html" target="_blank">IP Insights</a>, an unsupervised learning algorithm that learns the usage patterns for IPv4 addresses. This brings the total number of built-in algorithms to sixteen.</li></ul><p id="8cdc">Pfew. pre:Invent was quite busy this year :) I’m afraid this is nothing compared to what’s coming in the next few days 😱</p><p id="7254">I’ll keep you posted, of course. For live coverage, please follow me on <a href="https://twitter.com/julsimon" target="_blank">Twitter</a>.</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="e4ec"><em class="markup--p-em">Lightning’s gonna strike alright </em>🤘</p><figure id="d65a"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/CUzcxJNZKC4?feature=oembed" width="700"></iframe></figure></div></div></section>
+</section>
+</article></body></html>

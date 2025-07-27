@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Training MXNet — part 3: CIFAR-10 redux</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="0b8e">Training MXNet — part 3: CIFAR-10 redux</h3><p id="bec4">In <a href="https://medium.com/@julsimon/training-mxnet-part-2-cifar-10-c7b0b729c33c" target="_blank">part 2</a>, we learned about the <a href="https://www.cs.toronto.edu/~kriz/cifar.html" rel="nofollow noopener noopener" target="_blank">CIFAR-10</a> data set and we saw how to easily load it using a <a href="http://mxnet.io/api/python/io.html#module-mxnet.recordio" target="_blank">RecordIO</a> object. Using this data set, we both trained a network from scratch and fine-tuned a network trained on ImageNet. In both cases, we used a fixed learning rate and we got to a point where validation accuracy <strong class="markup--p-strong">plateaued</strong> at about 85%.</p><p id="c48b">In this article, we’re going to focus on improving validation accuracy.</p><h4 id="5df0">Using a variable learning rate</h4><p id="15b1">Let’s fine-tune our pre-trained network again. This time, we’re going to reduce the learning rate gradually, which should help the model converge to a “lower” minimum: we’ll start at 0.05 and multiply by 0.9 each time 25 epochs have gone by, until we reach 300 epochs.</p><blockquote class="graf--blockquote" id="799f">Gradually reducing the learning rate is a key technique in improving validation accuracy.</blockquote><p class="graf-after--blockquote" id="dc94">We need 2 extra parameters to do this:</p><ul class="postList"><li id="1f07"><em class="markup--li-em">lr-step-epochs</em>: the epoch steps when the learning rate will be updated.</li><li id="3d9b"><em class="markup--li-em">lr-factor</em>: the factor by which the learning rate will be updated.</li></ul><p id="d19a">The new fine-tuning command becomes:</p><pre class="graf--pre" id="27f5">$ python fine-tune.py <br/>--pretrained-model resnext-101 --load-epoch 0000 <br/>--gpus 0,1,2,3 — batch-size 128<br/>--data-train cifar10_train.rec --data-val cifar10_val.rec <br/>--num-examples 50000 --num-classes 10 --image-shape 3,28,28 <br/>--num-epoch 300 --lr 0.05 --lr-factor 0.9<br/>--lr-step-epochs 25,50,75,100,125,150,175,200,225,250,275,300</pre><p class="graf-after--pre" id="b7fb">A while later, here’s the result.</p><figure id="e476"><img class="graf-image" src="image02.webp"/><figcaption>Fine-tuning a pre-trained R<em class="markup--figure-em">esNext-101 model on CIFAR-10, variable learning rate</em></figcaption></figure><p id="35f2">As we can see, reducing the learning rate definitely helps reaching higher validation accuracy. Previously, it plateaued at 85% after 25 epochs or so. Here, it’s climbing steadily up to <strong class="markup--p-strong">89%</strong> and would probably keep increasing beyond 300 epochs. 4% is a huge difference: on a 10,000 image validation set, it means that an extra 400 images are correctly labelled.</p><h4 id="485e">AdaDelta</h4><p id="4ee9">Surely, we could keep tweaking and find an even better combination for the initial learning rate, the factor and the steps. But we could also do without all these parameters, thanks to the AdaDelta optimizer.</p><p id="5b52">AdaDelta is a evolution of the SGD algorithm we’ve been using so far for optimization (research paper). It doesn’t need to be given a learning rate. In fact, it will automatically select and adapt a learning rate for each dimension.</p><h4 id="7083">Training ResNext-101 from scratch with AdaDelta</h4><p id="edd9">Let’s try to train ResNext-101 from scratch, using AdaDelta. Instead of loading the network, we’re going to build one using <em class="markup--p-em">resnext.get_symbol()</em>, a <a href="https://github.com/dmlc/mxnet/tree/master/example/image-classification/symbols" target="_blank">Python function</a> available in MXnet. There’s a whole set of functions to build different networks: I suggest that you take some time to look at them, as they will help you understand how these networks are structured.</p><p id="ff9d">You should now be familiar with the rest of the code :)</p><figure id="9c61"><script src="https://gist.github.com/juliensimon/e99c7842bb61926282cd1bb03dc4d2e5.js"></script></figure><p id="b854">These are the results after 300 epochs.</p><figure id="8f5e"><img class="graf-image" src="image01.webp"/><figcaption>Training a R<em class="markup--figure-em">esNext-101 model from scratch on CIFAR-10, AdaDelta optimizer</em></figcaption></figure><p id="4cdb">In our previous article, training the same model from scratch only yielded 80% validation accuracy. Here, not only does training accuracy increase extremely fast, we also reach <strong class="markup--p-strong">86%</strong> validation accuracy without having to guess about learning rate or when to decrease it.</p><p id="0e22">It’s very likely that an expert would achieve better results by tweaking optimization parameters, but for the rest of us, AdaDelta is an interesting option.</p><p id="2328">MXNet supports a whole set of <a href="http://mxnet.io/api/python/model.html#optimizer-api-reference" target="_blank">optimization algorithms</a>. If you’d like to learn more on how they work and how they differ, here’s an <a href="http://sebastianruder.com/optimizing-gradient-descent/" target="_blank">excellent article</a> by Sebastian Ruder.</p><h4 id="1576">Fast and Furious</h4><p id="a9c4">One last thing. I mentioned earlier that training took ‘a while’. More precisely, it took 12+ hours using all 4 GPUs of a <a href="https://aws.amazon.com/blogs/aws/new-g2-instance-type-with-4x-more-gpu-power/" target="_blank">g2.8xlarg</a>e instance.</p><p id="d0b3">Could we go faster? Sure, I could use a <a href="https://aws.amazon.com/blogs/aws/new-p2-instance-type-for-amazon-ec2-up-to-16-gpus/" target="_blank">p2.16xlarge</a> instance. That’s as large as GPU servers get.</p><p id="7f3a">Even faster? We need distributed training, which we’ll cover in part 4.</p><p id="e59d">Thanks for reading :)</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="a8dd">Next:</p><p id="ad65"><a href="https://medium.com/@julsimon/training-mxnet-part-4-distributed-training-91def5ea3bb7" target="_blank">Part 4</a> — Distributed training</p><p id="a519"><a href="https://medium.com/@julsimon/training-mxnet-part-5-distributed-training-efs-edition-1c2a13cd5460" target="_blank">Part 5</a> — Distributed training, EFS edition</p></div></div></section>
+</section>
+</article></body></html>

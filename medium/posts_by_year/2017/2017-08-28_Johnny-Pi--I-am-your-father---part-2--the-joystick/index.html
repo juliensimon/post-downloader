@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>Johnny Pi, I am your father — part 2: the joystick</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="426e">Johnny Pi, I am your father — part 2: the joystick</h3><p id="9488">In the <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-1-moving-around-e09fe95bbfce" target="_blank">previous post</a>, we laid the foundations for movement, thanks to simple messages sent to our robot through AWS IoT.</p><p id="a864">In this post, I’ll show you how to control the robot with a joystick connected to an Arduino Yùn. I simply *love* this small device, as it is actually powered by two CPUs:</p><ul class="postList"><li id="f188">An Atheros CPU able to support a basic Linux distribution like OpenWRT. This is were the AWS IoT SDK will run.</li><li id="23c9">An ATmega32 CPU running the Arduino code and connected to multiple analog and digital ports.</li></ul><p id="ba9a">Both CPUs are connected by a serial bridge, allowing the Arduino code to transparently invoke Linux APIs. The best of both worlds :) Very clever design!</p><figure id="6dff"><img class="graf-image" src="image01.webp"/></figure><h4 id="a87e">What we’ll need</h4><p id="b841">Here’s the shopping list:</p><ul class="postList"><li id="dfc8">an Arduino Yùn. I strongly suggest that you purchase one from the <a href="https://store.arduino.cc/arduino-yun" target="_blank">official Arduino store</a> or at a least from a reputable vendor. Believe it or not, there are plenty of counterfeits out there. I got one by accident and it didn’t work at all :-/</li><li id="d812">an Arduino joystick, similar to <a href="https://www.amazon.com/SainSmart-JoyStick-Breakout-Module-Arduino/dp/B00CO2N18A" target="_blank">this one</a>. If you’re keen of playing with more sensors, I’d recommend buying a complete kit like <a href="https://www.amazon.com/SunFounder-Ultimate-Arduino-Mega2560-Mega328/dp/B017W15HT8" target="_blank">this one</a>: I did and they’re great fun.</li></ul><div class="graf--mixtapeEmbed" id="88d7"><a class="markup--mixtapeEmbed-anchor" href="https://www.eventbrite.com/e/the-chatbot-conference-tickets-34868758395?aff=CBL" title="https://www.eventbrite.com/e/the-chatbot-conference-tickets-34868758395?aff=CBL"><strong class="markup--mixtapeEmbed-strong">The Chatbot Conference</strong><br/><em class="markup--mixtapeEmbed-em">The Chatbot Conference On September 12, Chatbot's Life, will host our first Chatbot Conference in San Francisco. The…</em>www.eventbrite.com</a><a class="js-mixtapeImage mixtapeImage u-ignoreBlock" data-media-id="b18003c9b669ed613368b9ca442f134b" data-thumbnail-img-id="0*cRrcUA6yRZCMVCbO." href="https://www.eventbrite.com/e/the-chatbot-conference-tickets-34868758395?aff=CBL" style="background-image: url(https://cdn-images-1.medium.com/fit/c/160/160/0*cRrcUA6yRZCMVCbO.);"></a></div><h4 class="graf-after--mixtapeEmbed" id="ac55">Registering the Arduino in AWS IoT</h4><p id="f0d6">Just like for our Raspberry Pi robot, we need to register the Arduino in AWS IoT, create a certificate, a key pair, etc. <a href="https://docs.aws.amazon.com/iot/latest/developerguide/iot-gs.html" target="_blank">The process</a> is exactly the same, so just repeat the same steps and download all credentials on your local machine.</p><h4 id="bd15">Installing the AWS IoT SDK</h4><p id="7f86">Ditto for the <a href="https://github.com/aws/aws-iot-device-sdk-arduino-yun" target="_blank">AWS IoT SDK</a> installation. The only difference is that the installation script will install both the SDK and the credentials on the Arduino, so you do need the register the Arduino before installing the SDK. The process is a little more involved that for the Pi, but stick to the <a href="https://github.com/aws/aws-iot-device-sdk-arduino-yun#installation" target="_blank">instructions</a> and you’ll be fine.</p><h4 id="431a">Connecting to AWS IoT</h4><p id="d64b">We’re now ready to fire up the <a href="https://www.arduino.cc/en/Main/Software" target="_blank">Arduino IDE</a>. First, let’s write <em class="markup--p-em">aws_iot_config.h</em>, where we’ll define all parameters required to connect. Obviously, you’ll need to replace <em class="markup--p-em">XXX</em> with the appropriate values, namely:</p><ul class="postList"><li id="ecd9">the prefix of the private key and the certificate,</li><li id="9cde">the hostname of the IoT broker, which you’ll find either in the console or by issuing the ‘<em class="markup--li-em">aws iot describe-endpoint’</em> CLI command.</li></ul><figure id="57f7"><script src="https://gist.github.com/juliensimon/12937f5842a0ccabb63e992a26d1239f.js"></script></figure><p id="a1e9">Ok, now let’s take a look at the joystick and how we’ll connect it to the Arduino.</p><h4 id="1bf7">Connecting the joystick</h4><p id="573e">The joystick has five analog pins. From top to bottom:</p><ul class="postList"><li id="f894">Vcc → connected to +5V.</li><li id="92c8">Vertical movement → connected to A0.</li><li id="fd1a">Horizontal movement → connected to A1.</li><li id="c0b9">Selector. The joystick has a button located on the side. I found mine to be quite imprecise and I’ve decided not to use it. We’ll use an AWS IoT button instead in a future post :)</li><li id="c95f">GND → connected to ground.</li></ul><figure id="20ae"><img class="graf-image" src="image02.webp"/></figure><h4 id="2e8a">Writing the Arduino code</h4><p id="1d65">Arduino programs have a simple structure:</p><ul class="postList"><li id="046a">a <em class="markup--li-em">setup</em>() function called once at power-on: this is where we’ll connect to AWS IoT and calibrate the joystick, i.e. read the voltage on the analog pins where the joystick is in the neutral position.</li><li id="88fa">a <em class="markup--li-em">loop</em>() function called ‘forever’, or at least until you kill power: this is where we’ll read the voltage of the pins connected to the joystick, find out in which direction it moved, and then send the appropriate message to the <em class="markup--li-em">JohnnyPi/move</em> topic.</li></ul><p id="9d82">Let’s get to work.</p><h4 id="5146">The setup() function</h4><p id="f050">As you can see, we use the three <a href="https://github.com/aws/aws-iot-device-sdk-arduino-yun#api" target="_blank">APIs</a> from the AWS IoT SDK: <em class="markup--p-em">setup</em>(), <em class="markup--p-em">config</em>() and <em class="markup--p-em">connect</em>(). If all three succeed, then we’re connected to the message broker. Nothing complicated.</p><figure id="7b9d"><script src="https://gist.github.com/juliensimon/f974ebbe74d22677effe0df565019eda.js"></script></figure><h4 id="73f2">The loop() function</h4><p id="8425">Here, we read the voltage on the X and Y pins, subtract the neutral voltage and figure out in which direction the joystick has moved. Then, we publish the proper message to the JohnnyPi/move MQTT topic using the <em class="markup--p-em">publish</em>() API. We use QoS 1 for guaranteed delivery.</p><figure id="e8c6"><script src="https://gist.github.com/juliensimon/5c1605c1a883f7d9ab03743bb497082b.js"></script></figure><p id="a2f9">That’s all it takes. Not a lot of code, is it? You’ll find everything on <a href="https://github.com/juliensimon/johnnypi/tree/master/part2" target="_blank">Github</a>.</p><h4 id="30a7">Demo</h4><p id="5717">You can see the whole thing in action in the video below. The actual demo starts at 29:15.</p><figure id="fd92"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/emDxDLI9FRw?start=1755&amp;feature=oembed&amp;start=1755" width="700"></iframe></figure><h4 id="d509">What’s next</h4><p id="4b25">In the next post, I’ll take you through integration with Amazon Polly. Time for our little friend to speak!</p><p id="b23d">As always, thank you for reading and for your support :)</p></div></div></section><section class="section"><div><hr/></div><div><div><p id="80e6">Part 0: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-0-1eb537e5a36" target="_blank">a sneak preview</a></p><p id="4525">Part 1: <a href="https://becominghuman.ai/johnny-pi-i-am-your-father-part-1-moving-around-e09fe95bbfce" target="_blank">moving around</a></p><p id="0ddf">Part 3: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-3-adding-cloud-based-speech-fb6e4f207c76" target="_blank">adding cloud-based speech</a></p><p id="8aec">Part 4: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-4-adding-cloud-based-vision-8830c2676113" target="_blank">cloud-based vision</a></p><p id="de3b">Part 5: <a href="https://medium.com/@julsimon/johnny-pi-i-am-your-father-part-5-adding-mxnet-for-local-image-classification-bc27a5fd2c27" target="_blank">local image classification with MXNet</a></p><figure id="c5f0"><iframe frameborder="0" height="420" scrolling="no" src="https://upscri.be/8f5f8b?as_embed=true" width="700"></iframe></figure></div><div><figure id="db23" style="width: 33.333%;"><a href="https://becominghuman.ai/artificial-intelligence-communities-c305f28e674c" target="_blank"><img class="graf-image" src="image05.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="fb30" style="width: 33.333%;"><a href="https://upscri.be/8f5f8b" target="_blank"><img class="graf-image" src="image03.webp"/></a></figure><figure class="graf--layoutOutsetRowContinue" id="ed26" style="width: 33.333%;"><a href="https://becominghuman.ai/write-for-us-48270209de63" target="_blank"><img class="graf-image" src="image04.webp"/></a></figure></div></div></section>
+</section>
+</article></body></html>

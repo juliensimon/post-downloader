@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>An introduction to the MXNet API — part 6</title><style>
+      * {
+        font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      h1 {
+        font-size: 50px;
+        margin-bottom: 17px;
+        color: #333;
+      }
+      h2 {
+        font-size: 24px;
+        line-height: 1.6;
+        margin: 30px 0 0 0;
+        margin-bottom: 18px;
+        margin-top: 33px;
+        color: #333;
+      }
+      h3 {
+        font-size: 30px;
+        margin: 10px 0 20px 0;
+        color: #333;
+      }
+      header {
+        width: 640px;
+        margin: auto;
+      }
+      section {
+        width: 640px;
+        margin: auto;
+      }
+      section p {
+        margin-bottom: 27px;
+        font-size: 20px;
+        line-height: 1.6;
+        color: #333;
+      }
+      section img {
+        max-width: 640px;
+      }
+      footer {
+        padding: 0 20px;
+        margin: 50px 0;
+        text-align: center;
+        font-size: 12px;
+      }
+      .aspectRatioPlaceholder {
+        max-width: auto !important;
+        max-height: auto !important;
+      }
+      .aspectRatioPlaceholder-fill {
+        padding-bottom: 0 !important;
+      }
+      header,
+      section[data-field=subtitle],
+      section[data-field=description] {
+        display: none;
+      }
+      </style></head><body><article class="h-entry">
+<section class="e-content" data-field="body">
+<section class="section"><div><hr/></div><div><div><h3 id="2601">An introduction to the MXNet API — part 6</h3><p id="7b00">In <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-5-9e78534096db" target="_blank">part 5</a>, we used three different pre-trained models for object detection and compared them using a couple of images.</p><p id="b3fe">One of the things we learned is that models have <strong class="markup--p-strong">very different memory requirements</strong>, the most frugal model being Inception v3 with “only” 43MB. Obviously, this begs the question: “can we run this on something really small, say a Raspberry Pi?”. Well, let’s find out!</p><h4 id="1a3a">Building MXNet on a Pi</h4><p id="aab7">There’s an <a href="http://mxnet.io/get_started/raspbian_setup.html" target="_blank">official tutorial</a>, but I found it to be missing some steps, so here’s my version. It works fine on a Raspberry Pi 3 running the latest Raspbian.</p><pre class="graf--pre" id="2e9d">$ uname -a<br/>Linux raspberrypi 4.4.50-v7+ #970 SMP Mon Feb 20 19:18:29 GMT 2017 armv7l GNU/Linux</pre><p class="graf-after--pre" id="28a7">First, let’s add all necessary <strong class="markup--p-strong">dependencies</strong>.</p><pre class="graf--pre" id="95d3">$ sudo apt-get update<br/>$ sudo apt-get -y install git cmake build-essential g++-4.8 c++-4.8 liblapack* libblas* libopencv* python-opencv libssl-dev screen</pre><p class="graf-after--pre" id="2c6d">Then, let’s <strong class="markup--p-strong">clone</strong> the MXNet repository and <strong class="markup--p-strong">checkout</strong> the latest stable release. Don’t miss this last step, as I found HEAD to be broken most of the time (<em class="markup--p-em">Update 30/04/17: the MXNet dev team got in touch and informed me that Continuous Integration is now in place. I can confirm that HEAD now builds fine. Well done, guys</em>).</p><pre class="graf--pre" id="d513">$ git clone https://github.com/dmlc/mxnet.git --recursive<br/>$ cd mxnet<br/># List tags: v0.9.3a is the latest at the time of writing<br/>$ git tag -l<br/>$ git checkout tags/v0.9.3a</pre><p class="graf-after--pre" id="9f8b">MXNet is able to load and save data in S3, so let’s enable this feature, it might come in handy later on. MXNet also supports HDFS but you need to install Hadoop locally, so… no :)</p><p id="8f81">We could just run <em class="markup--p-em">make</em> but given the limited processing power of the Pi, the build is gonna take a while: you don’t want to it to be interrupted if your SSH session times out! <a href="https://www.gnu.org/software/screen/" target="_blank"><em class="markup--p-em">Screen</em></a> is going to solve this.</p><p id="52cf">To speed things up a little, we can run a parallel make on 2 cores (out of 4). I wouldn’t recommend using more, as my Pi became unresponsive when I tried it.</p><pre class="graf--pre" id="d345">$ export USE_S3=1<br/>$ screen make -j2</pre><p class="graf-after--pre" id="e44a">This should last about an hour. The last step is to <strong class="markup--p-strong">install</strong> the library and its Python bindings.</p><pre class="graf--pre" id="9e19">$ cd python<br/>$ sudo python setup.py install<br/>$ python<br/>Python 2.7.9 (default, Sep 17 2016, 20:26:04)<br/>[GCC 4.9.2] on linux2<br/>Type "help", "copyright", "credits" or "license" for more information.<br/>&gt;&gt;&gt; import mxnet as mx<br/>&gt;&gt;&gt; mx.__version__<br/>'0.9.3a'</pre><h4 class="graf-after--pre" id="848f">Loading models</h4><p id="9129">Once we’ve copied the model files to the Pi, we need to make sure that we can actually <strong class="markup--p-strong">load</strong> them. Let’s reuse the exact same code we wrote in <a href="https://medium.com/@julsimon/an-introduction-to-the-mxnet-api-part-5-9e78534096db" target="_blank">part 5</a>. For the record, the Pi is in CLI mode with about 580MB of free memory. All data is stored on a 32GB SD card.</p><p id="4ff0">Let’s try to load VGG16.</p><pre class="graf--pre" id="eef1">&gt;&gt;&gt; vgg16,categories = init("vgg16")<br/>terminate called after throwing an instance of 'std::bad_alloc'<br/>  what():  std::bad_alloc</pre><p class="graf-after--pre" id="e2d3">Ouch! VGG16 is <strong class="markup--p-strong">too large</strong> to fit in memory. Let’s try ResNet-152.</p><pre class="graf--pre" id="90d5">&gt;&gt;&gt; resnet152,categories = init("resnet-152")<br/>Loaded in 11056.10 milliseconds</pre><pre class="graf--pre graf-after--pre" id="257f">&gt;&gt; print predict("kreator.jpg",resnet152,categories,5)<br/>Predicted in 7.98 milliseconds<br/>[(0.87835813, 'n04296562 stage'), (0.045634001, 'n03759954 microphone, mike'), (0.035906471, 'n03272010 electric guitar'), (0.021166906, 'n04286575 spotlight, spot'), (0.0054096784, 'n02676566 acoustic guitar')]</pre><p class="graf-after--pre" id="6604">ResNet-152 loads successfully in about 10 seconds and predicts in less than 10 milliseconds. Let’s move on to Inception v3.</p><pre class="graf--pre" id="47da">&gt;&gt;&gt; inceptionv3,categories = init("Inception-BN")<br/>Loaded in 2137.62 milliseconds</pre><pre class="graf--pre graf-after--pre" id="4ae1">&gt;&gt; print predict("kreator.jpg",resnet152,categories,5)<br/>Predicted in 2.35 milliseconds<br/>[(0.4685601, 'n04296562 stage'), (0.40474886, 'n03272010 electric guitar'), (0.073685646, 'n04456115 torch'), (0.011639798, 'n03250847 drumstick'), (0.011014056, 'n02676566 acoustic guitar')]</pre><p class="graf-after--pre" id="bfa0">On a constrained device like the Pi, model differences are much more obvious! Inception v3 loads <strong class="markup--p-strong">much faster</strong> iand predicts in a few milliseconds. Even when the model is loaded, there’s <strong class="markup--p-strong">plenty</strong> of RAM left on the PI to run an actual application, so it’s definitely an interesting candidate for embedded apps. Let’s keep going :)</p><h4 id="dd3c">Capturing images using the Pi camera</h4><p id="0e46">One of the best gadgets you can add to the Raspberry Pi is a <a href="https://www.raspberrypi.org/learning/getting-started-with-picamera/" target="_blank"><strong class="markup--p-strong">camera module</strong></a>. It couldn’t be simpler to use!</p><pre class="graf--pre" id="4851">&gt;&gt;&gt; inceptionv3,categories = init("Inception-BN")</pre><pre class="graf--pre graf-after--pre" id="2bc1">&gt;&gt;&gt; import picamera<br/>&gt;&gt;&gt; camera = picamera.PiCamera()<br/>&gt;&gt;&gt; filename = '/home/pi/cap.jpg'</pre><pre class="graf--pre graf-after--pre" id="3bd9">&gt;&gt;&gt; print predict(filename, inceptionv3, categories, 5)</pre><p class="graf-after--pre" id="7fe8">Here’s an example.</p><figure id="6587"><img class="graf-image" src="image01.webp"/></figure><pre class="graf--pre" id="9798">Predicted in 12.90 milliseconds<br/>[(0.95071173, 'n04074963 remote control, remote'), (0.013508897, 'n04372370 switch, electric switch, electrical switch'), (0.013224524, 'n03602883 joystick'), (0.00399205, 'n04009552 projector'), (0.0036674738, 'n03777754 modem')]</pre><p class="graf-after--pre" id="7461">Really cool!</p><h4 id="b439">Adding a couple of Amazon AI services, because why not?</h4><p id="f085">Of course, I cannot resist running the same picture through <a href="https://aws.amazon.com/rekognition/" target="_blank">Amazon Rekognition</a> using the Python scripts I wrote a while ago (<a href="https://medium.com/@julsimon/a-hands-on-look-at-the-amazon-rekognition-api-e30e19e7d88b" target="_blank">article</a>, <a href="https://github.com/juliensimon/aws/tree/master/rekognition" target="_blank">code</a>).</p><pre class="graf--pre" id="3e57">$ ./rekognitionDetect.py jsimon-public cap.jpg copy<br/>Label Remote Control, confidence: 94.7508468628</pre><p class="graf-after--pre" id="999f">Good job, Rekognition. Now… wouldn’t it be nice it the Pi actually told us what the picture is about? It’s not too complicated to add <a href="https://aws.amazon.com/polly/" target="_blank">Amazon Polly</a> to the mix (<a href="https://medium.com/@julsimon/amazon-polly-hello-world-literally-812de2c620f4" target="_blank">article</a>).</p><blockquote class="graf--blockquote graf--hasDropCapModel" id="84c9">Amazon Rekognition and Amazon Polly are <strong class="markup--blockquote-strong">managed services</strong> based on Deep Learning technology. We don’t have to worry about models or infrastructure: all we have to do is to invoke an API.</blockquote><p class="graf-after--blockquote" id="0b10">So, here’s a video of my Raspberry Pi performing real-time object detection with the Inception v3 model running in MXNet, and describing what it sees with Amazon Polly.</p><figure id="9ec7"><iframe frameborder="0" height="393" scrolling="no" src="https://www.youtube.com/embed/eKGYFfr9MKI?feature=oembed" width="700"></iframe></figure></div></div></section><section class="section"><div><hr/></div><div><div><p id="dfc1">Well, we’ve come a long way! In these 6 articles, we learned how to:</p><ul class="postList"><li id="d81b">manage data with <em class="markup--li-em">NDArrays</em>,</li><li id="ae42">define models with <em class="markup--li-em">Symbols</em>,</li><li id="6fbc">run predictions with <em class="markup--li-em">Modules</em>,</li><li id="9e62">load and compare pre-trained models for object detection,</li><li id="029a">use a pre-trained model on a Raspberry Pi in real-time.</li></ul><p id="f6b6">We focused on Convolutional Neural Networks for object detection, but there is much more to MXNet, so expect more articles!</p><p id="6e76">This concludes this series. I hope you enjoyed it and learned useful stuff along the way.</p></div></div></section>
+</section>
+</article></body></html>
