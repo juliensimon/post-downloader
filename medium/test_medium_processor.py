@@ -266,46 +266,40 @@ class TestMediumPostProcessor(unittest.TestCase):
             "https://cdn-images-1.medium.com/max/1200/image2.png", updated_html
         )
 
-    @patch('process_posts.urllib.request.build_opener')
-    def test_download_image_success(self, mock_opener):
+    @patch('process_posts.Image')
+    def test_download_image_success(self, mock_pil):
         """Test successful image download"""
-        # Mock successful response
+        # Mock the session.open method
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.read.return_value = b'fake_image_data'
 
-        mock_opener_instance = MagicMock()
-        mock_opener_instance.open.return_value = mock_response
-        mock_opener.return_value = mock_opener_instance
+        self.processor.session.open = MagicMock(return_value=mock_response)
 
         # Create test output path
         output_path = self.test_output_dir / "test_image.webp"
 
         # Mock PIL Image and its methods
-        with patch('process_posts.Image') as mock_pil:
-            mock_image = MagicMock()
-            mock_image.mode = 'RGB'
-            mock_image.size = (100, 100)
-            mock_image.save = MagicMock()
-            mock_pil.open.return_value = mock_image
+        mock_image = MagicMock()
+        mock_image.mode = 'RGB'
+        mock_image.size = (100, 100)
+        mock_image.save = MagicMock()
+        mock_pil.open.return_value = mock_image
 
-            result = self.processor.download_image(
-                "https://example.com/image.jpg", output_path
-            )
+        result = self.processor.download_image(
+            "https://example.com/image.jpg", output_path
+        )
 
-            self.assertTrue(result)
-            # Note: The file might not actually be created due to mocking, but the function should return True
+        self.assertTrue(result)
+        # Note: The file might not actually be created due to mocking, but the function should return True
 
-    @patch('process_posts.urllib.request.build_opener')
-    def test_download_image_failure(self, mock_opener):
+    def test_download_image_failure(self):
         """Test failed image download"""
         # Mock failed response
         mock_response = MagicMock()
         mock_response.status = 404
 
-        mock_opener_instance = MagicMock()
-        mock_opener_instance.open.return_value = mock_response
-        mock_opener.return_value = mock_opener_instance
+        self.processor.session.open = MagicMock(return_value=mock_response)
 
         output_path = self.test_output_dir / "test_image.webp"
 
