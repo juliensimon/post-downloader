@@ -6,8 +6,8 @@ repos:
         language_version: python3
         args: [--line-length=88, --skip-string-normalization]
         stages: [pre-commit]
-        always_run: true
         require_serial: true
+        types: [python]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
@@ -15,8 +15,8 @@ repos:
       - id: isort
         args: [--profile=black, --line-length=88, --skip-glob=*/venv/*, --skip-glob=*/env/*]
         stages: [pre-commit]
-        always_run: true
         require_serial: true
+        types: [python]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
