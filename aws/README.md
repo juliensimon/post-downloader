@@ -1,224 +1,210 @@
-# Blog Post Downloader
+# AWS Blog Downloader
 
-A Python CLI tool that downloads blog posts from URLs, automatically extracts titles and dates, downloads and converts images to WebP format, and creates self-contained offline-readable HTML files.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)](https://github.com/julsimon/post-downloader)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/julsimon/post-downloader)
+
+A Python tool for downloading and archiving AWS blog posts with image processing, HTML cleaning, and local organization.
+
+## Demo
+
+See the processed results in action:
+- **[AWS Blog Posts](https://www.julien.org/aws-blog-posts.html)** - 68 AWS blog posts (2018-2021)
+
+This page demonstrates the clean, organized output that this tool produces.
 
 ## Features
 
-- 🔗 **URL-Based Input**: Works with simple text files containing URLs (one per line)
-- 🏷️ **Auto-Metadata**: Automatically extracts titles and publication dates from HTML
-- 📄 **Content Extraction**: Extracts main blog post content, filtering out navigation and peripheral elements
-- 🖼️ **Image Processing**: Downloads all images and converts them to optimized WebP format
-- 🔗 **Link Rewriting**: Rewrites image references to local paths for offline viewing
-- 🎨 **Basic Styling**: Applies clean, readable CSS styling to extracted content
-- 📁 **Organized Output**: Creates dated folders with descriptive names
-- 🔊 **Content Cleanup**: Removes Amazon Polly audio content and branding
-- 📍 **Source Attribution**: Adds "originally published at" links to source material
-- ✅ **Sanity Checks**: Validates downloads with comprehensive quality checks
+- **Comprehensive Download**: Downloads AWS blog posts with all associated images
+- **WebP Conversion**: Converts images to WebP format for better compression
+- **Sequential Naming**: Uses sequential naming for images (image01.webp, image02.webp, etc.)
+- **HTML Cleaning**: Removes unwanted AWS-specific attributes and classes
+- **Error Handling**: Robust error handling with detailed logging
+- **Rate Limiting**: Implements throttling to avoid being blocked
+- **Resume Capability**: Can resume processing from where it left off
+
+## Project Structure
+
+```
+aws/
+├── README.md                    # This documentation
+├── aws_blog_downloader.py      # Main processing script
+├── requirements.txt             # Python dependencies
+├── aws-blog-urls.txt           # AWS blog URLs to process
+└── downloads/                   # Processed posts organized by date
+    ├── 2020-12-08_new-amazon-sagemaker-pipelines-brings-devops-capabilities-to-your-machine-learning-projects/
+    ├── 2021-03-30_troubleshoot-boot-and-networking-issues-with-new-ec2-serial-console/
+    └── ...
+```
 
 ## Installation
 
-### Prerequisites
+1. **Navigate to the aws directory**:
+   ```bash
+   cd aws
+   ```
 
-- Python 3.7 or higher
-- pip package manager
-
-### Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-**Required packages:**
-- `requests` - HTTP requests for downloading content
-- `beautifulsoup4` - HTML parsing and manipulation
-- `Pillow` - Image processing and WebP conversion
-- `lxml` - Fast XML/HTML parser backend
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-### Basic Usage
+### Process All AWS Blog Posts
 
-Download the first 3 posts from URLs file (default):
+To process all AWS blog posts listed in `aws-blog-urls.txt`:
+
 ```bash
 python aws_blog_downloader.py
 ```
 
-### Command Line Options
+### Process Specific URLs
 
-```bash
-python aws_blog_downloader.py [OPTIONS]
+To process specific URLs, edit the `aws-blog-urls.txt` file and add the URLs you want to process:
+
+```txt
+https://aws.amazon.com/blogs/machine-learning/new-amazon-sagemaker-pipelines-brings-devops-capabilities-to-your-machine-learning-projects/
+https://aws.amazon.com/blogs/compute/troubleshoot-boot-and-networking-issues-with-new-ec2-serial-console/
 ```
 
-**Options:**
-- `--urls PATH` - Path to text file with URLs (default: `aws-blog-urls.txt`)
-- `--output DIR` - Output directory for downloads (default: `downloads`)
-- `--limit N` - Number of posts to download (default: 3)
-- `--start N` - Starting index in the file (default: 0)
+### What the Processing Does
 
-### Examples
+The script will:
+- Download each AWS blog post
+- Extract all images from the post
+- Download and convert images to WebP format
+- Clean HTML by removing AWS-specific attributes
+- Update image links to reference local files
+- Create organized directories for each post
+- Save cleaned HTML as `index.html`
 
-```bash
-# Download first 5 posts
-python aws_blog_downloader.py --limit 5
+### Output Format
 
-# Download posts 10-15 to custom directory
-python aws_blog_downloader.py --start 10 --limit 5 --output my_downloads
-
-# Use custom URLs file
-python aws_blog_downloader.py --urls my_urls.txt --limit 10
-```
-
-## Input Format
-
-Create a text file with URLs, one per line:
+Each processed post will be in its own directory with the following structure:
 
 ```
-# Blog Post URLs - lines starting with # are ignored
-https://example.com/blog/post-1/
-https://example.com/blog/post-2/
-https://example.com/blog/post-3/
+downloads/YYYY-MM-DD_Post-Title/
+├── index.html          # Cleaned HTML file
+├── image01.webp        # Downloaded and converted images
+├── image02.webp
+└── ...
 ```
 
-The tool automatically extracts:
-- **Title** from HTML meta tags or page title
-- **Publication date** from meta tags or URL patterns
-- **Content** from the main article section
+## How It Works
 
-## Output Structure
+1. **URL Processing**: Reads URLs from `aws-blog-urls.txt`
+2. **HTML Download**: Downloads each blog post using requests
+3. **Image Extraction**: Finds all images in the HTML content
+4. **Image Download**: Downloads images from AWS CDN
+5. **Format Conversion**: Converts images to WebP format using Pillow
+6. **Sequential Naming**: Uses image01.webp, image02.webp, etc.
+7. **HTML Cleaning**: Removes unwanted AWS-specific attributes
+8. **Link Updates**: Updates HTML to reference local images
+9. **File Organization**: Creates individual directories for each post
 
-For each blog post, the tool creates:
+## Image Processing
 
-```
-downloads/
-└── 2021-09-22_post-title-with-dashes/
-    ├── index.html          # Main content with styling
-    ├── metadata.json       # Post metadata and download info
-    ├── image01.webp        # Downloaded WebP images
-    └── image02.webp        # Sequential naming
-```
+The script handles image processing with the following features:
 
-### Generated HTML Structure
+- **Download**: Downloads images from AWS CDN with proper headers
+- **Conversion**: Converts all images to WebP format for better compression
+- **Optimization**: Uses WebP compression with quality setting
+- **Sequential Naming**: Uses image01.webp, image02.webp, etc. for consistent organization
+- **Error Handling**: Continues processing even if some images fail to download
 
-Each `index.html` contains:
-- Post title as H1
-- Publication date
-- "Originally published at" link
-- Main article content with local image references
-- Embedded CSS for clean presentation
+## HTML Cleaning
 
-## Technical Details
+The script automatically cleans up unwanted AWS-specific elements:
 
-### Content Extraction
+- **Data Attributes**: Removes AWS-specific data attributes
+- **CSS Classes**: Removes unnecessary CSS classes
+- **Clean Output**: Produces clean, semantic HTML without AWS-specific clutter
 
-The tool uses multiple CSS selectors to identify main content:
-1. `section.blog-post-content` (AWS blog-specific)
-2. `.blog-post-content`
-3. `main article`
-4. Fallback heuristics based on content length
+## Rate Limiting
 
-### Image Processing Pipeline
+The script implements throttling to avoid being blocked by AWS servers:
 
-1. **Discovery**: Finds all `<img>` tags in extracted content
-2. **Download**: Fetches images with proper User-Agent headers
-3. **Conversion**: Converts to WebP format (85% quality, optimized)
-4. **Sequential Naming**: Names images as `image01.webp`, `image02.webp`, etc.
-5. **Link Rewriting**: Updates `src` attributes to local filenames
-6. **Cleanup**: Removes external link wrappers and `srcset` attributes
-
-### Content Cleanup
-
-- Removes Amazon Polly audio players and branding
-- Filters out navigation elements and sidebars
-- Strips AWS-specific peripheral content
-- Maintains article structure and formatting
-
-### CSS Styling
-
-Applies responsive, clean styling including:
-- Modern font stack (system fonts)
-- Readable typography (1.6 line height)
-- Responsive images with shadows
-- Syntax highlighting for code blocks
-- Proper spacing and hierarchy
-
-### Sanity Checks
-
-After each download, the tool performs comprehensive validation:
-- **File Existence**: Verifies HTML, metadata, and image files are created
-- **Content Validation**: Checks HTML contains post title and source attribution
-- **Image Integrity**: Validates WebP format and file sizes
-- **Reference Consistency**: Ensures HTML image references match downloaded files
-- **Sequential Naming**: Verifies complete image sequence (image01.webp, image02.webp, etc.)
-- **Metadata Completeness**: Confirms all required metadata fields are present
-
-## Configuration
-
-### User-Agent
-
-The tool uses a standard browser User-Agent to ensure successful downloads:
-```
-Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-```
-
-### Request Settings
-
-- Timeout: 30 seconds per request
-- Delay: 2 seconds between posts (respectful crawling)
-- Session reuse for connection pooling
-
-### Image Processing
-
-- Format: WebP
-- Quality: 85%
-- Optimization: Enabled
-- Color mode: RGB (RGBA/LA converted automatically)
-
-## Error Handling
-
-The tool includes robust error handling:
-- Network timeouts and connection errors
-- Invalid image formats
-- Missing content selectors
-- File system permissions
-
-Failed downloads are logged but don't stop the overall process.
-
-## Performance
-
-- **Parallel Processing**: Images downloaded sequentially per post
-- **Memory Efficient**: Streams image data, doesn't load entire files
-- **Storage Optimized**: WebP typically 25-50% smaller than original formats
-- **Respectful**: 2-second delays between requests
+- **Base Delay**: Delay between downloads to avoid overwhelming servers
+- **Error Handling**: Handles HTTP errors gracefully
+- **Resume Capability**: Can resume processing from where it left off
 
 ## Troubleshooting
 
-### Common Issues
+### Rate Limiting Issues
 
-**"No content found"**: The blog structure may have changed. Check CSS selectors in `extract_main_content()`.
+If you encounter HTTP 429 (Too Many Requests) errors:
 
-**Image download failures**: Usually network issues or changed URLs. Check connectivity and try again.
+1. **Wait**: The script will automatically wait and retry
+2. **Resume**: If interrupted, simply run the script again - it will resume from where it left off
+3. **Manual Delay**: You can increase the delay in the script if needed
 
-**Permission errors**: Ensure write permissions in the output directory.
+### Image Download Failures
 
-### Debug Mode
+Some images may fail to download due to:
+- Network issues
+- Rate limiting
+- Invalid URLs
 
-Add debug prints by modifying the logging level in the script.
+The script will log these failures and continue processing other images.
 
-## Contributing
+### Memory Issues
 
-To modify content extraction:
-1. Update CSS selectors in `extract_main_content()`
-2. Test with various blog post URLs
-3. Ensure compatibility with different AWS blog formats
-
-## License
-
-This tool is for educational and personal use. Respect AWS Terms of Service and robots.txt when using.
+For large numbers of posts, the script processes them one at a time to minimize memory usage.
 
 ## Dependencies
 
-See `requirements.txt` for exact versions:
-- `requests>=2.28.0`
-- `beautifulsoup4>=4.11.0`
-- `Pillow>=9.0.0`
-- `lxml>=4.9.0` 
+### Required Dependencies
+- **requests>=2.28.0**: HTTP client for downloading content
+- **beautifulsoup4>=4.11.0**: HTML parsing and manipulation
+- **Pillow>=9.0.0**: Image processing and WebP conversion
+- **lxml>=4.9.0**: Fast XML/HTML parser for BeautifulSoup
+
+### Python Version
+- **Python 3.8+**: Required for type hints and pathlib features
+
+### Installation
+```bash
+pip install -r requirements.txt
+```
+
+## Configuration
+
+The script uses a simple configuration approach:
+
+- **URLs**: Edit `aws-blog-urls.txt` to specify which posts to download
+- **Image Quality**: Adjustable in the script (default: 85)
+- **Download Delay**: Configurable delay between downloads
+- **Output Directory**: Defaults to `downloads/`
+
+## Example Output
+
+After processing, you'll have a clean, organized archive:
+
+```
+downloads/
+├── 2020-12-08_new-amazon-sagemaker-pipelines-brings-devops-capabilities-to-your-machine-learning-projects/
+│   ├── index.html
+│   ├── image01.webp
+│   └── image02.webp
+├── 2021-03-30_troubleshoot-boot-and-networking-issues-with-new-ec2-serial-console/
+│   ├── index.html
+│   ├── image01.webp
+│   ├── image02.webp
+│   └── image03.webp
+└── ...
+```
+
+Each directory contains:
+- **index.html**: Clean, self-contained HTML file
+- **image*.webp**: Downloaded and converted images
+- **Local links**: All image references point to local files
+
+## License
+
+This project is part of the post-downloader repository and is provided as-is for educational and archival purposes.
+
+## Contributing
+
+Feel free to submit issues or pull requests to improve the AWS blog downloader.

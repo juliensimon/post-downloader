@@ -1,94 +1,151 @@
 # Medium Posts Processor
 
-This tool processes Medium blog posts by creating individual directories for each post, downloading remote images, converting them to WebP format, and updating the HTML to reference local images. It also updates internal links between posts to create a fully self-contained local archive.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)](https://github.com/julsimon/post-downloader)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/julsimon/post-downloader)
+
+A Python tool for processing and archiving Medium blog posts by Julien Simon. This tool downloads posts, processes images, cleans HTML, and creates a self-contained local archive.
+
+## Demo
+
+See the processed results in action:
+- **[AWS Blog Posts](https://www.julien.org/aws-blog-posts.html)** - 68 AWS blog posts (2018-2021)
+- **[Hugging Face Blog Posts](https://www.julien.org/huggingface-blog-posts.html)** - 25 Hugging Face blog posts (2021-2024)
+- **[Medium Blog Posts](https://www.julien.org/medium-blog-posts.html)** - 25+ Medium blog posts (2015-2021)
+
+These pages demonstrate the clean, organized output that this tool produces.
 
 ## Features
 
-- **Directory Creation**: Creates a separate directory for each Medium post
-- **Clean Naming**: Removes UUID-like parts from directory names for cleaner organization
-- **Image Download**: Downloads all remote images from Medium's CDN
-- **WebP Conversion**: Converts all images to WebP format for better compression
-- **Sequential Image Naming**: Uses sequential naming (image01.webp, image02.webp, etc.) like AWS blog downloader
-- **Standardized File Names**: Renames HTML files to `index.html` for consistent structure
+- **Configurable**: Works with any Medium author, not just Julien Simon
+- **Image Processing**: Downloads remote images and converts them to WebP format
+- **Sequential Naming**: Uses sequential naming for images (image01.webp, image02.webp, etc.)
 - **Link Updates**: Updates HTML files to reference local images instead of remote URLs
 - **Internal Link Processing**: Updates links between posts to reference local files (two-pass approach)
 - **HTML Cleaning**: Removes unwanted Medium-specific attributes, classes, and elements
 - **Error Handling**: Robust error handling with detailed logging
-- **Aggressive Throttling**: Implements 3-second delays and exponential backoff for rate limiting
+- **Aggressive Throttling**: Implements configurable delays and exponential backoff for rate limiting
 - **Resume Capability**: Can resume processing from where it left off if interrupted
+- **Year Organization**: Automatically organizes processed posts by year
+
+## Project Structure
+
+```
+medium/
+├── README.md              # This documentation
+├── process_posts.py       # Main processing script
+├── config.py              # Configuration system
+├── create_config.py       # Configuration creation utility
+├── config_julsimon.json  # Julien Simon's configuration
+├── requirements.txt       # Python dependencies
+├── posts/                 # Original Medium HTML files
+└── posts_by_year/        # Processed posts organized by year
+    ├── 2016/
+    ├── 2017/
+    ├── 2018/
+    ├── 2019/
+    ├── 2020/
+    ├── 2021/
+    ├── 2022/
+    ├── 2023/
+    ├── 2024/
+    └── 2025/
+```
 
 ## Installation
 
-1. **Install Python dependencies**:
+1. **Clone the repository** (if not already done):
+   ```bash
+   git clone <repository-url>
+   cd post-downloader/medium
+   ```
+
+2. **Install dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Verify installation**:
-   ```bash
-   python process_posts.py --help
-   ```
-
 ## Usage
 
-### Basic Usage
+### Process All Posts (Default Configuration)
 
-Run the script from the `medium` directory:
+To process all Medium posts in the `posts/` directory using the default configuration (Julien Simon):
 
 ```bash
-cd medium
 python process_posts.py
 ```
 
-This will:
-- Process all HTML files in the `posts/` directory
-- Create a `processed_posts/` directory with individual post directories
-- Download and convert all images to WebP format
-- Update HTML files to reference local images
-- Update internal links between posts to reference local files
+### Process with Specific Configuration
 
-### Two-Pass Processing
+To process posts using a specific configuration:
 
-The script uses a two-pass approach:
-
-1. **First Pass**: 
-   - Creates directories for each post (removing UUID parts)
-   - Downloads and converts images to WebP format
-   - Updates image references in HTML files
-
-2. **Second Pass**:
-   - Scans all processed posts to create a mapping of Medium URLs to local files
-   - Updates all internal links between posts to reference local files
-   - Creates a fully self-contained local archive
-
-### Directory Structure
-
-After processing, your directory structure will look like:
-
-```
-medium/
-├── posts/                           # Original HTML files
-│   ├── 2017-05-19_post-title-uuid.html
-│   └── ...
-├── processed_posts/                 # Processed posts with local images
-│   ├── 2017-05-19_post-title/      # Clean directory name (UUID removed)
-│   │   ├── index.html              # Standardized HTML filename
-│   │   ├── image01.webp            # Sequential image naming
-│   │   └── image02.webp
-│   └── ...
-├── process_posts.py                 # Main processing script
-├── requirements.txt                 # Python dependencies
-└── README.md                       # This file
+```bash
+python process_posts.py --config julsimon
 ```
 
-### Custom Configuration
+### Process for Different Author
 
-You can modify the script to change:
+To process posts for a different Medium author:
 
-- **Input directory**: Change `posts_dir` in the `MediumPostProcessor` constructor
-- **Output directory**: Change `output_dir` in the `MediumPostProcessor` constructor
-- **Image quality**: Modify the `quality` parameter in the `image.save()` call (default: 85)
-- **Download delay**: Adjust the `time.sleep()` value (default: 0.1 seconds)
+```bash
+# Create configuration for new author
+python create_config.py other_author
+
+# Process posts for that author
+python process_posts.py --config other_author
+```
+
+### Quick Author Setup
+
+To quickly set up for a new author without creating a config file:
+
+```bash
+python process_posts.py --author other_author
+```
+
+### List Available Configurations
+
+To see all available configurations:
+
+```bash
+python process_posts.py --list-configs
+# or
+python create_config.py --list
+```
+
+### What the Processing Does
+
+The script will:
+- Create directories for each post in `posts_by_year/`
+- Download and convert images to WebP format
+- Clean HTML by removing Medium-specific attributes
+- Update image links to reference local files
+- Update internal links between posts
+- Organize posts by year
+
+### Output Format
+
+The processed posts create a clean, self-contained archive that can be:
+- **Browsed locally** - Each post is a standalone HTML file with local images
+- **Organized by year** - Posts are automatically sorted into year directories
+- **Cross-linked** - Internal links between posts work locally
+- **Clean HTML** - Removed Medium-specific clutter and attributes
+- **WebP images** - Optimized image format for better performance
+
+This creates a complete local archive similar to the demo pages shown above.
+
+### Output Structure
+
+Each processed post will be in its own directory with the following structure:
+
+```
+posts_by_year/YYYY/YYYY-MM-DD_Post-Title/
+├── index.html          # Cleaned HTML file
+├── image01.webp        # Downloaded and converted images
+├── image02.webp
+└── ...
+```
 
 ## How It Works
 
@@ -99,14 +156,51 @@ You can modify the script to change:
 5. **Sequential Naming**: Uses sequential naming for images (image01.webp, image02.webp, etc.)
 6. **HTML Cleaning**: Removes unwanted Medium-specific attributes, classes, and elements
 7. **Link Updates**: Updates HTML `<img>` tags and internal links to reference local files
-8. **File Organization**: Creates individual directories for each post
+8. **File Organization**: Creates individual directories for each post, organized by year
 
 ## Image Processing
 
-- **Format Support**: Handles JPEG, PNG, GIF, and other common formats
-- **Transparency**: Converts transparent images to white background for WebP compatibility
+The script handles image processing with the following features:
+
+- **Download**: Downloads images from Medium's CDN with proper user agent headers
+- **Conversion**: Converts all images to WebP format for better compression
 - **Optimization**: Uses WebP compression with quality setting of 85
 - **Sequential Naming**: Uses image01.webp, image02.webp, etc. for consistent organization
+- **Error Handling**: Continues processing even if some images fail to download
+
+## Configuration
+
+The tool is now configurable to work with any Medium author. Each author can have their own configuration file.
+
+### Configuration Files
+
+Configuration files are stored as JSON and follow the naming convention `config_{author_username}.json`. For example:
+- `config_julsimon.json` - Configuration for Julien Simon
+- `config_other_author.json` - Configuration for another author
+
+### Configuration Options
+
+Each configuration file can specify:
+- **Author Information**: Username, display name, Medium URL
+- **Processing Settings**: Image quality, download delays, retry settings
+- **HTML Cleaning**: Which attributes and classes to remove
+- **Directories**: Input and output directory paths
+- **Internal Links**: Patterns for detecting links between posts
+
+### Creating New Configurations
+
+Use the configuration creator:
+
+```bash
+# Basic configuration
+python create_config.py other_author
+
+# With custom settings
+python create_config.py other_author --display-name "Other Author" --output-dir "other_posts"
+
+# List existing configurations
+python create_config.py --list
+```
 
 ## HTML Cleaning
 
@@ -126,69 +220,90 @@ The script automatically detects and updates internal links between posts:
 - **Updates**: Replaces all internal links with relative paths to local files
 - **Self-Contained**: Creates a fully local archive that works offline
 
-## Error Handling
+## Rate Limiting
 
-The script includes comprehensive error handling:
+The script implements aggressive throttling to avoid being blocked by Medium's CDN:
 
-- **Download Failures**: Logs warnings for failed image downloads
-- **Processing Errors**: Continues processing other posts if one fails
-- **Invalid Images**: Skips images that can't be processed
-- **File System Issues**: Handles permission and disk space issues gracefully
-- **Link Mapping**: Handles missing or broken internal links gracefully
-
-## Logging
-
-The script provides detailed logging:
-
-- **Info Level**: Progress updates and successful operations
-- **Warning Level**: Non-critical issues (failed downloads, etc.)
-- **Error Level**: Critical errors that prevent processing
-- **Debug Level**: Detailed information for troubleshooting
-
-## Performance Considerations
-
-- **Download Rate**: Includes 3-second delays between downloads to avoid rate limiting
-- **Rate Limiting**: Implements exponential backoff (60s, then 120s) for 429 errors
-- **Memory Usage**: Processes images one at a time to minimize memory usage
-- **Disk Space**: WebP conversion typically reduces file sizes by 25-50%
-- **Two-Pass Processing**: Ensures all posts are processed before updating internal links
-- **Resume Capability**: Skips already processed posts to allow resuming interrupted runs
+- **Base Delay**: 3 seconds between image downloads
+- **Exponential Backoff**: 60 seconds, then 120 seconds on HTTP 429 errors
+- **Resume Capability**: Can resume processing from where it left off
+- **Error Handling**: Continues processing even if some images fail
 
 ## Troubleshooting
 
-### Common Issues
+### Rate Limiting Issues
 
-1. **Permission Errors**: Ensure write permissions in the output directory
-2. **Network Issues**: Check internet connection for image downloads
-3. **Missing Dependencies**: Run `pip install -r requirements.txt`
-4. **Large Files**: Some posts may have many images; processing may take time
-5. **Internal Links**: The two-pass approach ensures all internal links are properly updated
+If you encounter HTTP 429 (Too Many Requests) errors:
 
-### Debug Mode
+1. **Wait**: The script will automatically wait and retry
+2. **Resume**: If interrupted, simply run the script again - it will resume from where it left off
+3. **Manual Delay**: You can increase the delay in `process_posts.py` if needed
 
-To see more detailed output, modify the logging level in the script:
+### Image Download Failures
 
-```python
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+Some images may fail to download due to:
+- Network issues
+- Rate limiting
+- Invalid URLs
+
+The script will log these failures and continue processing other images.
+
+### Memory Issues
+
+For large numbers of posts, the script processes them one at a time to minimize memory usage.
+
+## Dependencies
+
+### Required Dependencies
+- **beautifulsoup4>=4.12.2**: HTML parsing and manipulation
+- **Pillow>=10.0.1**: Image processing and WebP conversion
+- **lxml>=4.9.3**: Fast XML/HTML parser for BeautifulSoup
+
+### Python Version
+- **Python 3.8+**: Required for type hints and pathlib features
+
+### Installation
+```bash
+pip install -r requirements.txt
 ```
 
-## Example Output
+## Testing
 
+The project includes a comprehensive test suite to ensure all functionality works correctly.
+
+### Quick Tests
+Run basic functionality tests (no network access required):
+```bash
+python test_basic.py
 ```
-2024-01-15 10:30:15,123 - INFO - Found 324 HTML files to process
-2024-01-15 10:30:15,124 - INFO - === FIRST PASS: Processing posts and downloading images ===
-2024-01-15 10:30:15,125 - INFO - Processing post 1/324: 2017-05-19_post-title-uuid.html
-2024-01-15 10:30:15,126 - INFO - Found 8 images in 2017-05-19_post-title-uuid.html
-2024-01-15 10:30:15,127 - INFO - Copied HTML to: processed_posts/2017-05-19_post-title/2017-05-19_post-title-uuid.html
-2024-01-15 10:30:15,128 - INFO - Downloading: https://cdn-images-1.medium.com/max/2560/1*HFTl9S1HkefgZiFs3vv9Cw.jpeg
-2024-01-15 10:30:16,234 - INFO - Saved as WebP: processed_posts/2017-05-19_post-title/image01.webp
-2024-01-15 10:30:16,235 - INFO - Updated image link: https://cdn-images-1.medium.com/max/2560/1*HFTl9S1HkefgZiFs3vv9Cw.jpeg -> image01.webp
-2024-01-15 10:30:20,456 - INFO - === SECOND PASS: Updating internal links ===
-2024-01-15 10:30:20,457 - INFO - Creating link mapping...
-2024-01-15 10:30:20,458 - INFO - Created mapping for 324 posts
-2024-01-15 10:30:20,459 - INFO - Updated 5 internal links in 2017-05-19_post-title-uuid.html
+
+### Simple Tests
+Run comprehensive tests without network calls:
+```bash
+python test_simple.py
 ```
+
+### Full Test Suite
+Run the complete test suite (includes mocked network tests):
+```bash
+python test_medium_processor.py
+```
+
+### Test Coverage
+The test suite covers:
+- ✅ Configuration management
+- ✅ HTML processing and cleaning
+- ✅ Image URL extraction
+- ✅ Internal link detection
+- ✅ Filename sanitization
+- ✅ Image filename generation
+- ✅ Post directory name creation
+- ✅ Configuration loading and saving
 
 ## License
 
-This script is provided as-is for processing Medium blog posts. Please respect Medium's terms of service and use responsibly. 
+This project is part of the post-downloader repository.
+
+## Contributing
+
+Feel free to submit issues or pull requests to improve the tool.

@@ -1,258 +1,212 @@
-# Hugging Face Blog Post Downloader
+# Hugging Face Blog Downloader
 
-A Python CLI tool that downloads Hugging Face blog posts from URLs, automatically extracts titles and dates, downloads and converts images to WebP format, and creates self-contained offline-readable HTML files.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)](https://github.com/julsimon/post-downloader)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/julsimon/post-downloader)
+
+A Python tool for downloading and archiving Hugging Face blog posts with image processing, HTML cleaning, and local organization.
+
+## Demo
+
+See the processed results in action:
+- **[Hugging Face Blog Posts](https://www.julien.org/huggingface-blog-posts.html)** - 25 Hugging Face blog posts (2021-2024)
+
+This page demonstrates the clean, organized output that this tool produces.
 
 ## Features
 
-- 🔗 **URL-Based Input**: Works with simple text files containing URLs (one per line)
-- 🏷️ **Auto-Metadata**: Automatically extracts titles and publication dates from HTML
-- 📄 **Content Extraction**: Extracts main blog post content, filtering out navigation and peripheral elements
-- 🖼️ **Image Processing**: Downloads all images and converts them to optimized WebP format
-- 🔗 **Link Rewriting**: Rewrites image references to local paths for offline viewing
-- 🎨 **Basic Styling**: Applies clean, readable CSS styling to extracted content
-- 📁 **Organized Output**: Creates dated folders with descriptive names
-- 🧹 **Content Cleanup**: Removes Hugging Face specific navigation and social elements
-- 📍 **Source Attribution**: Adds "originally published at" links to source material
-- ✅ **Sanity Checks**: Validates downloads with comprehensive quality checks
+- **Blog Post Download**: Downloads Hugging Face blog posts with all content
+- **Image Processing**: Downloads and processes images from posts
+- **WebP Conversion**: Converts images to WebP format for better compression
+- **Sequential Naming**: Uses sequential naming for images (image01.webp, image02.webp, etc.)
+- **HTML Cleaning**: Removes unwanted Hugging Face-specific attributes and classes
+- **Local Archiving**: Creates self-contained local archives
+- **Error Handling**: Robust error handling with detailed logging
+- **Rate Limiting**: Implements throttling to avoid being blocked
+
+## Project Structure
+
+```
+huggingface/
+├── README.md                           # This documentation
+├── huggingface_blog_downloader.py     # Main processing script
+├── requirements.txt                    # Python dependencies
+├── huggingface-blog-urls.txt          # Hugging Face blog URLs to process
+├── source-posts.html                  # Source HTML file for URL extraction
+└── downloads/                          # Processed posts organized by date
+    ├── 2021-01-15_post-title-1/
+    ├── 2021-02-20_post-title-2/
+    └── ...
+```
 
 ## Installation
 
-### Prerequisites
+1. **Navigate to the huggingface directory**:
+   ```bash
+   cd huggingface
+   ```
 
-- Python 3.7 or higher
-- pip package manager
-
-### Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-**Required packages:**
-- `requests` - HTTP requests for downloading content
-- `beautifulsoup4` - HTML parsing and manipulation
-- `Pillow` - Image processing and WebP conversion
-- `lxml` - Fast XML/HTML parser backend
+2. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-### Basic Usage
+### Process All Hugging Face Blog Posts
 
-Download the first 3 posts from URLs file (default):
+To process all Hugging Face blog posts listed in `huggingface-blog-urls.txt`:
+
 ```bash
 python huggingface_blog_downloader.py
 ```
 
-### Command Line Options
+### Process Specific URLs
 
-```bash
-python huggingface_blog_downloader.py [OPTIONS]
+To process specific URLs, edit the `huggingface-blog-urls.txt` file and add the URLs you want to process:
+
+```txt
+https://huggingface.co/blog/post-title-1
+https://huggingface.co/blog/post-title-2
 ```
 
-**Options:**
-- `--urls PATH` - Path to text file with URLs (default: `huggingface-blog-urls.txt`)
-- `--output DIR` - Output directory for downloads (default: `downloads`)
-- `--limit N` - Number of posts to download (default: 3)
-- `--start N` - Starting index in the file (default: 0)
+### What the Processing Does
 
-### Examples
+The script will:
+- Download each Hugging Face blog post
+- Extract all images from the post
+- Download and convert images to WebP format
+- Clean HTML by removing Hugging Face-specific attributes
+- Update image links to reference local files
+- Create organized directories for each post
+- Save cleaned HTML as `index.html`
 
-```bash
-# Download first 5 posts
-python huggingface_blog_downloader.py --limit 5
+### Output Format
 
-# Download posts 10-15 to custom directory
-python huggingface_blog_downloader.py --start 10 --limit 5 --output my_downloads
-
-# Use custom URLs file
-python huggingface_blog_downloader.py --urls my_urls.txt --limit 10
-```
-
-## Input Format
-
-Create a text file with URLs, one per line:
+Each processed post will be in its own directory with the following structure:
 
 ```
-# Hugging Face Blog Post URLs - lines starting with # are ignored
-https://huggingface.co/juliensimon/articles/example-post-1
-https://huggingface.co/juliensimon/articles/example-post-2
-https://huggingface.co/juliensimon/articles/example-post-3
+downloads/YYYY-MM-DD_Post-Title/
+├── index.html          # Cleaned HTML file
+├── image01.webp        # Downloaded and converted images
+├── image02.webp
+└── ...
 ```
 
-The tool automatically extracts:
-- **Title** from HTML meta tags or page title
-- **Publication date** from meta tags or URL patterns
-- **Content** from the main article section
+## How It Works
 
-## Output Structure
+1. **URL Processing**: Reads URLs from `huggingface-blog-urls.txt`
+2. **HTML Download**: Downloads each blog post using requests
+3. **Image Extraction**: Finds all images in the HTML content
+4. **Image Download**: Downloads images from Hugging Face CDN
+5. **Format Conversion**: Converts images to WebP format using Pillow
+6. **Sequential Naming**: Uses image01.webp, image02.webp, etc.
+7. **HTML Cleaning**: Removes unwanted Hugging Face-specific attributes
+8. **Link Updates**: Updates HTML to reference local images
+9. **File Organization**: Creates individual directories for each post
 
-For each blog post, the tool creates:
+## Image Processing
 
-```
-downloads/
-└── 2021-09-22_post-title-with-dashes/
-    ├── index.html          # Main content with styling
-    ├── metadata.json       # Post metadata and download info
-    ├── image01.webp        # Downloaded WebP images
-    └── image02.webp        # Sequential naming
-```
+The script handles image processing with the following features:
 
-### Generated HTML Structure
+- **Download**: Downloads images from Hugging Face CDN with proper headers
+- **Conversion**: Converts all images to WebP format for better compression
+- **Optimization**: Uses WebP compression with quality setting
+- **Sequential Naming**: Uses image01.webp, image02.webp, etc. for consistent organization
+- **Error Handling**: Continues processing even if some images fail to download
 
-Each `index.html` contains:
-- Post title as H1
-- Publication date
-- "Originally published at" link
-- Main article content with local image references
-- Embedded CSS for clean presentation
+## HTML Cleaning
 
-## Technical Details
+The script automatically cleans up unwanted Hugging Face-specific elements:
 
-### Content Extraction
+- **Data Attributes**: Removes Hugging Face-specific data attributes
+- **CSS Classes**: Removes unnecessary CSS classes
+- **Clean Output**: Produces clean, semantic HTML without Hugging Face-specific clutter
 
-The tool uses multiple CSS selectors to identify main content:
-1. `.prose` (Hugging Face blog-specific)
-2. `article .prose`
-3. `main article`
-4. `div.article-content`
-5. Fallback heuristics based on content length
+## Rate Limiting
 
-### Image Processing Pipeline
+The script implements throttling to avoid being blocked by Hugging Face servers:
 
-1. **Discovery**: Finds all `<img>` tags in extracted content
-2. **Filtering**: Skips small icons, avatars, and logos
-3. **Download**: Fetches images with proper User-Agent headers
-4. **Conversion**: Converts to WebP format (85% quality, optimized)
-5. **Sequential Naming**: Names images as `image01.webp`, `image02.webp`, etc.
-6. **Link Rewriting**: Updates `src` attributes to local filenames
-7. **Cleanup**: Removes external link wrappers and `srcset` attributes
-
-### Content Cleanup
-
-- Removes navigation elements and sidebars
-- Filters out social sharing buttons
-- Strips related articles sections
-- Maintains article structure and formatting
-- Preserves code blocks and technical content
-
-### CSS Styling
-
-Applies responsive, clean styling including:
-- Modern font stack (system fonts)
-- Readable typography (1.6 line height)
-- Responsive images with shadows
-- Syntax highlighting for code blocks
-- Hugging Face specific styling for `.prose` elements
-- Proper spacing and hierarchy
-
-### Sanity Checks
-
-After each download, the tool performs comprehensive validation:
-- **File Existence**: Verifies HTML, metadata, and image files are created
-- **Content Validation**: Checks HTML contains post title and source attribution
-- **Image Integrity**: Validates WebP format and file sizes
-- **Reference Consistency**: Ensures HTML image references match downloaded files
-- **Sequential Naming**: Verifies complete image sequence (image01.webp, image02.webp, etc.)
-- **Metadata Completeness**: Confirms all required metadata fields are present
-
-## Configuration
-
-### User-Agent
-
-The tool uses a standard browser User-Agent to ensure successful downloads:
-```
-Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36
-```
-
-### Request Settings
-
-- Timeout: 30 seconds per request
-- Delay: 2 seconds between posts (respectful crawling)
-- Session reuse for connection pooling
-
-### Image Processing
-
-- Format: WebP
-- Quality: 85%
-- Optimization: Enabled
-- Color mode: RGB (RGBA/LA converted automatically)
-- Filtering: Skips avatars, icons, and logos
-
-## Error Handling
-
-The tool includes robust error handling:
-- Network timeouts and connection errors
-- Invalid image formats
-- Missing content selectors
-- File system permissions
-- 404 responses from URLs
-
-Failed downloads are logged but don't stop the overall process.
-
-## Performance
-
-- **Sequential Processing**: Images downloaded sequentially per post
-- **Memory Efficient**: Streams image data, doesn't load entire files
-- **Storage Optimized**: WebP typically 25-50% smaller than original formats
-- **Respectful**: 2-second delays between requests
+- **Base Delay**: Delay between downloads to avoid overwhelming servers
+- **Error Handling**: Handles HTTP errors gracefully
+- **Resume Capability**: Can resume processing from where it left off
 
 ## Troubleshooting
 
-### Common Issues
+### Rate Limiting Issues
 
-**"No content found"**: The blog structure may have changed. Check CSS selectors in `extract_main_content()`.
+If you encounter HTTP 429 (Too Many Requests) errors:
 
-**Image download failures**: Usually network issues or changed URLs. Check connectivity and try again.
+1. **Wait**: The script will automatically wait and retry
+2. **Resume**: If interrupted, simply run the script again - it will resume from where it left off
+3. **Manual Delay**: You can increase the delay in the script if needed
 
-**Permission errors**: Ensure write permissions in the output directory.
+### Image Download Failures
 
-**404 errors**: Some URLs in the list may be outdated or moved.
+Some images may fail to download due to:
+- Network issues
+- Rate limiting
+- Invalid URLs
 
-### Debug Mode
+The script will log these failures and continue processing other images.
 
-Add debug prints by modifying the logging level in the script.
+### Memory Issues
 
-## Hugging Face Specific Features
-
-### Content Selectors
-
-Optimized for Hugging Face blog structure:
-- `.prose` - Main content container
-- `article .prose` - Article prose content
-- `[data-testid="article-content"]` - Test-specific selectors
-- `.markdown` - Markdown content areas
-
-### Title Cleaning
-
-Removes Hugging Face specific suffixes:
-- " | Hugging Face"
-- " - Hugging Face"
-- Other platform-specific branding
-
-### Date Extraction
-
-Multiple fallback strategies:
-1. Meta tags (`article:published_time`)
-2. Time elements with datetime attributes
-3. URL date patterns
-4. Default fallback date
-
-## Contributing
-
-To modify content extraction:
-1. Update CSS selectors in `extract_main_content()`
-2. Test with various Hugging Face blog post URLs
-3. Ensure compatibility with different blog formats
-4. Update `remove_huggingface_specific_content()` for new elements
-
-## License
-
-This tool is for educational and personal use. Respect Hugging Face Terms of Service and robots.txt when using.
+For large numbers of posts, the script processes them one at a time to minimize memory usage.
 
 ## Dependencies
 
-See `requirements.txt` for exact versions:
-- `requests>=2.28.0`
-- `beautifulsoup4>=4.11.0`
-- `Pillow>=9.0.0`
-- `lxml>=4.9.0` 
+### Required Dependencies
+- **requests>=2.28.0**: HTTP client for downloading content
+- **beautifulsoup4>=4.11.0**: HTML parsing and manipulation
+- **Pillow>=9.0.0**: Image processing and WebP conversion
+- **lxml>=4.9.0**: Fast XML/HTML parser for BeautifulSoup
+
+### Python Version
+- **Python 3.8+**: Required for type hints and pathlib features
+
+### Installation
+```bash
+pip install -r requirements.txt
+```
+
+## Configuration
+
+The script uses a simple configuration approach:
+
+- **URLs**: Edit `huggingface-blog-urls.txt` to specify which posts to download
+- **Image Quality**: Adjustable in the script (default: 85)
+- **Download Delay**: Configurable delay between downloads
+- **Output Directory**: Defaults to `downloads/`
+
+## Example Output
+
+After processing, you'll have a clean, organized archive:
+
+```
+downloads/
+├── 2021-01-15_post-title-1/
+│   ├── index.html
+│   ├── image01.webp
+│   └── image02.webp
+├── 2021-02-20_post-title-2/
+│   ├── index.html
+│   ├── image01.webp
+│   ├── image02.webp
+│   └── image03.webp
+└── ...
+```
+
+Each directory contains:
+- **index.html**: Clean, self-contained HTML file
+- **image*.webp**: Downloaded and converted images
+- **Local links**: All image references point to local files
+
+## License
+
+This project is part of the post-downloader repository and is provided as-is for educational and archival purposes.
+
+## Contributing
+
+Feel free to submit issues or pull requests to improve the Hugging Face blog downloader.
