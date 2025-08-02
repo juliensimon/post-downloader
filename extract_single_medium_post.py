@@ -9,6 +9,7 @@ import copy
 from datetime import datetime, timedelta
 
 import argparse
+import io
 import logging
 import os
 import re
@@ -18,6 +19,7 @@ import urllib.parse
 import urllib.request
 from bs4 import BeautifulSoup
 from pathlib import Path
+from PIL import Image
 
 # Set up logging
 logging.basicConfig(
@@ -89,6 +91,111 @@ class MediumPostExtractor:
         if len(filename) > 200:
             filename = filename[:200]
         return filename
+
+    def download_image(self, url, output_path):
+        """Download an image from URL and convert to WebP format"""
+        try:
+            logger.info(f"Downloading image: {url}")
+
+            # Add delay to be respectful
+            time.sleep(2)
+
+            # Download the image
+            response = self.session.open(url)
+
+            # Handle rate limiting
+            if response.status == 429:
+                logger.warning(f"Rate limited (429) for {url}, waiting 5 seconds...")
+                time.sleep(5)
+                response = self.session.open(url)
+                if response.status == 429:
+                    logger.error(f"Still rate limited after waiting, skipping {url}")
+                    return False
+
+            if response.status != 200:
+                logger.warning(f"Failed to download {url}: HTTP {response.status}")
+                return False
+
+            image_data = response.read()
+
+            # Try to open with PIL to validate it's an image
+            try:
+                image = Image.open(io.BytesIO(image_data))
+                # Convert to RGB if necessary (for WebP compatibility)
+                if image.mode in ('RGBA', 'LA', 'P'):
+                    # Create a white background for transparent images
+                    background = Image.new('RGB', image.size, (255, 255, 255))
+                    if image.mode == 'P':
+                        image = image.convert('RGBA')
+                    background.paste(
+                        image, mask=image.split()[-1] if image.mode == 'RGBA' else None
+                    )
+                    image = background
+                elif image.mode != 'RGB':
+                    image = image.convert('RGB')
+
+                # Save as WebP with good quality
+                image.save(output_path, 'WEBP', quality=85, optimize=True)
+                logger.info(f"Saved as WebP: {output_path}")
+                return True
+
+            except Exception as e:
+                logger.error(f"Failed to process image {url}: {e}")
+                return False
+
+        except Exception as e:
+            logger.error(f"Failed to download {url}: {e}")
+            return False
+
+    def extract_image_urls(self, html_content):
+        """Extract all image URLs from HTML content"""
+        soup = BeautifulSoup(html_content, 'html.parser')
+        image_urls = []
+
+        # Find all img tags
+        for img in soup.find_all('img'):
+            src = img.get('src')
+            if src:
+                # Handle relative URLs (though unlikely in Medium exports)
+                if src.startswith('http'):
+                    image_urls.append(src)
+                elif src.startswith('//'):
+                    image_urls.append('https:' + src)
+
+        # Also find images in source tags (for picture elements)
+        for source in soup.find_all('source'):
+            srcset = source.get('srcset')
+            if srcset:
+                # Extract URLs from srcset (format: "url1 width1, url2 width2, ...")
+                # Parse srcset to get the highest quality image
+                srcset_parts = srcset.split(',')
+                best_url = None
+                best_width = 0
+
+                for part in srcset_parts:
+                    part = part.strip()
+                    if ' ' in part:
+                        url, width_spec = part.rsplit(' ', 1)
+                        if width_spec.endswith('w'):
+                            try:
+                                width = int(width_spec[:-1])
+                                if width > best_width:
+                                    best_width = width
+                                    best_url = url.strip()
+                            except ValueError:
+                                continue
+
+                if best_url:
+                    if best_url.startswith('http'):
+                        image_urls.append(best_url)
+                    elif best_url.startswith('//'):
+                        image_urls.append('https:' + best_url)
+
+        return list(set(image_urls))  # Remove duplicates
+
+    def generate_image_filename(self, image_number):
+        """Generate a filename for the downloaded image using sequential naming"""
+        return f"image{image_number:02d}.webp"
 
     def clean_content(self, article_elem):
         """Clean the article content by removing unwanted elements and sections"""
@@ -292,7 +399,7 @@ class MediumPostExtractor:
             return None
 
     def save_post(self, post_info, output_dir="extracted_posts"):
-        """Save the post to a file"""
+        """Save the post to a file with images"""
         if not post_info:
             logger.error("No post info to save")
             return False
@@ -320,6 +427,34 @@ class MediumPostExtractor:
 
         filepath = output_path / filename
 
+        # Extract and download images
+        image_mapping = {}
+        if post_info['content']:
+            image_urls = self.extract_image_urls(post_info['content'])
+            if image_urls:
+                logger.info(f"Found {len(image_urls)} images to download")
+
+                for i, image_url in enumerate(image_urls, 1):
+                    image_filename = self.generate_image_filename(i)
+                    image_path = output_path / image_filename
+
+                    if self.download_image(image_url, image_path):
+                        # Create relative path for HTML
+                        image_mapping[image_url] = image_filename
+                        logger.info(f"Mapped {image_url} -> {image_filename}")
+                    else:
+                        logger.warning(f"Failed to download {image_url}")
+
+        # Update HTML content to reference local images
+        updated_content = post_info['content']
+        if image_mapping:
+            soup = BeautifulSoup(post_info['content'], 'html.parser')
+            for img in soup.find_all('img'):
+                src = img.get('src')
+                if src and src in image_mapping:
+                    img['src'] = image_mapping[src]
+            updated_content = str(soup)
+
         # Create HTML content
         html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -346,7 +481,7 @@ class MediumPostExtractor:
         <p><strong>Source:</strong> <a href="{post_info['url']}">{post_info['url']}</a></p>
     </div>
     <div class="content">
-        {post_info['content'] or '<p>No content available</p>'}
+        {updated_content or '<p>No content available</p>'}
     </div>
 </body>
 </html>"""
