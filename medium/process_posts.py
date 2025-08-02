@@ -601,6 +601,129 @@ class MediumPostProcessor:
         for elem in cleaned_article.find_all(['script', 'style', 'iframe']):
             elem.decompose()
 
+        # Remove Medium-specific UI elements
+        unwanted_selectors = [
+            '[data-testid="headerClapButton"]',
+            '[data-testid="headerBookmarkButton"]',
+            '[data-testid="headerSocialShareButton"]',
+            '[data-testid="audioPlayButton"]',
+            '.pw-multi-vote-icon',
+            '.pw-multi-vote-count',
+            '.pw-responses-count',
+            '.speechify-ignore',
+            '[role="tooltip"]',
+            '[aria-hidden="true"]',
+            '.ac.cp',  # Author info container
+            '.ac.ij',  # Author photo container
+            '.ac.r.it',  # Author name container
+            '.ac.r.jc',  # Author info wrapper
+            '.je.bm',  # Read time container
+            '.ac.cp.ji',  # Action buttons container
+            '.ac.r.jy',  # Share buttons container
+            '.ac.r.ko',  # Clap button container
+            '.ac.r.lq',  # Bookmark container
+            '.fd.ls.cn',  # Audio/share container
+            '.lt.lu.lv.lw.lx.ly',  # Audio button wrapper
+        ]
+
+        for selector in unwanted_selectors:
+            for elem in cleaned_article.select(selector):
+                elem.decompose()
+
+        # Remove elements with specific classes that contain UI elements
+        unwanted_classes = [
+            'ac',
+            'cp',
+            'ji',
+            'jj',
+            'jk',
+            'jl',
+            'jm',
+            'jn',
+            'jo',
+            'jp',
+            'jq',
+            'jr',
+            'js',
+            'jt',
+            'ju',
+            'jv',
+            'jw',
+            'jx',
+            'kn',
+            'ko',
+            'kp',
+            'kq',
+            'kr',
+            'ks',
+            'kt',
+            'ku',
+            'kv',
+            'kw',
+            'kx',
+            'ky',
+            'kz',
+            'la',
+            'lb',
+            'lc',
+            'ld',
+            'le',
+            'lf',
+            'lg',
+            'lh',
+            'li',
+            'lj',
+            'lk',
+            'll',
+            'lm',
+            'ln',
+            'lo',
+            'lp',
+            'lq',
+            'lr',
+            'ls',
+            'lt',
+            'lu',
+            'lv',
+            'lw',
+            'lx',
+            'ly',
+            'lz',
+            'ma',
+            'mb',
+            'mc',
+            'md',
+            'me',
+            'mf',
+            'mg',
+            'mh',
+            'mi',
+            'mj',
+            'mk',
+            'ml',
+            'mm',
+            'mn',
+            'mo',
+            'mp',
+            'mq',
+        ]
+
+        for class_name in unwanted_classes:
+            for elem in cleaned_article.find_all(class_=class_name):
+                # Only remove if it's not a paragraph or heading
+                if elem.name not in [
+                    'p',
+                    'h1',
+                    'h2',
+                    'h3',
+                    'h4',
+                    'h5',
+                    'h6',
+                    'div',
+                    'span',
+                ]:
+                    elem.decompose()
+
         # Find the subtitle (h2 element)
         subtitle = cleaned_article.find('h2')
         if subtitle:
