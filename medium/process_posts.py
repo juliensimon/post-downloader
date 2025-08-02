@@ -13,6 +13,8 @@ This script processes all Medium posts by:
 Supports configuration for different Medium authors.
 """
 
+from datetime import datetime, timedelta
+
 import argparse
 import hashlib
 import io
@@ -413,6 +415,276 @@ class MediumPostProcessor:
 
         logger.info("Processing complete!")
 
+    def convert_relative_date(self, relative_date_text):
+        """Convert relative date text to actual date"""
+        if not relative_date_text:
+            return None
+
+        # Clean the text
+        text = relative_date_text.strip().lower()
+
+        # Current date
+        now = datetime.now()
+
+        # Common patterns
+        patterns = [
+            (r'(\d+)\s*days?\s*ago', lambda m: now - timedelta(days=int(m.group(1)))),
+            (r'(\d+)\s*weeks?\s*ago', lambda m: now - timedelta(weeks=int(m.group(1)))),
+            (
+                r'(\d+)\s*months?\s*ago',
+                lambda m: now - timedelta(days=int(m.group(1)) * 30),
+            ),
+            (
+                r'(\d+)\s*years?\s*ago',
+                lambda m: now - timedelta(days=int(m.group(1)) * 365),
+            ),
+            (r'yesterday', lambda m: now - timedelta(days=1)),
+            (r'today', lambda m: now),
+            (r'(\d+)\s*hours?\s*ago', lambda m: now - timedelta(hours=int(m.group(1)))),
+            (
+                r'(\d+)\s*minutes?\s*ago',
+                lambda m: now - timedelta(minutes=int(m.group(1))),
+            ),
+        ]
+
+        for pattern, converter in patterns:
+            match = re.search(pattern, text)
+            if match:
+                try:
+                    actual_date = converter(match)
+                    return actual_date.strftime('%Y-%m-%d')
+                except Exception as e:
+                    logger.warning(f"Error converting date '{relative_date_text}': {e}")
+                    return None
+
+        return None
+
+    def extract_post_info(self, url):
+        """Extract post information from a Medium URL"""
+        try:
+            logger.info(f"Fetching post: {url}")
+
+            # Add delay to be respectful
+            time.sleep(2)
+
+            response = self.session.open(url)
+
+            if response.status != 200:
+                logger.error(f"Failed to fetch {url}: HTTP {response.status}")
+                return None
+
+            html_content = response.read().decode('utf-8')
+            soup = BeautifulSoup(html_content, 'html.parser')
+
+            # Extract title
+            title = None
+            title_elem = soup.find('h1')
+            if title_elem:
+                title = title_elem.get_text(strip=True)
+
+            # Extract author
+            author = None
+            author_elem = soup.find('a', {'data-testid': 'authorName'})
+            if author_elem:
+                author = author_elem.get_text(strip=True)
+
+            # Extract publication date
+            date = None
+            date_selectors = [
+                'time[datetime]',
+                '[data-testid="storyReadTime"]',
+                '.pw-post-date',
+                'time',
+            ]
+
+            for selector in date_selectors:
+                date_elem = soup.select_one(selector)
+                if date_elem:
+                    if selector == 'time[datetime]' or selector == 'time':
+                        date = date_elem.get('datetime')
+                        if date:
+                            try:
+                                dt = datetime.fromisoformat(date.replace('Z', '+00:00'))
+                                date = dt.strftime('%Y-%m-%d')
+                                break
+                            except Exception as e:
+                                logger.warning(f"Error parsing datetime: {e}")
+                                date = None
+                    else:
+                        # Look for date in the text or nearby elements
+                        parent = date_elem.parent
+                        if parent:
+                            text = parent.get_text()
+                            # Look for ISO date format
+                            date_match = re.search(r'(\d{4}-\d{2}-\d{2})', text)
+                            if date_match:
+                                date = date_match.group(1)
+                                break
+                            else:
+                                # Look for other date formats
+                                date_match = re.search(
+                                    r'(\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4})',
+                                    text,
+                                )
+                                if date_match:
+                                    try:
+                                        dt = datetime.strptime(
+                                            date_match.group(1), '%d %b %Y'
+                                        )
+                                        date = dt.strftime('%Y-%m-%d')
+                                        break
+                                    except Exception as e:
+                                        logger.warning(f"Date parsing failed: {e}")
+                                        pass
+                                else:
+                                    # Try to find relative date patterns
+                                    relative_patterns = [
+                                        r'(\d+)\s*days?\s*ago',
+                                        r'(\d+)\s*weeks?\s*ago',
+                                        r'(\d+)\s*months?\s*ago',
+                                        r'yesterday',
+                                        r'today',
+                                    ]
+
+                                    for pattern in relative_patterns:
+                                        match = re.search(pattern, text.lower())
+                                        if match:
+                                            if pattern in ['yesterday', 'today']:
+                                                relative_date = match.group(0)
+                                            else:
+                                                relative_date = (
+                                                    f"{match.group(1)} days ago"
+                                                )
+
+                                            # Convert relative date to actual date
+                                            actual_date = self.convert_relative_date(
+                                                relative_date
+                                            )
+                                            if actual_date:
+                                                date = actual_date
+                                            break
+                    if date:
+                        break
+
+            # Extract main content
+            content = None
+            article_elem = soup.find('article')
+            if article_elem:
+                # Clean the content
+                cleaned_article = self.clean_content(article_elem)
+                if cleaned_article:
+                    content = str(cleaned_article)
+
+            return {
+                'title': title,
+                'author': author,
+                'date': date,
+                'content': content,
+                'url': url,
+            }
+
+        except Exception as e:
+            logger.error(f"Error extracting post info: {e}")
+            return None
+
+    def clean_content(self, article_elem):
+        """Clean the article content by removing unwanted elements and sections"""
+        if not article_elem:
+            return None
+
+        # Create a copy to avoid modifying the original
+        import copy
+
+        cleaned_article = copy.deepcopy(article_elem)
+
+        # Remove unwanted elements
+        for elem in cleaned_article.find_all(['script', 'style', 'iframe']):
+            elem.decompose()
+
+        # Find the subtitle (h2 element)
+        subtitle = cleaned_article.find('h2')
+        if subtitle:
+            # Find the first figure element after the subtitle
+            first_figure = None
+            for elem in subtitle.find_next_siblings():
+                if elem.name == 'figure':
+                    first_figure = elem
+                    break
+
+            if first_figure:
+                # Remove all elements between subtitle and first figure
+                current_elem = subtitle.find_next_sibling()
+                while current_elem and current_elem != first_figure:
+                    next_elem = current_elem.find_next_sibling()
+                    current_elem.decompose()
+                    current_elem = next_elem
+
+        return cleaned_article
+
+    def process_single_post_from_url(self, url):
+        """Process a single post from a Medium URL"""
+        logger.info(f"Processing single post from URL: {url}")
+
+        # Extract post information
+        post_info = self.extract_post_info(url)
+        if not post_info:
+            logger.error("Failed to extract post information")
+            return False
+
+        # Create a proper filename from title and date
+        title = post_info['title'] or 'untitled'
+        safe_title = self.sanitize_filename(title)
+
+        # Add date if available
+        if post_info['date']:
+            try:
+                date_obj = datetime.fromisoformat(
+                    post_info['date'].replace('Z', '+00:00')
+                )
+                date_str = date_obj.strftime('%Y-%m-%d')
+                filename = f"{date_str}_{safe_title}.html"
+            except:
+                filename = f"{safe_title}.html"
+        else:
+            filename = f"{safe_title}.html"
+
+        # Create a temporary HTML file with proper name
+        import tempfile
+
+        temp_dir = tempfile.mkdtemp()
+        temp_html_path = os.path.join(temp_dir, filename)
+
+        with open(temp_html_path, 'w', encoding='utf-8') as f:
+            # Create HTML content
+            html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{post_info['title'] or 'Untitled'}</title>
+    <meta name="author" content="{post_info['author'] or 'Unknown'}">
+    <meta name="date" content="{post_info['date'] or ''}">
+    <meta name="source" content="{post_info['url']}">
+</head>
+<body>
+    {post_info['content'] or '<p>No content available</p>'}
+</body>
+</html>"""
+            f.write(html_content)
+
+        try:
+            # Process the temporary HTML file
+            temp_html_file = Path(temp_html_path)
+            self.process_post(temp_html_file)
+            logger.info(f"Successfully processed post: {post_info['title']}")
+            return True
+        finally:
+            # Clean up temporary directory
+            import shutil
+
+            if os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir)
+
     def update_all_internal_links(self):
         """Update all internal links in processed posts"""
         # Create mapping from Medium URLs to local file paths
@@ -485,6 +757,11 @@ def main():
     parser.add_argument(
         '--list-configs', action='store_true', help='List available configurations'
     )
+    parser.add_argument(
+        '--single-post',
+        '-s',
+        help='Process a single Medium post URL instead of batch processing',
+    )
 
     args = parser.parse_args()
 
@@ -525,7 +802,17 @@ def main():
 
     # Create processor and run
     processor = MediumPostProcessor(config)
-    processor.process_all_posts()
+
+    if args.single_post:
+        # Process a single post from URL
+        success = processor.process_single_post_from_url(args.single_post)
+        if success:
+            print("✅ Single post processed successfully!")
+        else:
+            print("❌ Failed to process single post")
+    else:
+        # Process all posts
+        processor.process_all_posts()
 
 
 if __name__ == "__main__":
