@@ -23,6 +23,8 @@ post-downloader/
 ├── README.md                           # This documentation
 ├── extract_juliensimon_urls.py        # URL extraction utilities
 ├── extract_all_juliensimon_urls.py    # Comprehensive URL extraction
+├── extract_single_medium_post.py      # Single Medium post extractor
+├── requirements_simple.txt             # Dependencies for single post extractor
 ├── medium/                             # Medium posts processor
 │   ├── README.md                      # Medium-specific documentation
 │   ├── process_posts.py               # Main Medium processing script
@@ -45,7 +47,15 @@ post-downloader/
 
 ## Features
 
-### Medium Posts Processor
+### Single Medium Post Extractor
+- **Real Date Conversion**: Converts relative dates ("2 days ago") to actual calendar dates
+- **Content Cleaning**: Removes unwanted UI elements between subtitle and image
+- **Clean Metadata**: Extracts title, author, real date, and source URL
+- **Organized Filenames**: Uses date and title for better file organization
+- **Rate Limiting**: Respectful delays to avoid being blocked
+- **Error Handling**: Robust error handling with graceful fallbacks
+
+### Medium Posts Processor (Batch)
 - **Image Processing**: Downloads remote images and converts them to WebP format
 - **HTML Cleaning**: Removes unwanted Medium-specific attributes and classes
 - **Internal Link Processing**: Updates links between posts to reference local files
@@ -65,7 +75,33 @@ post-downloader/
 
 ## Quick Start
 
-### Medium Posts
+### Single Medium Post Extraction
+
+For extracting individual Medium posts with clean formatting:
+
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements_simple.txt
+   ```
+
+2. **Extract a single post**:
+   ```bash
+   python extract_single_medium_post.py "https://medium.com/@username/post-url"
+   ```
+
+3. **Extract with custom output directory**:
+   ```bash
+   python extract_single_medium_post.py "https://medium.com/@username/post-url" --output-dir my_posts
+   ```
+
+**Features**:
+- ✅ **Real Date Extraction**: Converts "2 days ago" to actual dates (e.g., "2025-07-31")
+- ✅ **Content Cleaning**: Removes unwanted UI elements between subtitle and image
+- ✅ **Clean Filenames**: Uses date and title for organized filenames
+- ✅ **Metadata Extraction**: Title, author, date, and source URL
+- ✅ **Rate Limiting**: Respectful delays to avoid being blocked
+
+### Medium Posts (Batch Processing)
 
 1. **Navigate to the medium directory**:
    ```bash
