@@ -79,25 +79,23 @@ post-downloader/
 
 For extracting individual Medium posts with clean formatting:
 
-1. **Install dependencies**:
-   ```bash
-   pip install -r requirements_simple.txt
-   ```
+**Option 1: Using the existing batch processor (recommended)**
+```bash
+cd medium
+python process_posts.py --single-post "https://medium.com/@username/post-url"
+```
 
-2. **Extract a single post**:
-   ```bash
-   python extract_single_medium_post.py "https://medium.com/@username/post-url"
-   ```
-
-3. **Extract with custom output directory**:
-   ```bash
-   python extract_single_medium_post.py "https://medium.com/@username/post-url" --output-dir my_posts
-   ```
+**Option 2: Using the standalone extractor**
+```bash
+pip install -r requirements_simple.txt
+python extract_single_medium_post.py "https://medium.com/@username/post-url"
+```
 
 **Features**:
 - ✅ **Real Date Extraction**: Converts "2 days ago" to actual dates (e.g., "2025-07-31")
 - ✅ **Content Cleaning**: Removes unwanted UI elements between subtitle and image
-- ✅ **Clean Filenames**: Uses date and title for organized filenames
+- ✅ **Individual Folders**: Creates organized directory structure with date and title
+- ✅ **Image Downloading**: Downloads and converts images to WebP format
 - ✅ **Metadata Extraction**: Title, author, date, and source URL
 - ✅ **Rate Limiting**: Respectful delays to avoid being blocked
 
