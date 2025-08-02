@@ -151,6 +151,34 @@ class MediumPostProcessor:
                 elif src.startswith('//'):
                     image_urls.append('https:' + src)
 
+        # Also find images in source tags (for picture elements)
+        for source in soup.find_all('source'):
+            srcset = source.get('srcset')
+            if srcset:
+                # Parse srcset to get the highest quality image
+                srcset_parts = srcset.split(',')
+                best_url = None
+                best_width = 0
+
+                for part in srcset_parts:
+                    part = part.strip()
+                    if ' ' in part:
+                        url, width_spec = part.rsplit(' ', 1)
+                        if width_spec.endswith('w'):
+                            try:
+                                width = int(width_spec[:-1])
+                                if width > best_width:
+                                    best_width = width
+                                    best_url = url.strip()
+                            except ValueError:
+                                continue
+
+                if best_url:
+                    if best_url.startswith('http'):
+                        image_urls.append(best_url)
+                    elif best_url.startswith('//'):
+                        image_urls.append('https:' + best_url)
+
         return list(set(image_urls))  # Remove duplicates
 
     def generate_image_filename(self, image_number):
@@ -631,6 +659,7 @@ class MediumPostProcessor:
                 elem.decompose()
 
         # Remove elements with specific classes that contain UI elements
+        # But be more careful to preserve content elements
         unwanted_classes = [
             'ac',
             'cp',
@@ -710,18 +739,32 @@ class MediumPostProcessor:
 
         for class_name in unwanted_classes:
             for elem in cleaned_article.find_all(class_=class_name):
-                # Only remove if it's not a paragraph or heading
-                if elem.name not in [
-                    'p',
-                    'h1',
-                    'h2',
-                    'h3',
-                    'h4',
-                    'h5',
-                    'h6',
-                    'div',
-                    'span',
-                ]:
+                # Only remove if it's not a content element and doesn't contain images
+                if (
+                    elem.name
+                    not in [
+                        'p',
+                        'h1',
+                        'h2',
+                        'h3',
+                        'h4',
+                        'h5',
+                        'h6',
+                        'div',
+                        'span',
+                        'figure',
+                        'img',
+                        'picture',
+                        'source',
+                    ]
+                    and not elem.find('img')
+                    and not elem.find(  # Don't remove elements that contain images
+                        'figure'
+                    )
+                    and not elem.find(  # Don't remove elements that contain figures
+                        'picture'
+                    )
+                ):  # Don't remove elements that contain pictures
                     elem.decompose()
 
         # Find the subtitle (h2 element)
