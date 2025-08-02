@@ -141,43 +141,50 @@ class MediumPostProcessor:
         soup = BeautifulSoup(html_content, 'html.parser')
         image_urls = []
 
-        # Find all img tags
-        for img in soup.find_all('img'):
-            src = img.get('src')
-            if src:
-                # Handle relative URLs (though unlikely in Medium exports)
-                if src.startswith('http'):
-                    image_urls.append(src)
-                elif src.startswith('//'):
-                    image_urls.append('https:' + src)
-
-        # Also find images in source tags (for picture elements)
-        for source in soup.find_all('source'):
-            srcset = source.get('srcset')
-            if srcset:
-                # Parse srcset to get the highest quality image
-                srcset_parts = srcset.split(',')
+        # First, check if we have picture elements with source tags
+        picture_elements = soup.find_all('picture')
+        if picture_elements:
+            # If we have picture elements, prefer source tags over img tags
+            # Group by picture element to avoid duplicates
+            for picture in picture_elements:
                 best_url = None
                 best_width = 0
 
-                for part in srcset_parts:
-                    part = part.strip()
-                    if ' ' in part:
-                        url, width_spec = part.rsplit(' ', 1)
-                        if width_spec.endswith('w'):
-                            try:
-                                width = int(width_spec[:-1])
-                                if width > best_width:
-                                    best_width = width
-                                    best_url = url.strip()
-                            except ValueError:
-                                continue
+                # Find the best image URL from all source tags in this picture
+                for source in picture.find_all('source'):
+                    srcset = source.get('srcset')
+                    if srcset:
+                        # Parse srcset to get the highest quality image
+                        srcset_parts = srcset.split(',')
+
+                        for part in srcset_parts:
+                            part = part.strip()
+                            if ' ' in part:
+                                url, width_spec = part.rsplit(' ', 1)
+                                if width_spec.endswith('w'):
+                                    try:
+                                        width = int(width_spec[:-1])
+                                        if width > best_width:
+                                            best_width = width
+                                            best_url = url.strip()
+                                    except ValueError:
+                                        continue
 
                 if best_url:
                     if best_url.startswith('http'):
                         image_urls.append(best_url)
                     elif best_url.startswith('//'):
                         image_urls.append('https:' + best_url)
+        else:
+            # Fall back to img tags if no picture elements
+            for img in soup.find_all('img'):
+                src = img.get('src')
+                if src:
+                    # Handle relative URLs (though unlikely in Medium exports)
+                    if src.startswith('http'):
+                        image_urls.append(src)
+                    elif src.startswith('//'):
+                        image_urls.append('https:' + src)
 
         return list(set(image_urls))  # Remove duplicates
 
